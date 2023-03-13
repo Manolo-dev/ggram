@@ -81,62 +81,23 @@ vector<Token> lex(string code) {
     return tokens;
 }
 
-void ___or(IT&it, IT e, vector<void (*)(IT&, IT)> foo) {
-    for(long unsigned int i = 0; i != foo.size(); ++i) {
-        try {
-            foo[i](it, e);
-            return;
-        } catch(const char* msg) {
-            continue;
-        }
-    }
-    throw "BAD";
-}
-
-void ___option(IT&it, IT e, void (*foo)(IT&, IT)) {
-    try {
-        foo(it, e);
-    } catch(const char* msg) {
-        return;
-    }
-}
-
-void ___loop(IT&it, IT e, void (*foo)(IT&, IT)) {
-    foo(it, e);
-    while(true) {
-        try {
-            foo(it, e);
-        } catch(const char* msg) {
-            return;
-        }
-    }
-}
-
 void create_lexemes(vector<Lexeme> &lexemes) {
-    lexemes.push_back(Lexeme("a", "(a)"));
-    lexemes.push_back(Lexeme("b", "(b)"));
-    lexemes.push_back(Lexeme("c", "(c)"));
-    lexemes.push_back(Lexeme("d", "(d)"));
-    lexemes.push_back(Lexeme("e", "(e)"));
+    lexemes.push_back(Lexeme("int", "([1-9][0-9]*)"));
+    lexemes.push_back(Lexeme("add", "(\\+)"));
+    lexemes.push_back(Lexeme("sub", "(-)"));
+    lexemes.push_back(Lexeme("mult", "(\\*)"));
+    lexemes.push_back(Lexeme("fun", "([a-z]+)"));
 }
-void __a(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "a") throw "BAD"; it++; }
-void __b(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "b") throw "BAD"; it++; }
-void __c(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "c") throw "BAD"; it++; }
-void __d(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "d") throw "BAD"; it++; }
-void __e(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "e") throw "BAD"; it++; }
+
+void __int(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "int") throw "BAD"; it++; }
+void __add(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "add") throw "BAD"; it++; }
+void __sub(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "sub") throw "BAD"; it++; }
+void __mult(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "mult") throw "BAD"; it++; }
+void __fun(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "fun") throw "BAD"; it++; }
 void __expr(IT&it, IT e);
 
 void __expr(IT&it, IT e) {
-    __a(it, e);
-    ___or(it, e, (vector<void (*)(IT&, IT)>){
-        __b,
-        [](IT&it, IT e){
-            ___option(it, e, __c);
-            __expr(it, e);
-        },
-        ___loop(it, e, __d)
-    });
-    __e(it, e);
+    IT t;t = it;try {__int(it, e);__add(it, e);__int(it, e);} catch(...) {it = t;t = it;try {__int(it, e);__sub(it, e);__int(it, e);} catch(...) {it = t;t = it;try {__int(it, e);__mult(it, e);__int(it, e);} catch(...) {it = t;__fun(it, e);__int(it, e);while(true) {t = it; try {__int(it, e);} catch(...) {it = t;break;}}}}}
 }
 
 int main() {

@@ -80,34 +80,3 @@ vector<Token> lex(string code) {
 
     return tokens;
 }
-
-void ___or(IT&it, IT e, vector<void (*)(IT&, IT)> foo) {
-    for(long unsigned int i = 0; i != foo.size(); ++i) {
-        try {
-            foo[i](it, e);
-            return;
-        } catch(const char* msg) {
-            continue;
-        }
-    }
-    throw "BAD";
-}
-
-void ___option(IT&it, IT e, void (*foo)(IT&, IT)) {
-    try {
-        foo(it, e);
-    } catch(const char* msg) {
-        return;
-    }
-}
-
-void ___loop(IT&it, IT e, void (*foo)(IT&, IT)) {
-    foo(it, e);
-    while(true) {
-        try {
-            foo(it, e);
-        } catch(const char* msg) {
-            return;
-        }
-    }
-}

@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <cstring>
 #include <string>
 #include <regex>
 #include <filesystem>
@@ -35,12 +34,49 @@ string join(vector<string> const &strings, string delim = "", string exception =
     return result;
 }
 
-vector<string> parse(vector<string> &words) {
+string ____or(vector<string> const &strings) {
+    string result = "";
+    for(long unsigned int i = 0; i < strings.size() - 1; i++) {
+        result += "t = it;try {";
+        result += strings[i];
+        result += "} catch(...) {it = t;";
+    }
+    result += strings[strings.size() - 1];
+    for(long unsigned int i = 0; i < strings.size() - 1; i++) {
+        result += "}";
+    }
+    return result;
+}
+
+string ____option(vector<string> const &strings) {
+    string result = "";
+    result += "t = it;try {";
+    for(long unsigned int i = 0; i < strings.size(); i++) {
+        result += strings[i];
+    }
+    result += "} catch(...) {it = t;}";
+    return result;
+}
+
+string ____loop(vector<string> const &strings) {
+    string result = "";
+    for(long unsigned int i = 0; i < strings.size(); i++) {
+        result += strings[i];
+    }
+    result += "while(true) {t = it; try {";
+    for(long unsigned int i = 0; i < strings.size(); i++) {
+        result += strings[i];
+    }
+    result += "} catch(...) {it = t;break;}}";
+    return result;
+}
+
+vector<string> parse(vector<string>&words) {
     vector<string> result = vector<string>();
     for(long unsigned int i = 0; i < words.size(); i++) {
         if(words[i][0] == '<' && words[i][words[i].size() - 1] == '>') {
             string word = words[i].substr(1, words[i].size() - 2);
-            result.push_back("__" + word);
+            result.push_back("__" + word + "(it, e);");
         }
         if(words[i] == "(") {
             int level = 1;
@@ -57,7 +93,8 @@ vector<string> parse(vector<string> &words) {
                 }
                 subwords.push_back(words[j]);
             }
-            result.push_back("[](IT&it, IT e){" + join(parse(subwords), "(it, e);") + "(it, e);}");
+            cout << subwords << endl;
+            result.push_back(join(parse(subwords)));
         }
         if(words[i] == "[") {
             int level = 1;
@@ -74,7 +111,7 @@ vector<string> parse(vector<string> &words) {
                 }
                 subwords.push_back(words[j]);
             }
-            result.push_back("___option(it, e, [](IT&it, IT e){" + join(parse(subwords), "(it, e);") + "(it, e);})");
+            result.push_back(____option(parse(subwords)));
         }
         if(words[i] == "{") {
             int level = 1;
@@ -91,7 +128,7 @@ vector<string> parse(vector<string> &words) {
                 }
                 subwords.push_back(words[j]);
             }
-            result.push_back("___loop(it, e, [](IT&it, IT e){" + join(parse(subwords), "(it, e);") + "(it, e);})");
+            result.push_back(____loop(parse(subwords)));
         }
         if(words[i] == "<") {
             int level = 1;
@@ -108,7 +145,7 @@ vector<string> parse(vector<string> &words) {
                 }
                 subwords.push_back(words[j]);
             }
-            result.push_back("___or(it, e, (vector<void (*)(IT&, IT)>){" + join(parse(subwords), ",") + "})");
+            result.push_back(____or(parse(subwords)));
         }
     }
     return result;
@@ -218,7 +255,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    out << "}" << endl;
+    out << "}" << endl << endl;
 
     for(auto token : tokens) {
         out << "void __" << token << "(IT&it, IT e) { if(it == e) throw \"BAD\"; if(it->type() != \"" + token + "\") throw \"BAD\"; it++; }" << endl;
@@ -242,7 +279,6 @@ int main(int argc, char *argv[]) {
         regex re("^\\s*<([a-zA-Z_][a-zA-Z_0-9]*)>\\s*::=\\s*(.+)\\s*$");
         if(regex_search(line, match, re)) {
             string name = match.str(1);
-            cout << name << endl;
             string expr = match.str(2);
             int i = 0;
             while(line.find(';') > line.length()) {
@@ -270,8 +306,7 @@ int main(int argc, char *argv[]) {
                 currentRule.push_back(word);
             }
 
-        
-            rules.push_back(make_pair(name, join(parse(currentRule), "(it, e);\n") + "(it, e);\n"));
+            rules.push_back(make_pair(name, "IT t;" + join(parse(currentRule))));
         }
     }
 

@@ -1,9 +1,9 @@
-a "a"
-b "b"
-c "c"
-d "d"
-e "e"
+int "[1-9][0-9]*"
+add "\\+"
+sub "-"
+mult "\\*"
+fun "[a-z]+"
 
 ---
 
-<expr> ::= <a> < <b> ( [ <c> ] <expr> ) { <d> } > <e>;
+<expr> ::= < ( <int> <add> <int> ) ( <int> <sub> <int> ) ( <int> <mult> <int> ) ( <fun> { <int> } ) > ;
