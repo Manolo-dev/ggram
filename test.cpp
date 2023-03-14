@@ -97,7 +97,7 @@ void __fun(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "fun") throw
 void __expr(IT&it, IT e);
 
 void __expr(IT&it, IT e) {
-    IT t;t = it;try {__int(it, e);__add(it, e);__int(it, e);} catch(...) {it = t;t = it;try {__int(it, e);__sub(it, e);__int(it, e);} catch(...) {it = t;t = it;try {__int(it, e);__mult(it, e);__int(it, e);} catch(...) {it = t;__fun(it, e);__int(it, e);while(true) {t = it; try {__int(it, e);} catch(...) {it = t;break;}}}}}
+    IT t;t = it;try {__int(it, e);} catch(...) {it = t;t = it;try {__add(it, e);__expr(it, e);} catch(...) {it = t;t = it;try {__sub(it, e);__expr(it, e);} catch(...) {it = t;t = it;try {__mult(it, e);__expr(it, e);} catch(...) {it = t;__fun(it, e);__int(it, e);while(true) {t = it; try {__int(it, e);} catch(...) {it = t;break;}}}}}}
 }
 
 int main() {

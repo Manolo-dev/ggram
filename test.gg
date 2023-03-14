@@ -6,4 +6,4 @@ fun "[a-z]+"
 
 ---
 
-<expr> ::= < ( <int> <add> <int> ) ( <int> <sub> <int> ) ( <int> <mult> <int> ) ( <fun> { <int> } ) > ;
+<expr> ::= < <int> ( <add> <expr> ) ( <sub> <expr> ) ( <mult> <expr> ) ( <fun> { <int> } ) > ;
