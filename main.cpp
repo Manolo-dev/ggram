@@ -7,6 +7,55 @@
 
 using namespace std;
 
+char *concat_char(string a[], int lenght){   
+    char *result;
+    for(int i = 0; i < lenght; i++){
+        result = strcat(result, a[i].c_str());
+    }
+    return result;
+}
+
+#define INVALID_FILE_EXTENSION 0
+#define FILE_NOT_FOUND 1
+#define NO_FILENAME_SPECIFIED 2
+#define REGEX_ERROR 3
+#define INVALID_SYNTAX 4
+
+class Error {
+public:
+    Error(int type, string other){
+        string temp[1] = {other};
+        *this = Error(type, temp);
+    }
+    Error(int type, string *other) {
+        string error = "\e[1;31mError:\e[0m ";
+        switch(type){
+            case INVALID_FILE_EXTENSION:
+                error += "Invalid file extension. Only " + other[0] + " files are allowed.";
+                break;
+            case FILE_NOT_FOUND:
+                error += "The file " + other[0] + " was not found.";
+                break;
+            case NO_FILENAME_SPECIFIED:
+                error += "No " + other[0] + " specified.";
+                break;
+            case REGEX_ERROR:
+                error += "Invalid regex on line " + other[0] + ": " + other[1] + "\n regex_error code: " + other[2];
+                break;
+            case INVALID_SYNTAX:
+                error += "Invalid syntax on line " + other[0] + ": " + other[1];
+                break;
+            default:
+                error += "Unknown error.";
+                break;
+
+        }
+        this->error = error;
+        
+    }   
+    string error;
+};
+
 ostream& operator<<(ostream& os, vector<string> const &v) {
     os << "[";
     for(long unsigned int i = 0; i < v.size(); i++) {
@@ -151,10 +200,7 @@ vector<string> parse(vector<string>&words) {
     return result;
 }
 
-
-int main(int argc, char *argv[]) {
-    string filename = "";
-    string output = "output.cpp";
+void get_arg(int argc, char *argv[], string &filename, string &output) {
     for(int i = 1; i != argc; ++i) {
         if(strcmp(argv[i],"-h") == 0) {
             cout << "Usage: " << endl;
@@ -166,106 +212,138 @@ int main(int argc, char *argv[]) {
             cout << "  -v  Show version" << endl;
             cout << "  -f  File name" << endl;
             cout << "  -o  Output file name" << endl;
-            return 0;
+            exit(0);
         } else if(strcmp(argv[i],"-v") == 0) {
             cout << "Version: 0.0.1" << endl;
-            return 0;
+            exit(0);
         } else if(strcmp(argv[i],"-f") == 0) {
             if(i+1 < argc) {
                 filename = argv[i+1];
                 string extension = filename.substr(filename.find_last_of(".") + 1);
                 if(extension != "gg") {
-                    cerr << "\e[1;31mError:\e[0m Invalid file extension" << endl;
-                    return 1;
+                    Error err = Error(INVALID_FILE_EXTENSION, ".gg");
+                    cerr << err.error << endl;
+                    exit(1);
                 }
             } else {
-                cerr << "\e[1;31mError:\e[0m No file name specified" << endl;
-                return 1;
+                Error err =  Error(NO_FILENAME_SPECIFIED, "input file");
+                cerr << err.error << endl;
+                exit(1);
             }
         } else if(strcmp(argv[i],"-o") == 0) {
             if(i+1 < argc) {
                 output = argv[i+1];
                 string extension = output.substr(output.find_last_of(".") + 1);
                 if(extension != "cpp") {
-                    cerr << "\e[1;31mError:\e[0m Invalid file extension" << endl;
-                    return 1;
+                    Error err =  Error(INVALID_FILE_EXTENSION, ".cpp");
+                    cerr << err.error << endl;
+                    exit(1);
                 }
             } else {
-                cerr << "\e[1;31mError:\e[0m No file name specified" << endl;
-                return 1;
+                Error err =  Error(NO_FILENAME_SPECIFIED, "output file");
+                cerr << err.error << endl;
+                exit(1);
             }
         }
     }
+}
 
+void check_file(string &filename, string &output, ifstream &file, ofstream &out) {
     if(output == "") {
-        cerr << "\e[1;31mError:\e[0m No output file specified" << endl;
-        return 1;
+        Error err =  Error(NO_FILENAME_SPECIFIED, "output file");
+        cerr << err.error << endl;
+        exit(1);
     }
 
     if(filename == "") {
-        cerr << "\e[1;31mError:\e[0m No file specified" << endl;
-        return 1;
+        Error err =  Error(NO_FILENAME_SPECIFIED, "input file");
+        cerr << err.error << endl;
+        exit(1);
     }
 
-    ifstream file(filename);
+    file = ifstream(filename);
     if(!file.is_open()) {
-        cerr << "\e[1;31mError:\e[0m Could not open file" << endl;
-        return 1;
+        Error err =  Error(FILE_NOT_FOUND, filename);
+        cerr << err.error << endl;
+        exit(1);
     }
 
     filesystem::remove(output);
     filesystem::copy("template.cpp", output);
 
-    ofstream out(output, ios::app);
+    out = ofstream(output, ios::app);
     if(!out.is_open()) {
-        cerr << "\e[1;31mError:\e[0m Could not open output file" << endl;
-
-        filesystem::remove(output);
-        return 1;
+        Error err =  Error(FILE_NOT_FOUND, output);
+        cerr << err.error << endl;
+        exit(1);
     }
+}
 
-    out << endl << endl << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
+string create_lexems_part(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, int &lineNum) {
+    outputFile << endl << endl << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
 
+    
     string line;
-    int lineNum = 0;
-    vector<string> tokens;
-    while(getline(file, line)) {
+    while(getline(inputFile, line)) {
         lineNum++;
-        if(line == "") continue;
-        if(line[0] == '#') continue;
-        if(line == "---") break;
+
+        if(line == "") continue; // skip empty line
+        if(line[0] == '#') continue; // ingnore comment
+        if(line == "---") break; // threat only the first part of the file
+
         smatch match;
         regex re("^([a-zA-Z_][a-zA-Z_0-9]*)\\s*\"(([^\"]|\\\\\")*)\"$");
+
         if(regex_search(line, match, re)) {
             try {
                 regex check(match.str(2));
             } catch (regex_error& e) {
-                cerr << "\e[1;31mError:\e[0m Invalid regex on line \e[1m" << lineNum << "\e[0m" << endl;
-
-                filesystem::remove(output);
-                return 1;
+                string arg[] = {match.str(2), to_string(lineNum), e.what()};
+                Error err =  Error(REGEX_ERROR, arg);
+                cerr << err.error << endl;
+                exit(1);
             }
-            out << ("    lexemes.push_back(Lexeme(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\"));") << endl;
+
+            outputFile << ("    lexemes.push_back(Lexeme(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\"));") << endl;
+
             tokens.push_back(match.str(1));
         } else {
-            cerr << "\e[1;31mError:\e[0m Invalid syntax on line \e[1m" << lineNum << "\e[0m" << endl;
-
-            filesystem::remove(output);
-            return 1;
+            Error err =  Error(INVALID_SYNTAX, to_string(lineNum));
+            cerr << err.error << endl;
+            exit(1);
         }
     }
 
-    out << "}" << endl << endl;
+    outputFile << "}" << endl << endl;
+    return line;
+}
+
+int main(int argc, char *argv[]) {
+    string filename = "";
+    string outputName = "output.cpp";
+
+    get_arg(argc, argv, filename, outputName);
+
+    ifstream file;
+    ofstream out;
+    
+    check_file(filename, outputName, file, out);
+
+    vector<string> tokens;
+    int lineNum = 0;
+
+    string last_line = create_lexems_part(out, file, outputName, tokens, lineNum);
 
     for(auto token : tokens) {
         out << "void __" << token << "(IT&it, IT e) { if(it == e) throw \"BAD\"; if(it->type() != \"" + token + "\") throw \"BAD\"; it++; }" << endl;
     }
 
-    if(line != "---")
+    if(last_line != "---")
         return 0;
 
     bool semicolon = false;
     vector<pair<string, string>> rules;
+    string line;
     while(1) {
         if(!semicolon) {
             if(!getline(file, line))
@@ -286,7 +364,7 @@ int main(int argc, char *argv[]) {
                 if(!getline(file, line)) {
                     cerr << "\e[1;31mError:\e[0m Invalid rule on line \e[1m" << lineNum << "\e[0m" << endl;
 
-                    filesystem::remove(output);
+                    filesystem::remove(outputName);
                     return 1;
                 }
                 expr += line;
