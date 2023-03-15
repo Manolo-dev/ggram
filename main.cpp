@@ -200,7 +200,7 @@ vector<string> parse(vector<string>&words) {
     return result;
 }
 
-void get_arg(int argc, char *argv[], string &filename, string &output) {
+void getArg(int argc, char *argv[], string &filename, string &output) {
     for(int i = 1; i != argc; ++i) {
         if(strcmp(argv[i],"-h") == 0) {
             cout << "Usage: " << endl;
@@ -248,7 +248,7 @@ void get_arg(int argc, char *argv[], string &filename, string &output) {
     }
 }
 
-void check_file(string &filename, string &output, ifstream &file, ofstream &out) {
+void checkFile(string &filename, string &output, ifstream &file, ofstream &out) {
     if(output == "") {
         Error err =  Error(NO_FILENAME_SPECIFIED, "output file");
         cerr << err.error << endl;
@@ -279,7 +279,7 @@ void check_file(string &filename, string &output, ifstream &file, ofstream &out)
     }
 }
 
-string create_lexems_part(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, int &lineNum) {
+string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, int &lineNum) {
     outputFile << endl << endl << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
 
     
@@ -318,28 +318,32 @@ string create_lexems_part(ofstream &outputFile, ifstream &inputFile, string &out
     return line;
 }
 
+void typeExpressionGenerator(vector<string> &tokens) {
+    for(auto token : tokens) {
+        out << "void __" << token << "(IT&it, IT e) { if(it == e) throw \"BAD\"; if(it->type() != \"" + token + "\") throw \"BAD\"; it++; }" << endl;
+    }
+}
+
 int main(int argc, char *argv[]) {
     string filename = "";
     string outputName = "output.cpp";
 
-    get_arg(argc, argv, filename, outputName);
+    getArg(argc, argv, filename, outputName);
 
     ifstream file;
     ofstream out;
     
-    check_file(filename, outputName, file, out);
+    checkFile(filename, outputName, file, out);
 
     vector<string> tokens;
     int lineNum = 0;
 
-    string last_line = create_lexems_part(out, file, outputName, tokens, lineNum);
+    string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
 
-    for(auto token : tokens) {
-        out << "void __" << token << "(IT&it, IT e) { if(it == e) throw \"BAD\"; if(it->type() != \"" + token + "\") throw \"BAD\"; it++; }" << endl;
-    }
+    prototypeGenerator(tokens);
 
     if(last_line != "---")
-        return 0;
+        return 0; // no rules
 
     bool semicolon = false;
     vector<pair<string, string>> rules;
@@ -350,16 +354,19 @@ int main(int argc, char *argv[]) {
                 break;
             lineNum++;
         }
-        if(line == "") continue;
-        if(line[0] == '#') continue;
-        if(line == "---") break;
+
+        if(line == "") continue; // skip empty line
+        if(line[0] == '#') continue; // ingnore comment
+        if(line == "---") break; // threat only the second part of the file
         smatch match;
         regex re("^\\s*<([a-zA-Z_][a-zA-Z_0-9]*)>\\s*::=\\s*(.+)\\s*$");
-        if(regex_search(line, match, re)) {
+
+        if(regex_search(line, match, re)) { // TODO: make error handling
             string name = match.str(1);
             string expr = match.str(2);
             int i = 0;
-            while(line.find(';') > line.length()) {
+
+            while(line.find(';') > line.length()) { // run until the end of the expression
                 i++;
                 if(!getline(file, line)) {
                     cerr << "\e[1;31mError:\e[0m Invalid rule on line \e[1m" << lineNum << "\e[0m" << endl;
@@ -369,6 +376,7 @@ int main(int argc, char *argv[]) {
                 }
                 expr += line;
             }
+
             line = expr.substr(expr.find(';') + 1, expr.length());
             expr = expr.substr(0, expr.find(';'));
             lineNum += i;
@@ -379,6 +387,7 @@ int main(int argc, char *argv[]) {
             regex_token_iterator<string::iterator> end;
 
             vector<string> currentRule;
+
             while(j != end) {
                 string word = *j++;
                 currentRule.push_back(word);
