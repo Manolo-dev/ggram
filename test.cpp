@@ -51,6 +51,9 @@ class Lexeme {
 
 using IT = vector<Token>::iterator;
 
+IT it;
+IT it_e;
+
 void create_lexemes(vector<Lexeme> &lexemes);
 
 vector<Token> lex(string code) {
@@ -82,35 +85,40 @@ vector<Token> lex(string code) {
 }
 
 void create_lexemes(vector<Lexeme> &lexemes) {
-    lexemes.push_back(Lexeme("int", "([1-9][0-9]*)"));
-    lexemes.push_back(Lexeme("add", "(\\+)"));
-    lexemes.push_back(Lexeme("sub", "(-)"));
-    lexemes.push_back(Lexeme("mult", "(\\*)"));
-    lexemes.push_back(Lexeme("fun", "([a-z]+)"));
+    lexemes.push_back(Lexeme("a", "(a)"));
+    lexemes.push_back(Lexeme("b", "(b)"));
+    lexemes.push_back(Lexeme("c", "(c)"));
+    lexemes.push_back(Lexeme("d", "(d)"));
+    lexemes.push_back(Lexeme("e", "(e)"));
 }
 
-void __int(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "int") throw "BAD"; it++; }
-void __add(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "add") throw "BAD"; it++; }
-void __sub(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "sub") throw "BAD"; it++; }
-void __mult(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "mult") throw "BAD"; it++; }
-void __fun(IT&it, IT e) { if(it == e) throw "BAD"; if(it->type() != "fun") throw "BAD"; it++; }
-void __expr(IT&it, IT e);
+bool __a() { if(it == it_e) return 1; if(it->type() != "a") return 1; it++; return 0; }
+bool __b() { if(it == it_e) return 1; if(it->type() != "b") return 1; it++; return 0; }
+bool __c() { if(it == it_e) return 1; if(it->type() != "c") return 1; it++; return 0; }
+bool __d() { if(it == it_e) return 1; if(it->type() != "d") return 1; it++; return 0; }
+bool __e() { if(it == it_e) return 1; if(it->type() != "e") return 1; it++; return 0; }
+bool __expr();
 
-void __expr(IT&it, IT e) {
-    IT t;t = it;try {__int(it, e);} catch(...) {it = t;t = it;try {__add(it, e);__expr(it, e);} catch(...) {it = t;t = it;try {__sub(it, e);__expr(it, e);} catch(...) {it = t;t = it;try {__mult(it, e);__expr(it, e);} catch(...) {it = t;__fun(it, e);__int(it, e);while(true) {t = it; try {__int(it, e);} catch(...) {it = t;break;}}}}}}
+bool __expr() {
+    IT t = it;
+    if(__a() || __b() || __d()) it = t;
+    else return 0;
+    if(__a() || __c() || __expr() || __d()) it = t;
+    else return 0;
+    return 1;
 }
 
 int main() {
     string code;
     getline(cin, code);
     vector<Token> tokens = lex(code);
-    IT it = tokens.begin();
+    it = tokens.begin();
+    it_e = tokens.end();
     
-    try {
-        __expr(it, tokens.end());
-    } catch(const char* msg) {
-        cout << "BAD" << endl;
-        return 0;
+    if(__expr()) {
+        cout << "ERROR" << endl;
+    } else {
+        cout << "OK" << endl;
     }
 
     return 0;

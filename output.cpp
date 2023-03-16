@@ -52,7 +52,8 @@ class Lexeme {
 using IT = vector<Token>::iterator;
 
 IT it;
-IT it_e;
+IT it_end;
+IT it_temp;
 
 void create_lexemes(vector<Lexeme> &lexemes);
 
@@ -82,4 +83,39 @@ vector<Token> lex(string code) {
     }
 
     return tokens;
+}
+
+void create_lexemes(vector<Lexeme> &lexemes) {
+    lexemes.push_back(Lexeme("a", "(a)"));
+    lexemes.push_back(Lexeme("b", "(b)"));
+    lexemes.push_back(Lexeme("c", "(c)"));
+    lexemes.push_back(Lexeme("d", "(d)"));
+    lexemes.push_back(Lexeme("e", "(e)"));
+}
+
+bool __a() { if(it == it_e) return 1; if(it->type() != "a") return 1; it++; return 0; }
+bool __b() { if(it == it_e) return 1; if(it->type() != "b") return 1; it++; return 0; }
+bool __c() { if(it == it_e) return 1; if(it->type() != "c") return 1; it++; return 0; }
+bool __d() { if(it == it_e) return 1; if(it->type() != "d") return 1; it++; return 0; }
+bool __e() { if(it == it_e) return 1; if(it->type() != "e") return 1; it++; return 0; }
+bool __expr();
+
+bool __expr() {
+    IT t;__a(it, e);t = it;try {__b(it, e);} catch(...) {it = t;t = it;try {t = it;try {__c(it, e);} catch(...) {it = t;}__expr(it, e);} catch(...) {it = t;__d(it, e);while(true) {t = it; try {__d(it, e);} catch(...) {it = t;break;}}}}__e(it, e);
+}
+
+int main() {
+    string code;
+    getline(cin, code);
+    vector<Token> tokens = lex(code);
+    IT it = tokens.begin();
+    
+    try {
+        __expr(it, tokens.end());
+    } catch(const char* msg) {
+        cout << "BAD" << endl;
+        return 0;
+    }
+
+    return 0;
 }

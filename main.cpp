@@ -4,16 +4,9 @@
 #include <regex>
 #include <filesystem>
 #include <vector>
+#include <stack>
 
 using namespace std;
-
-char *concat_char(string a[], int lenght){   
-    char *result;
-    for(int i = 0; i < lenght; i++){
-        result = strcat(result, a[i].c_str());
-    }
-    return result;
-}
 
 #define INVALID_FILE_EXTENSION 0
 #define FILE_NOT_FOUND 1
@@ -83,119 +76,63 @@ string join(vector<string> const &strings, string delim = "", string exception =
     return result;
 }
 
-string ____or(vector<string> const &strings) {
-    string result = "";
-    for(long unsigned int i = 0; i < strings.size() - 1; i++) {
-        result += "t = it;try {";
-        result += strings[i];
-        result += "} catch(...) {it = t;";
+vector<vector<string>> generateCombinations(vector<string>&tree) {
+    vector<vector<vector<string>>> or_results = {{{}}};
+    vector<vector<string>>*result = &or_results[0];
+    for(long unsigned int i = 0; i < tree.size(); i++) {
+        if(tree[i] == "(") {
+            int level = 1;
+            vector<string> temp;
+            while(level > 0) {
+                i++;
+                if(tree[i] == "(")
+                    level++;
+                else if(tree[i] == ")")
+                    level--;
+                if(level != 0)
+                    temp.push_back(tree[i]);
+            }
+
+            vector<vector<string>> ors = generateCombinations(temp);
+            vector<vector<string>> temp_result;
+            for(long unsigned int j = 0; j < result->size(); j++) {
+                for(long unsigned int k = 0; k < ors.size(); k++) {
+                    temp_result.push_back((*result)[j]);
+                    for(long unsigned int l = 0; l < ors[k].size(); l++) {
+                        temp_result[temp_result.size() - 1].push_back(ors[k][l]);
+                    }
+                }
+            }
+            *result = temp_result;
+        } else if(tree[i] == "|") {
+            or_results.push_back({{}});
+            result = &or_results[or_results.size() - 1];
+        } else {
+            for(long unsigned int j = 0; j < result->size(); j++) {
+                (*result)[j].push_back(tree[i]);
+            }
+        }
     }
-    result += strings[strings.size() - 1];
-    for(long unsigned int i = 0; i < strings.size() - 1; i++) {
-        result += "}";
+
+    vector<vector<string>> final_result;
+    for(long unsigned int i = 0; i < or_results.size(); i++) {
+        for(long unsigned int j = 0; j < or_results[i].size(); j++) {
+            final_result.push_back(or_results[i][j]);
+        }
     }
-    return result;
+    return final_result;
 }
 
-string ____option(vector<string> const &strings) {
+string parse(vector<string>&tree) {
     string result = "";
-    result += "t = it;try {";
-    for(long unsigned int i = 0; i < strings.size(); i++) {
-        result += strings[i];
-    }
-    result += "} catch(...) {it = t;}";
-    return result;
-}
-
-string ____loop(vector<string> const &strings) {
-    string result = "";
-    for(long unsigned int i = 0; i < strings.size(); i++) {
-        result += strings[i];
-    }
-    result += "while(true) {t = it; try {";
-    for(long unsigned int i = 0; i < strings.size(); i++) {
-        result += strings[i];
-    }
-    result += "} catch(...) {it = t;break;}}";
-    return result;
-}
-
-vector<string> parse(vector<string>&words) {
-    vector<string> result = vector<string>();
-    for(long unsigned int i = 0; i < words.size(); i++) {
-        if(words[i][0] == '<' && words[i][words[i].size() - 1] == '>') {
-            string word = words[i].substr(1, words[i].size() - 2);
-            result.push_back("__" + word + "(it, e);");
+    for(auto&x : generateCombinations(tree)) {
+        result += "    if(";
+        for(long unsigned int i = 0; i < x.size() - 1; i++) {
+            result += "__" + x[i].substr(1, x[i].size() - 2) + "()";
+            result += " || ";
         }
-        if(words[i] == "(") {
-            int level = 1;
-            vector<string> subwords = vector<string>();
-            for(long unsigned int j = i + 1; j < words.size(); j++) {
-                if(words[j] == "(") {
-                    level++;
-                } else if(words[j] == ")") {
-                    level--;
-                }
-                if(level == 0) {
-                    i = j;
-                    break;
-                }
-                subwords.push_back(words[j]);
-            }
-            cout << subwords << endl;
-            result.push_back(join(parse(subwords)));
-        }
-        if(words[i] == "[") {
-            int level = 1;
-            vector<string> subwords = vector<string>();
-            for(long unsigned int j = i + 1; j < words.size(); j++) {
-                if(words[j] == "[") {
-                    level++;
-                } else if(words[j] == "]") {
-                    level--;
-                }
-                if(level == 0) {
-                    i = j;
-                    break;
-                }
-                subwords.push_back(words[j]);
-            }
-            result.push_back(____option(parse(subwords)));
-        }
-        if(words[i] == "{") {
-            int level = 1;
-            vector<string> subwords = vector<string>();
-            for(long unsigned int j = i + 1; j < words.size(); j++) {
-                if(words[j] == "{") {
-                    level++;
-                } else if(words[j] == "}") {
-                    level--;
-                }
-                if(level == 0) {
-                    i = j;
-                    break;
-                }
-                subwords.push_back(words[j]);
-            }
-            result.push_back(____loop(parse(subwords)));
-        }
-        if(words[i] == "<") {
-            int level = 1;
-            vector<string> subwords = vector<string>();
-            for(long unsigned int j = i + 1; j < words.size(); j++) {
-                if(words[j] == "<") {
-                    level++;
-                } else if(words[j] == ">") {
-                    level--;
-                }
-                if(level == 0) {
-                    i = j;
-                    break;
-                }
-                subwords.push_back(words[j]);
-            }
-            result.push_back(____or(parse(subwords)));
-        }
+        result += "__" + x[x.size() - 1].substr(1, x[x.size() - 1].size() - 2) + "()";
+        result += ") it = t;\n    else return 0;\n";
     }
     return result;
 }
@@ -318,9 +255,9 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
     return line;
 }
 
-void typeExpressionGenerator(vector<string> &tokens) {
+void typeExpressionGenerator(vector<string> &tokens, ofstream &out) {
     for(auto token : tokens) {
-        out << "void __" << token << "(IT&it, IT e) { if(it == e) throw \"BAD\"; if(it->type() != \"" + token + "\") throw \"BAD\"; it++; }" << endl;
+        out << "bool __" << token << "() { if(it == it_e) return 1; if(it->type() != \"" + token + "\") return 1; it++; return 0; }" << endl;
     }
 }
 
@@ -340,7 +277,7 @@ int main(int argc, char *argv[]) {
 
     string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
 
-    prototypeGenerator(tokens);
+    typeExpressionGenerator(tokens, out);
 
     if(last_line != "---")
         return 0; // no rules
@@ -393,17 +330,18 @@ int main(int argc, char *argv[]) {
                 currentRule.push_back(word);
             }
 
-            rules.push_back(make_pair(name, "IT t;" + join(parse(currentRule))));
+            rules.push_back(make_pair(name, parse(currentRule)));
         }
     }
 
     for(auto rule : rules) {
-        out << "void __" << rule.first << "(IT&it, IT e);" << endl;
+        out << "bool __" << rule.first << "();" << endl;
     }
 
     for(auto rule : rules) {
-        out << endl << "void __" << rule.first << "(IT&it, IT e) {" << endl;
-        out << "    " << rule.second << endl;
+        out << endl << "bool __" << rule.first << "() {" << endl;
+        out << "    IT t = it;" << endl << rule.second;
+        out << "    return 1;" << endl;
         out << "}" << endl;
     }
 
