@@ -338,13 +338,14 @@ int main(int argc, char *argv[]) {
                 expr += line;
             }
 
-            line = expr.substr(expr.find(';') + 1, expr.length());
-            expr = expr.substr(0, expr.find(';'));
+            line = expr.substr(expr.find(';') + 1, expr.length()); // get the rest of the line
+            expr = expr.substr(0, expr.find(';')); // get the expression
+
             lineNum += i;
             semicolon = line.size() > 0;
 
             regex e("\\s+");
-            regex_token_iterator<string::iterator> j(expr.begin(), expr.end(), e, -1);
+            regex_token_iterator<string::iterator> j(expr.begin(), expr.end(), e, -1); // split the expression by words
             regex_token_iterator<string::iterator> end;
 
             vector<string> currentRule;
