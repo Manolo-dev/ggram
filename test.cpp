@@ -53,6 +53,8 @@ using IT = vector<Token>::iterator;
 
 IT it;
 IT it_e;
+IT it_label;
+string it_label_value;
 
 void create_lexemes(vector<Lexeme> &lexemes);
 
@@ -85,25 +87,33 @@ vector<Token> lex(string code) {
 }
 
 void create_lexemes(vector<Lexeme> &lexemes) {
-    lexemes.push_back(Lexeme("a", "(a)"));
-    lexemes.push_back(Lexeme("b", "(b)"));
-    lexemes.push_back(Lexeme("c", "(c)"));
-    lexemes.push_back(Lexeme("d", "(d)"));
-    lexemes.push_back(Lexeme("e", "(e)"));
+    lexemes.push_back(Lexeme("int", "([1-9][0-9]*|0)"));
+    lexemes.push_back(Lexeme("other", "(\\(|\\)|\\+)"));
 }
 
-bool __a() { if(it == it_e) return 1; if(it->type() != "a") return 1; it++; return 0; }
-bool __b() { if(it == it_e) return 1; if(it->type() != "b") return 1; it++; return 0; }
-bool __c() { if(it == it_e) return 1; if(it->type() != "c") return 1; it++; return 0; }
-bool __d() { if(it == it_e) return 1; if(it->type() != "d") return 1; it++; return 0; }
-bool __e() { if(it == it_e) return 1; if(it->type() != "e") return 1; it++; return 0; }
+bool __(string val) { if(it == it_e) return 1; if(it->value() != val) return 1; it++; return 0; }
+
+bool __int() { if(it == it_e) return 1; if(it->type() != "int") return 1; it++; return 0; }
+bool __other() { if(it == it_e) return 1; if(it->type() != "other") return 1; it++; return 0; }
 bool __expr();
+bool __casted();
 
 bool __expr() {
     IT t = it;
-    if(__a() || __b() || __d()) it = t;
+    if(__casted() || __("+") || __expr()) it = t;
     else return 0;
-    if(__a() || __c() || __expr() || __d()) it = t;
+    if(__int()) it = t;
+    else return 0;
+    if(__("(") || __expr() || __(")")) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __casted() {
+    IT t = it;
+    if(__("(") || __expr() || __(")")) it = t;
+    else return 0;
+    if(__int()) it = t;
     else return 0;
     return 1;
 }
@@ -119,7 +129,14 @@ int main() {
         cout << "ERROR" << endl;
     } else {
         cout << "OK" << endl;
+        IT t = tokens.begin();
+        while(t != it) {
+            cout << t->value() << " ";
+            t++;
+        }
+        cout << endl;
     }
 
     return 0;
 }
+

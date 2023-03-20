@@ -9,6 +9,12 @@ int main() {
         cout << "ERROR" << endl;
     } else {
         cout << "OK" << endl;
+        IT t = tokens.begin();
+        while(t != it) {
+            cout << t->value() << " ";
+            t++;
+        }
+        cout << endl;
     }
 
     return 0;

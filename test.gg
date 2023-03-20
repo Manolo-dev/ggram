@@ -1,9 +1,12 @@
-a "a"
-b "b"
-c "c"
-d "d"
-e "e"
+int "[1-9][0-9]*|0"
+other "\\(|\\)|\\+"
 
 ---
 
-<expr> ::= <a> ( <b> | <c> <expr> ) <d> ;
+<expr> ::= <casted> "+" <expr>
+    | <int>
+    | "(" <expr> ")" ;
+
+<casted> ::= "(" <expr> ")"
+    | <int>
+    ;

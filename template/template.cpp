@@ -53,6 +53,8 @@ using IT = vector<Token>::iterator;
 
 IT it;
 IT it_e;
+IT it_label;
+string it_label_value;
 
 void create_lexemes(vector<Lexeme> &lexemes);
 

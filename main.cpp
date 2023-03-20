@@ -49,6 +49,19 @@ public:
     string error;
 };
 
+void copy(string filename, ofstream &output) {
+    ifstream input(filename);
+    if(input.is_open()) {
+        string line;
+        while(getline(input, line)) {
+            output << line << endl;
+        }
+        output << endl;
+    } else {
+        throw Error(FILE_NOT_FOUND, filename);
+    }
+}
+
 ostream& operator<<(ostream& os, vector<string> const &v) {
     os << "[";
     for(long unsigned int i = 0; i < v.size(); i++) {
@@ -125,13 +138,20 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
 
 string parse(vector<string>&tree) {
     string result = "";
-    for(auto&x : generateCombinations(tree)) {
+    for(vector<string>&x : generateCombinations(tree)) {
         result += "    if(";
         for(long unsigned int i = 0; i < x.size() - 1; i++) {
-            result += "__" + x[i].substr(1, x[i].size() - 2) + "()";
+            if(x[i][0] == '<' && x[i][x[i].size() - 1] == '>')
+                result += "__" + x[i].substr(1, x[i].size() - 2) + "()";
+            else if(x[i][0] == '"' && x[i][x[i].size() - 1] == '"')
+                result += "__(\"" + x[i].substr(1, x[i].size() - 2) + "\")";
+
             result += " || ";
         }
-        result += "__" + x[x.size() - 1].substr(1, x[x.size() - 1].size() - 2) + "()";
+        if(x[x.size() - 1][0] == '<' && x[x.size() - 1][x[x.size() - 1].size() - 1] == '>')
+            result += "__" + x[x.size() - 1].substr(1, x[x.size() - 1].size() - 2) + "()";
+        else if(x[x.size() - 1][0] == '"' && x[x.size() - 1][x[x.size() - 1].size() - 1] == '"')
+            result += "__(\"" + x[x.size() - 1].substr(1, x[x.size() - 1].size() - 2) + "\")";
         result += ") it = t;\n    else return 0;\n";
     }
     return result;
@@ -206,20 +226,23 @@ void checkFile(string &filename, string &output, ifstream &file, ofstream &out) 
     }
 
     filesystem::remove(output);
-    filesystem::copy("template.cpp", output);
-
     out = ofstream(output, ios::app);
+
     if(!out.is_open()) {
-        Error err =  Error(FILE_NOT_FOUND, output);
+        Error err = Error(FILE_NOT_FOUND, output);
         cerr << err.error << endl;
         exit(1);
     }
+
+    copy("template/head.cpp", out);
+    copy("template/Token.cpp", out);
+    copy("template/Lexeme.cpp", out);
+    copy("template/lex.cpp", out);
 }
 
 string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, int &lineNum) {
-    outputFile << endl << endl << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
+    outputFile << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
 
-    
     string line;
     while(getline(inputFile, line)) {
         lineNum++;
@@ -277,6 +300,7 @@ int main(int argc, char *argv[]) {
 
     string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
 
+    copy("template/valueExpression.cpp", out);
     typeExpressionGenerator(tokens, out);
 
     if(last_line != "---")
@@ -346,11 +370,7 @@ int main(int argc, char *argv[]) {
     }
 
     out << endl;
-    ifstream main_template("main_template.cpp");
-    while(getline(main_template, line)) {
-        out << line << endl;
-    }
-    main_template.close();
+    copy("template/main.cpp", out);
 
     file.close();
     out.close();
