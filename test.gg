@@ -18,5 +18,7 @@ bracket "\\(|\\)"
     | <float>
     | <string>
     | <char>
-    | <id>
+    | <fun>
     ;
+
+<fun> ::= <id> [ [ { <expr> "," } ] <expr> ] ;
