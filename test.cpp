@@ -71,7 +71,9 @@ vector<Token> lex(string code) {
             smatch match;
             if(regex_search(code, match, re)) {
                 if(match.position() == 0 && match.length() > 0) {
-                    tokens.push_back(Token(lexemes[i].type(), match.str(), 0, 0));
+                    if(lexemes[i].type() != ".ignore") {
+                        tokens.push_back(Token(lexemes[i].type(), match.str(), 0, 0));
+                    }
                     code = match.suffix();
                     found = true;
                     break;
@@ -79,7 +81,9 @@ vector<Token> lex(string code) {
             }
         }
         if(!found) {
-            code = code.substr(1);
+            cerr << "ERROR" << endl;
+            exit(1);
+            //code = code.substr(1);
         }
     }
 
@@ -88,23 +92,32 @@ vector<Token> lex(string code) {
 
 void create_lexemes(vector<Lexeme> &lexemes) {
     lexemes.push_back(Lexeme("int", "([1-9][0-9]*|0)"));
-    lexemes.push_back(Lexeme("other", "(\\(|\\)|\\+)"));
+    lexemes.push_back(Lexeme("float", "([0-9]+\\.[0-9]+)"));
+    lexemes.push_back(Lexeme("string", "(\"[^\"]*\")"));
+    lexemes.push_back(Lexeme("char", "('[^']*')"));
+    lexemes.push_back(Lexeme("id", "([a-zA-Z_][a-zA-Z0-9_]*)"));
+    lexemes.push_back(Lexeme("op", "([\\+\\-\\*/])"));
+    lexemes.push_back(Lexeme("bracket", "(\\(|\\))"));
+    lexemes.push_back(Lexeme(".ignore", "([ \t\r\n]+)"));
 }
 
 bool __(string val) { if(it == it_e) return 1; if(it->value() != val) return 1; it++; return 0; }
 
 bool __int() { if(it == it_e) return 1; if(it->type() != "int") return 1; it++; return 0; }
-bool __other() { if(it == it_e) return 1; if(it->type() != "other") return 1; it++; return 0; }
+bool __float() { if(it == it_e) return 1; if(it->type() != "float") return 1; it++; return 0; }
+bool __string() { if(it == it_e) return 1; if(it->type() != "string") return 1; it++; return 0; }
+bool __char() { if(it == it_e) return 1; if(it->type() != "char") return 1; it++; return 0; }
+bool __id() { if(it == it_e) return 1; if(it->type() != "id") return 1; it++; return 0; }
+bool __op() { if(it == it_e) return 1; if(it->type() != "op") return 1; it++; return 0; }
+bool __bracket() { if(it == it_e) return 1; if(it->type() != "bracket") return 1; it++; return 0; }
 bool __expr();
 bool __casted();
 
 bool __expr() {
     IT t = it;
-    if(__casted() || __("+") || __expr()) it = t;
+    if(__casted() || __op() || __expr()) it = t;
     else return 0;
-    if(__int()) it = t;
-    else return 0;
-    if(__("(") || __expr() || __(")")) it = t;
+    if(__casted()) it = t;
     else return 0;
     return 1;
 }
@@ -114,6 +127,14 @@ bool __casted() {
     if(__("(") || __expr() || __(")")) it = t;
     else return 0;
     if(__int()) it = t;
+    else return 0;
+    if(__float()) it = t;
+    else return 0;
+    if(__string()) it = t;
+    else return 0;
+    if(__char()) it = t;
+    else return 0;
+    if(__id() || __expr() || __expr()) it = t;
     else return 0;
     return 1;
 }

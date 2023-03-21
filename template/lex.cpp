@@ -20,7 +20,9 @@ vector<Token> lex(string code) {
             smatch match;
             if(regex_search(code, match, re)) {
                 if(match.position() == 0 && match.length() > 0) {
-                    tokens.push_back(Token(lexemes[i].type(), match.str(), 0, 0));
+                    if(lexemes[i].type() != ".ignore") {
+                        tokens.push_back(Token(lexemes[i].type(), match.str(), 0, 0));
+                    }
                     code = match.suffix();
                     found = true;
                     break;
@@ -28,7 +30,9 @@ vector<Token> lex(string code) {
             }
         }
         if(!found) {
-            code = code.substr(1);
+            cerr << "ERROR" << endl;
+            exit(1);
+            //code = code.substr(1);
         }
     }
 

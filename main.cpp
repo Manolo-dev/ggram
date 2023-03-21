@@ -252,7 +252,7 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
         if(line == "---") break; // threat only the first part of the file
 
         smatch match;
-        regex re("^([a-zA-Z_][a-zA-Z_0-9]*)\\s*\"(([^\"]|\\\\\")*)\"$");
+        regex re("^(\\.?[a-zA-Z_][a-zA-Z_0-9]*)\\s*\"(([^\"]|\\\\\")*)\"$");
 
         if(regex_search(line, match, re)) {
             try {
@@ -266,9 +266,10 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
 
             outputFile << ("    lexemes.push_back(Lexeme(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\"));") << endl;
 
-            tokens.push_back(match.str(1));
+            if(match.str(1)[0] != '.')
+                tokens.push_back(match.str(1));
         } else {
-            Error err =  Error(INVALID_SYNTAX, to_string(lineNum));
+            Error err = Error(INVALID_SYNTAX, to_string(lineNum));
             cerr << err.error << endl;
             exit(1);
         }
