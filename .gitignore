@@ -1,2 +1,4 @@
-# Unignore all with extensions
+*
+!/**/
 !*.*
+test*

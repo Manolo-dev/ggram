@@ -20,56 +20,8 @@ typedef signed long int s64;
 typedef float f32;
 typedef double f64;
 
-
-enum class ErrorType {
-    INVALID_FILE_EXTENSION,
-    FILE_NOT_FOUND,
-    NO_FILENAME_SPECIFIED,
-    REGEX_ERROR,
-    INVALID_SYNTAX
-};
-
-class Error {
-public:
-    Error(ErrorType type, string other){
-        string temp[1] = {other};
-        *this = Error(type, temp);
-    }
-    Error(ErrorType type, string *other) {
-        string error = "\e[1;31mError:\e[0m ";
-
-        switch(type){
-            case ErrorType::INVALID_FILE_EXTENSION:
-                error += "Invalid file extension. Only " + other[0] + " files are allowed.";
-                break;
-            case ErrorType::FILE_NOT_FOUND:
-                error += "The file " + other[0] + " was not found.";
-                break;
-            case ErrorType::NO_FILENAME_SPECIFIED:
-                error += "No " + other[0] + " specified.";
-                break;
-            case ErrorType::REGEX_ERROR:
-                error += "Invalid regex on line " + other[0] + ": " + other[1] + "\n regex_error code: " + other[2];
-                break;
-            case ErrorType::INVALID_SYNTAX:
-                error += "Invalid syntax on line " + other[0] + ": " + other[1];
-                break;
-            default:
-                error += "Unknown error.";
-                break;
-
-        }
-        this->error = error;
-        this->type = type;
-        
-    }
-    void throw_error() {
-        cerr << error << endl;
-        exit(1);
-    }
-    string error;
-    ErrorType type;
-};
+using combinations = vector<vector<string>>;
+#include "error.hpp"
 
 void copy(string filename, ofstream &output) {
     ifstream input(filename);
@@ -124,9 +76,9 @@ string join(vector<string> const &strings, string delim = "", string exception =
     return result;
 }
 
-vector<vector<string>> generateCombinations(vector<string>&tree) {
-    vector<vector<vector<string>>> or_results = {{{}}};
-    vector<vector<string>>*result = &or_results[0];
+combinations generateCombinations(vector<string>&tree) {
+    vector<combinations> or_results = {{{}}};
+    combinations*result = &or_results[0];
     for(u64 i = 0; i < tree.size(); i++) {
         if(tree[i] == "(") {
             s32 level = 1;
@@ -138,8 +90,8 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
                 if(level != 0) temp.push_back(tree[i]);
             }
 
-            vector<vector<string>> ors = generateCombinations(temp);
-            vector<vector<string>> temp_result;
+            combinations ors = generateCombinations(temp);
+            combinations temp_result;
             for(u64 j = 0; j < result->size(); j++) {
                 for(u64 k = 0; k < ors.size(); k++) {
                     temp_result.push_back((*result)[j]);
@@ -159,9 +111,9 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
                 if(level != 0) temp.push_back(tree[i]);
             }
 
-            vector<vector<string>> ors = generateCombinations(temp);
+            combinations ors = generateCombinations(temp);
             ors.push_back({});
-            vector<vector<string>> temp_result;
+            combinations temp_result;
             for(u64 j = 0; j < result->size(); j++) {
                 for(u64 k = 0; k < ors.size(); k++) {
                     temp_result.push_back((*result)[j]);
@@ -181,7 +133,7 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
         }
     }
 
-    vector<vector<string>> final_result;
+    combinations final_result;
     for(u64 i = 0; i < or_results.size(); i++) {
         for(u64 j = 0; j < or_results[i].size(); j++) {
             final_result.push_back(or_results[i][j]);
@@ -312,7 +264,7 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
             if(match.str(1)[0] != '.')
                 tokens.push_back(match.str(1));
         } else {
-            Error err(ErrorType::INVALID_SYNTAX, to_string(lineNum));
+            Error err(ErrorType::INVALID_SYNTAX, lineNum);
             cerr << err.error << endl;
             exit(1);
         }
@@ -354,30 +306,8 @@ vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<s
     return newRule;
 }
 
-int main(int argc, char *argv[]) {
-    string filename = "";
-    string outputName = "output.cpp";
-
-    getArg(argc, argv, filename, outputName);
-
-    ifstream file;
-    ofstream out;
-    
-    checkFile(filename, outputName, file, out);
-
-    vector<string> tokens;
-    u32 lineNum = 0;
-
-    string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
-
-    copy("template/valueExpression.cpp", out);
-    typeExpressionGenerator(tokens, out);
-
-    if(last_line != "---")
-        return 0; // no rules
-
+void createRulesPart(ifstream &file, ofstream &out, u32 lineNum, vector<pair<string, string>> &rules){
     bool semicolon = false;
-    vector<pair<string, string>> rules;
     string line;
     while(1) {
         if(!semicolon) {
@@ -400,10 +330,8 @@ int main(int argc, char *argv[]) {
             while(line.find(';') > line.length()) { // run until the end of the expression
                 i++;
                 if(!getline(file, line)) {
-                    cerr << "\e[1;31mError:\e[0m Invalid rule on line \e[1m" << lineNum << "\e[0m" << endl;
-
-                    filesystem::remove(outputName);
-                    return 1;
+                    Error err(ErrorType::INVALID_RULE, lineNum);
+                    err.throw_error();
                 }
                 expr += line;
             }
@@ -420,21 +348,26 @@ int main(int argc, char *argv[]) {
 
             vector<string> currentRule;
 
-            while(j != end)
+            while(j != end) // convert the expression to vector
                 currentRule.push_back(*j++);
 
             currentRule = loopExpressionGenerator(currentRule, rules, "_" + name);
             rules.push_back(make_pair(name, parse(currentRule)));
+            // pair : first - name, second - expression
         }
     }
+}
 
+void declareRule(vector<pair<string, string>> &rules, ofstream &out) {
     for(auto rule : rules) {
         if(rule.first[0] == '.')
             out << "bool " << rule.first.substr(1) << "();" << endl;
         else
             out << "bool __" << rule.first << "();" << endl;
     }
+}
 
+void writeRule(vector<pair<string, string>> &rules, ofstream &out) {
     for(auto rule : rules) {
         if(rule.first[0] == '.')
             out << endl << "bool " << rule.first.substr(1) << "() {" << endl;
@@ -444,7 +377,38 @@ int main(int argc, char *argv[]) {
         out << "    return 1;" << endl;
         out << "}" << endl;
     }
+}
 
+int main(int argc, char *argv[]) {
+    string filename = "";
+    string outputName = "output.cpp";
+
+    getArg(argc, argv, filename, outputName);
+
+    ifstream file;
+    ofstream out;
+    
+    checkFile(filename, outputName, file, out);
+
+    vector<string> tokens;
+    u32 lineNum = 0;
+
+    string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
+
+    copy("template/valueExpression.cpp", out);
+    typeExpressionGenerator(tokens, out);
+
+    if(last_line != "---")
+        return 0; // no rules
+
+    vector<pair<string, string>> rules;
+
+    createRulesPart(file, out, lineNum, rules);
+
+    declareRule(rules, out);
+
+    writeRule(rules, out);
+    
     out << endl;
     copy("template/main.cpp", out);
 
