@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+
 enum class ErrorType {
     INVALID_FILE_EXTENSION,
     FILE_NOT_FOUND,
@@ -11,11 +14,11 @@ enum class ErrorType {
 
 class Error {
 public:
-    Error(ErrorType type, string other);
+    Error(ErrorType type, std::string other);
     Error(ErrorType type, s32 num);
-    Error(ErrorType type, string *other);
+    Error(ErrorType type, std::string *other);
     void throw_error();
 private:
-    string error;
+    std::string error;
     ErrorType type;
 };

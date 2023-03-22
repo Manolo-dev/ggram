@@ -6,8 +6,6 @@
 #include <vector>
 #include <stack>
 
-using namespace std;
-
 typedef unsigned char u8;
 typedef signed char s8;
 typedef unsigned short u16;
@@ -20,8 +18,11 @@ typedef signed long int s64;
 typedef float f32;
 typedef double f64;
 
+#include "Error.cpp"
+
+using namespace std;
+
 using combinations = vector<vector<string>>;
-#include "error.hpp"
 
 void copy(string filename, ofstream &output) {
     ifstream input(filename);
@@ -265,8 +266,7 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
                 tokens.push_back(match.str(1));
         } else {
             Error err(ErrorType::INVALID_SYNTAX, lineNum);
-            cerr << err.error << endl;
-            exit(1);
+            err.throw_error();
         }
     }
 
