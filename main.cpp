@@ -99,6 +99,15 @@ ostream& operator<<(ostream& os, vector<string> const &v) {
     return os;
 }
 
+string operator*(const string& s, unsigned int n) {
+    stringstream out;
+    while(n--)
+        out << s;
+    return out.str();
+}
+
+string operator*(unsigned int n, const string& s) { return s * n; }
+
 string join(vector<string> const &strings, string delim = "", string exception = "") {
     string result = "";
     for(u64 i = 0; i < strings.size() - 1; i++) {
@@ -123,12 +132,9 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
             vector<string> temp;
             while(level > 0) {
                 i++;
-                if(tree[i] == "(")
-                    level++;
-                else if(tree[i] == ")")
-                    level--;
-                if(level != 0)
-                    temp.push_back(tree[i]);
+                if(tree[i] == "(") level++;
+                if(tree[i] == ")") level--;
+                if(level != 0) temp.push_back(tree[i]);
             }
 
             vector<vector<string>> ors = generateCombinations(temp);
@@ -137,6 +143,28 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
                 for(u64 k = 0; k < ors.size(); k++) {
                     temp_result.push_back((*result)[j]);
                     for(u64 l = 0; l < ors[k].size(); l++) {
+                        temp_result[temp_result.size() - 1].push_back(ors[k][l]);
+                    }
+                }
+            }
+            *result = temp_result;
+        } else if(tree[i] == "[") {
+            int level = 1;
+            vector<string> temp;
+            while(level > 0) {
+                i++;
+                if(tree[i] == "[") level++;
+                if(tree[i] == "]") level--;
+                if(level != 0) temp.push_back(tree[i]);
+            }
+
+            vector<vector<string>> ors = generateCombinations(temp);
+            ors.push_back({});
+            vector<vector<string>> temp_result;
+            for(long unsigned int j = 0; j < result->size(); j++) {
+                for(long unsigned int k = 0; k < ors.size(); k++) {
+                    temp_result.push_back((*result)[j]);
+                    for(long unsigned int l = 0; l < ors[k].size(); l++) {
                         temp_result[temp_result.size() - 1].push_back(ors[k][l]);
                     }
                 }
@@ -161,23 +189,27 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
     return final_result;
 }
 
-string parse(vector<string>&tree) {
+string parse(vector<string>&tree, unsigned int tablevel=1) {
     string result = "";
     for(vector<string>&x : generateCombinations(tree)) {
+<<<<<<< Updated upstream
         result += "    if(";
         for(u64 i = 0; i < x.size() - 1; i++) {
             if(x[i][0] == '<' && x[i][x[i].size() - 1] == '>')
+=======
+        result += (string("    ") * tablevel) + "if(";
+        for(long unsigned int i = 0; i < x.size(); i++) {
+            if(x[i][0] == '{' && x[i][x[i].size() - 1] == '}')
+                result += "_loop(" + x[i].substr(1, x[i].size() - 2) + ")";
+            else if(x[i][0] == '<' && x[i][x[i].size() - 1] == '>')
+>>>>>>> Stashed changes
                 result += "__" + x[i].substr(1, x[i].size() - 2) + "()";
             else if(x[i][0] == '"' && x[i][x[i].size() - 1] == '"')
                 result += "__(\"" + x[i].substr(1, x[i].size() - 2) + "\")";
-
-            result += " || ";
+            if(i < x.size() - 1)
+                result += " || ";
         }
-        if(x[x.size() - 1][0] == '<' && x[x.size() - 1][x[x.size() - 1].size() - 1] == '>')
-            result += "__" + x[x.size() - 1].substr(1, x[x.size() - 1].size() - 2) + "()";
-        else if(x[x.size() - 1][0] == '"' && x[x.size() - 1][x[x.size() - 1].size() - 1] == '"')
-            result += "__(\"" + x[x.size() - 1].substr(1, x[x.size() - 1].size() - 2) + "\")";
-        result += ") it = t;\n    else return 0;\n";
+        result += ") it = t;\n" + (string("    ") * tablevel) + "else return 0;\n";
     }
     return result;
 }
@@ -300,7 +332,60 @@ void typeExpressionGenerator(vector<string> &tokens, ofstream &out) {
     }
 }
 
+<<<<<<< Updated upstream
 void createRule(ifstream &file, u32 &lineNum, vector<pair<string, string>> &rules) {
+=======
+vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<string, string>>&rules, string name) {
+    int j = 0;
+    vector<string> newRule;
+    for(unsigned int i = 0; i < currentRule.size(); i++) {
+        if(currentRule[i] == "{") {
+            int level = 1;
+            vector<string> loopRule;
+            while(level != 0) {
+                i++;
+                if(currentRule[i] == "{") level++;
+                if(currentRule[i] == "}") level--;
+                if(level != 0) loopRule.push_back(currentRule[i]);
+            }
+            loopRule = loopExpressionGenerator(loopRule, rules, "_" + to_string(j) + name);
+            newRule.push_back("{_" + to_string(j) + name + "}");
+            cout << "loop: " << newRule << endl;
+
+            rules.push_back(make_pair("._" + to_string(j) + name, parse(loopRule)));
+            j++;
+        } else {
+            newRule.push_back(currentRule[i]);
+        }
+    }
+    return newRule;
+}
+
+int main(int argc, char *argv[]) {
+    string filename = "";
+    string outputName = "output.cpp";
+
+    getArg(argc, argv, filename, outputName);
+
+    ifstream file;
+    ofstream out;
+    
+    checkFile(filename, outputName, file, out);
+
+    vector<string> tokens;
+    int lineNum = 0;
+
+    string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
+
+    copy("template/valueExpression.cpp", out);
+    typeExpressionGenerator(tokens, out);
+
+    if(last_line != "---")
+        return 0; // no rules
+
+    bool semicolon = false;
+    vector<pair<string, string>> rules;
+>>>>>>> Stashed changes
     string line;
     bool semicolon = false;
     while(1) {
@@ -342,11 +427,17 @@ void createRule(ifstream &file, u32 &lineNum, vector<pair<string, string>> &rule
 
             vector<string> currentRule;
 
+<<<<<<< Updated upstream
             while(j != end) { // convert the expression to vector
                 string word = *j++;
                 currentRule.push_back(word);
             }
+=======
+            while(j != end)
+                currentRule.push_back(*j++);
+>>>>>>> Stashed changes
 
+            currentRule = loopExpressionGenerator(currentRule, rules, "_" + name);
             rules.push_back(make_pair(name, parse(currentRule)));
         }
     }
@@ -382,11 +473,17 @@ s32 main(s32 argc, char *argv[]) {
     // rule.second - code of the rule
 
     for(auto rule : rules) {
-        out << "bool __" << rule.first << "();" << endl;
+        if(rule.first[0] == '.')
+            out << "bool " << rule.first.substr(1) << "();" << endl;
+        else
+            out << "bool __" << rule.first << "();" << endl;
     }
 
     for(auto rule : rules) {
-        out << endl << "bool __" << rule.first << "() {" << endl;
+        if(rule.first[0] == '.')
+            out << endl << "bool " << rule.first.substr(1) << "() {" << endl;
+        else
+            out << endl << "bool __" << rule.first << "() {" << endl;
         out << "    IT t = it;" << endl << rule.second;
         out << "    return 1;" << endl;
         out << "}" << endl;
