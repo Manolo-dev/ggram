@@ -19,6 +19,6 @@ public:
     Error(ErrorType type, std::string *other);
     void throw_error();
 private:
-    std::string error;
-    ErrorType type;
+    std::string _error;
+    ErrorType _type;
 };

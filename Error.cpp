@@ -35,12 +35,12 @@ Error::Error(ErrorType type, std::string *other) {
             break;
 
     }
-    this->error = error;
-    this->type = type;
+    this->_error = error;
+    this->_type = type;
     
 }
 
 void Error::throw_error() {
-    std::cerr << error << std::endl;
+    std::cerr << _error << std::endl;
     exit(1);
 }

@@ -295,8 +295,6 @@ vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<s
             }
             loopRule = loopExpressionGenerator(loopRule, rules, "_" + to_string(j) + name);
             newRule.push_back("{_" + to_string(j) + name + "}");
-            cout << "loop: " << newRule << endl;
-
             rules.push_back(make_pair("._" + to_string(j) + name, parse(loopRule)));
             j++;
         } else {
