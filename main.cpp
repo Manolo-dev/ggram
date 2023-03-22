@@ -8,53 +8,35 @@
 
 using namespace std;
 
-enum class ErrorType {
-    INVALID_FILE_EXTENSION,
-    FILE_NOT_FOUND,
-    NO_FILENAME_SPECIFIED,
-    REGEX_ERROR,
-    INVALID_SYNTAX,
-    INVALID_RULE,
-};
-
-typedef unsigned char u8;
-typedef signed char s8;
-typedef unsigned short u16;
-typedef signed short s16;
-typedef unsigned int u32;
-typedef signed int s32;
-typedef unsigned long int u64;
-typedef signed long int s64;
-
-typedef float f32;
-typedef double f64;
+#define INVALID_FILE_EXTENSION 0
+#define FILE_NOT_FOUND 1
+#define NO_FILENAME_SPECIFIED 2
+#define REGEX_ERROR 3
+#define INVALID_SYNTAX 4
 
 class Error {
 public:
-    Error(ErrorType type, string other){
+    Error(int type, string other){
         string temp[1] = {other};
         *this = Error(type, temp);
     }
-    Error(ErrorType type, string *other) {
+    Error(int type, string *other) {
         string error = "\e[1;31mError:\e[0m ";
         switch(type){
-            case ErrorType::INVALID_FILE_EXTENSION:
+            case INVALID_FILE_EXTENSION:
                 error += "Invalid file extension. Only " + other[0] + " files are allowed.";
                 break;
-            case ErrorType::FILE_NOT_FOUND:
+            case FILE_NOT_FOUND:
                 error += "The file " + other[0] + " was not found.";
                 break;
-            case ErrorType::NO_FILENAME_SPECIFIED:
+            case NO_FILENAME_SPECIFIED:
                 error += "No " + other[0] + " specified.";
                 break;
-            case ErrorType::REGEX_ERROR:
+            case REGEX_ERROR:
                 error += "Invalid regex on line " + other[0] + ": " + other[1] + "\n regex_error code: " + other[2];
                 break;
-            case ErrorType::INVALID_SYNTAX:
+            case INVALID_SYNTAX:
                 error += "Invalid syntax on line " + other[0] + ": " + other[1];
-                break;
-            case ErrorType::INVALID_RULE:
-                error += "Invalid rule on line " + other[0];
                 break;
             default:
                 error += "Unknown error.";
@@ -62,15 +44,9 @@ public:
 
         }
         this->error = error;
-        this->type = type;
         
-    }
-    void throw_error() {
-        cerr << error << endl;
-        exit((int)type);
-    }
+    }   
     string error;
-    ErrorType type;
 };
 
 void copy(string filename, ofstream &output) {
@@ -82,14 +58,13 @@ void copy(string filename, ofstream &output) {
         }
         output << endl;
     } else {
-        Error err(ErrorType::FILE_NOT_FOUND, filename);
-        err.throw_error();
+        throw Error(FILE_NOT_FOUND, filename);
     }
 }
 
 ostream& operator<<(ostream& os, vector<string> const &v) {
     os << "[";
-    for(u64 i = 0; i < v.size(); i++) {
+    for(long unsigned int i = 0; i < v.size(); i++) {
         os << v[i];
         if(i != v.size() - 1) {
             os << ", ";
@@ -110,7 +85,7 @@ string operator*(unsigned int n, const string& s) { return s * n; }
 
 string join(vector<string> const &strings, string delim = "", string exception = "") {
     string result = "";
-    for(u64 i = 0; i < strings.size() - 1; i++) {
+    for(long unsigned int i = 0; i < strings.size() - 1; i++) {
         if(strings[i] == exception) {
             result += strings[i];
         } else if(strings[i+1] == exception) {
@@ -126,9 +101,9 @@ string join(vector<string> const &strings, string delim = "", string exception =
 vector<vector<string>> generateCombinations(vector<string>&tree) {
     vector<vector<vector<string>>> or_results = {{{}}};
     vector<vector<string>>*result = &or_results[0];
-    for(u64 i = 0; i < tree.size(); i++) {
+    for(long unsigned int i = 0; i < tree.size(); i++) {
         if(tree[i] == "(") {
-            s32 level = 1;
+            int level = 1;
             vector<string> temp;
             while(level > 0) {
                 i++;
@@ -139,10 +114,10 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
 
             vector<vector<string>> ors = generateCombinations(temp);
             vector<vector<string>> temp_result;
-            for(u64 j = 0; j < result->size(); j++) {
-                for(u64 k = 0; k < ors.size(); k++) {
+            for(long unsigned int j = 0; j < result->size(); j++) {
+                for(long unsigned int k = 0; k < ors.size(); k++) {
                     temp_result.push_back((*result)[j]);
-                    for(u64 l = 0; l < ors[k].size(); l++) {
+                    for(long unsigned int l = 0; l < ors[k].size(); l++) {
                         temp_result[temp_result.size() - 1].push_back(ors[k][l]);
                     }
                 }
@@ -174,15 +149,15 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
             or_results.push_back({{}});
             result = &or_results[or_results.size() - 1];
         } else {
-            for(u64 j = 0; j < result->size(); j++) {
+            for(long unsigned int j = 0; j < result->size(); j++) {
                 (*result)[j].push_back(tree[i]);
             }
         }
     }
 
     vector<vector<string>> final_result;
-    for(u64 i = 0; i < or_results.size(); i++) {
-        for(u64 j = 0; j < or_results[i].size(); j++) {
+    for(long unsigned int i = 0; i < or_results.size(); i++) {
+        for(long unsigned int j = 0; j < or_results[i].size(); j++) {
             final_result.push_back(or_results[i][j]);
         }
     }
@@ -192,17 +167,11 @@ vector<vector<string>> generateCombinations(vector<string>&tree) {
 string parse(vector<string>&tree, unsigned int tablevel=1) {
     string result = "";
     for(vector<string>&x : generateCombinations(tree)) {
-<<<<<<< Updated upstream
-        result += "    if(";
-        for(u64 i = 0; i < x.size() - 1; i++) {
-            if(x[i][0] == '<' && x[i][x[i].size() - 1] == '>')
-=======
         result += (string("    ") * tablevel) + "if(";
         for(long unsigned int i = 0; i < x.size(); i++) {
             if(x[i][0] == '{' && x[i][x[i].size() - 1] == '}')
                 result += "_loop(" + x[i].substr(1, x[i].size() - 2) + ")";
             else if(x[i][0] == '<' && x[i][x[i].size() - 1] == '>')
->>>>>>> Stashed changes
                 result += "__" + x[i].substr(1, x[i].size() - 2) + "()";
             else if(x[i][0] == '"' && x[i][x[i].size() - 1] == '"')
                 result += "__(\"" + x[i].substr(1, x[i].size() - 2) + "\")";
@@ -214,8 +183,8 @@ string parse(vector<string>&tree, unsigned int tablevel=1) {
     return result;
 }
 
-void getArg(u32 argc, char *argv[], string &filename, string &output) {
-    for(u32 i = 1; i != argc; ++i) {
+void getArg(int argc, char *argv[], string &filename, string &output) {
+    for(int i = 1; i != argc; ++i) {
         if(strcmp(argv[i],"-h") == 0) {
             cout << "Usage: " << endl;
             cout << "  " << argv[0] << " -h" << endl;
@@ -235,24 +204,28 @@ void getArg(u32 argc, char *argv[], string &filename, string &output) {
                 filename = argv[i+1];
                 string extension = filename.substr(filename.find_last_of(".") + 1);
                 if(extension != "gg") {
-                    Error err(ErrorType::INVALID_FILE_EXTENSION, ".gg");
-                    err.throw_error();
+                    Error err = Error(INVALID_FILE_EXTENSION, ".gg");
+                    cerr << err.error << endl;
+                    exit(1);
                 }
             } else {
-                Error err(ErrorType::NO_FILENAME_SPECIFIED, "input file");
-                err.throw_error();
+                Error err =  Error(NO_FILENAME_SPECIFIED, "input file");
+                cerr << err.error << endl;
+                exit(1);
             }
         } else if(strcmp(argv[i],"-o") == 0) {
             if(i+1 < argc) {
                 output = argv[i+1];
                 string extension = output.substr(output.find_last_of(".") + 1);
                 if(extension != "cpp") {
-                    Error err(ErrorType::INVALID_FILE_EXTENSION, ".cpp");
-                    err.throw_error();
+                    Error err =  Error(INVALID_FILE_EXTENSION, ".cpp");
+                    cerr << err.error << endl;
+                    exit(1);
                 }
             } else {
-                Error err(ErrorType::NO_FILENAME_SPECIFIED, "output file");
-                err.throw_error();
+                Error err =  Error(NO_FILENAME_SPECIFIED, "output file");
+                cerr << err.error << endl;
+                exit(1);
             }
         }
     }
@@ -260,27 +233,31 @@ void getArg(u32 argc, char *argv[], string &filename, string &output) {
 
 void checkFile(string &filename, string &output, ifstream &file, ofstream &out) {
     if(output == "") {
-        Error err(ErrorType::NO_FILENAME_SPECIFIED, "output file");
-        err.throw_error();
+        Error err =  Error(NO_FILENAME_SPECIFIED, "output file");
+        cerr << err.error << endl;
+        exit(1);
     }
 
     if(filename == "") {
-        Error err(ErrorType::NO_FILENAME_SPECIFIED, "input file");
-        err.throw_error();
+        Error err =  Error(NO_FILENAME_SPECIFIED, "input file");
+        cerr << err.error << endl;
+        exit(1);
     }
 
     file = ifstream(filename);
     if(!file.is_open()) {
-        Error err(ErrorType::FILE_NOT_FOUND, filename);
-        err.throw_error();
+        Error err =  Error(FILE_NOT_FOUND, filename);
+        cerr << err.error << endl;
+        exit(1);
     }
 
     filesystem::remove(output);
     out = ofstream(output, ios::app);
 
     if(!out.is_open()) {
-        Error err(ErrorType::FILE_NOT_FOUND, output);
-        err.throw_error();
+        Error err = Error(FILE_NOT_FOUND, output);
+        cerr << err.error << endl;
+        exit(1);
     }
 
     copy("template/head.cpp", out);
@@ -289,7 +266,7 @@ void checkFile(string &filename, string &output, ifstream &file, ofstream &out) 
     copy("template/lex.cpp", out);
 }
 
-string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, u32 &lineNum) {
+string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, int &lineNum) {
     outputFile << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
 
     string line;
@@ -308,8 +285,9 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
                 regex check(match.str(2));
             } catch (regex_error& e) {
                 string arg[] = {match.str(2), to_string(lineNum), e.what()};
-                Error err(ErrorType::REGEX_ERROR, arg);
-                err.throw_error();
+                Error err =  Error(REGEX_ERROR, arg);
+                cerr << err.error << endl;
+                exit(1);
             }
 
             outputFile << ("    lexemes.push_back(Lexeme(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\"));") << endl;
@@ -317,8 +295,9 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
             if(match.str(1)[0] != '.')
                 tokens.push_back(match.str(1));
         } else {
-            Error err(ErrorType::INVALID_SYNTAX, to_string(lineNum));
-            err.throw_error();
+            Error err = Error(INVALID_SYNTAX, to_string(lineNum));
+            cerr << err.error << endl;
+            exit(1);
         }
     }
 
@@ -332,9 +311,6 @@ void typeExpressionGenerator(vector<string> &tokens, ofstream &out) {
     }
 }
 
-<<<<<<< Updated upstream
-void createRule(ifstream &file, u32 &lineNum, vector<pair<string, string>> &rules) {
-=======
 vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<string, string>>&rules, string name) {
     int j = 0;
     vector<string> newRule;
@@ -385,9 +361,7 @@ int main(int argc, char *argv[]) {
 
     bool semicolon = false;
     vector<pair<string, string>> rules;
->>>>>>> Stashed changes
     string line;
-    bool semicolon = false;
     while(1) {
         if(!semicolon) {
             if(!getline(file, line))
@@ -404,13 +378,15 @@ int main(int argc, char *argv[]) {
         if(regex_search(line, match, re)) { // TODO: make error handling
             string name = match.str(1);
             string expr = match.str(2);
-            u32 i = 0;
+            int i = 0;
 
             while(line.find(';') > line.length()) { // run until the end of the expression
                 i++;
                 if(!getline(file, line)) {
-                    Error err(ErrorType::INVALID_SYNTAX, to_string(lineNum));
-                    err.throw_error();
+                    cerr << "\e[1;31mError:\e[0m Invalid rule on line \e[1m" << lineNum << "\e[0m" << endl;
+
+                    filesystem::remove(outputName);
+                    return 1;
                 }
                 expr += line;
             }
@@ -427,50 +403,13 @@ int main(int argc, char *argv[]) {
 
             vector<string> currentRule;
 
-<<<<<<< Updated upstream
-            while(j != end) { // convert the expression to vector
-                string word = *j++;
-                currentRule.push_back(word);
-            }
-=======
             while(j != end)
                 currentRule.push_back(*j++);
->>>>>>> Stashed changes
 
             currentRule = loopExpressionGenerator(currentRule, rules, "_" + name);
             rules.push_back(make_pair(name, parse(currentRule)));
         }
     }
-}
-
-s32 main(s32 argc, char *argv[]) {
-    string filename = "";
-    string outputName = "output.cpp";
-
-    getArg(argc, argv, filename, outputName);
-
-    ifstream file;
-    ofstream out;
-    
-    checkFile(filename, outputName, file, out);
-
-    vector<string> tokens;
-    u32 lineNum = 0;
-
-    string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
-
-    copy("template/valueExpression.cpp", out);
-    typeExpressionGenerator(tokens, out);
-
-    if(last_line != "---")
-        return 0; // no rules
-
-    vector<pair<string, string>> rules;
-    
-    createRule(file, lineNum, rules);
-
-    // rule.first - name of the rule
-    // rule.second - code of the rule
 
     for(auto rule : rules) {
         if(rule.first[0] == '.')
