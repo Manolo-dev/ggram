@@ -96,13 +96,13 @@ void create_lexemes(vector<Lexeme> &lexemes) {
     lexemes.push_back(Lexeme("string", "(\"[^\"]*\")"));
     lexemes.push_back(Lexeme("char", "('[^']')"));
     lexemes.push_back(Lexeme("id", "([a-zA-Z_][a-zA-Z0-9_]*)"));
-    lexemes.push_back(Lexeme("operator", "([\\+\\-\\*/%&|^<>!$=]+)"));
-    lexemes.push_back(Lexeme("bracket", "(\\(|\\)|\\[|\\]|\\{|\\})"));
+    lexemes.push_back(Lexeme("operator", "([\\+\\-\\*/%&|^<>!$=\\.]+)"));
+    lexemes.push_back(Lexeme("bracket", "(\\(|\\)|\\[|\\])"));
     lexemes.push_back(Lexeme("comma", "(,|\\|)"));
     lexemes.push_back(Lexeme(".ignore", "([ \t\r\n]+)"));
 }
 
-bool _loop(bool (*f)()) { if(f()) return 1; while(1) if(f()) break; return 0; }
+bool _loop(bool (*f)()) { if(f()) return 1; while(it != it_e) if(f()) break; return 0; }
 bool __(string val) { if(it == it_e) return 1; if(it->value() != val) return 1; it++; return 0; }
 
 bool __int() { if(it == it_e) return 1; if(it->type() != "int") return 1; it++; return 0; }
@@ -128,10 +128,9 @@ bool __structure_if();
 bool __structure_while();
 bool __structure_loop();
 bool __structure_for();
-bool _0_structure_match();
-bool __structure_match();
 bool _0_list();
 bool __list();
+bool _0_check_all_type();
 bool __check_all_type();
 bool _0_structure_lambda();
 bool __structure_lambda();
@@ -169,8 +168,6 @@ bool __instructions() {
     IT t = it;
     if(__("(") || _loop(_0_instructions) || __(")")) it = t;
     else return 0;
-    if(__expr()) it = t;
-    else return 0;
     if(__fun()) it = t;
     else return 0;
     return 1;
@@ -198,8 +195,6 @@ bool __expr() {
 
 bool __casted() {
     IT t = it;
-    if(__("(") || __expr() || __(")")) it = t;
-    else return 0;
     if(__int()) it = t;
     else return 0;
     if(__float()) it = t;
@@ -208,13 +203,15 @@ bool __casted() {
     else return 0;
     if(__char()) it = t;
     else return 0;
-    if(__instructions()) it = t;
-    else return 0;
     if(__id()) it = t;
     else return 0;
-    if(__comprehensive_list()) it = t;
+    if(__instructions()) it = t;
     else return 0;
     if(__structure()) it = t;
+    else return 0;
+    if(__list()) it = t;
+    else return 0;
+    if(__comprehensive_list()) it = t;
     else return 0;
     return 1;
 }
@@ -287,22 +284,6 @@ bool __structure_for() {
     return 1;
 }
 
-bool _0_structure_match() {
-    IT t = it;
-    if(__("|") || __operator() || __expr() || __("=>") || __instructions()) it = t;
-    else return 0;
-    return 1;
-}
-
-bool __structure_match() {
-    IT t = it;
-    if(__("{") || __expr() || _loop(_0_structure_match) || __("|") || __instructions() || __("}")) it = t;
-    else return 0;
-    if(__("{") || __expr() || __("|") || __instructions() || __("}")) it = t;
-    else return 0;
-    return 1;
-}
-
 bool _0_list() {
     IT t = it;
     if(__expr()) it = t;
@@ -319,9 +300,18 @@ bool __list() {
     return 1;
 }
 
+bool _0_check_all_type() {
+    IT t = it;
+    if(__expr()) it = t;
+    else return 0;
+    return 1;
+}
+
 bool __check_all_type() {
     IT t = it;
-    if(__list()) it = t;
+    if(__("[") || _loop(_0_check_all_type) || __("]")) it = t;
+    else return 0;
+    if(__("[") || __("]")) it = t;
     else return 0;
     return 1;
 }
@@ -374,8 +364,6 @@ bool __structure() {
     if(__structure_loop()) it = t;
     else return 0;
     if(__structure_for()) it = t;
-    else return 0;
-    if(__structure_match()) it = t;
     else return 0;
     if(__structure_function()) it = t;
     else return 0;

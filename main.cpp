@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <vector>
 #include <stack>
+#include "Error.cpp"
 
 typedef unsigned char u8;
 typedef signed char s8;
@@ -18,10 +19,7 @@ typedef signed long int s64;
 typedef float f32;
 typedef double f64;
 
-#include "Error.cpp"
-
 using namespace std;
-
 using combinations = vector<vector<string>>;
 
 void copy(string filename, ofstream &output) {
