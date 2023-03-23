@@ -143,10 +143,10 @@ combinations generateCombinations(vector<string>&tree) {
     return final_result;
 }
 
-string parse(vector<string>&tree, u32 tablevel=1) {
+string parse(vector<string>&tree) {
     string result = "";
     for(vector<string>&x : generateCombinations(tree)) {
-        result += (string("    ") * tablevel) + "if(";
+        result += "    if(";
         for(u64 i = 0; i < x.size(); i++) {
             if(x[i][0] == '{' && x[i][x[i].size() - 1] == '}')
                 result += "_loop(" + x[i].substr(1, x[i].size() - 2) + ")";
@@ -157,7 +157,7 @@ string parse(vector<string>&tree, u32 tablevel=1) {
             if(i < x.size() - 1)
                 result += " || ";
         }
-        result += ") it = t;\n" + (string("    ") * tablevel) + "else return 0;\n";
+        result += ") it = t;\n    else return 0;\n";
     }
     return result;
 }
@@ -293,7 +293,7 @@ vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<s
                 if(currentRule[i] == "}") level--;
                 if(level != 0) loopRule.push_back(currentRule[i]);
             }
-            loopRule = loopExpressionGenerator(loopRule, rules, "_" + to_string(j) + name);
+            loopRule = loopExpressionGenerator(loopRule, rules, "__" + to_string(j) + name);
             newRule.push_back("{_" + to_string(j) + name + "}");
             rules.push_back(make_pair("._" + to_string(j) + name, parse(loopRule)));
             j++;

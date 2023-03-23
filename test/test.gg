@@ -1,25 +1,25 @@
 int "[1-9][0-9]*|0"
 float "[0-9]+\\.[0-9]+"
 string "\"[^\"]*\""
-char "'[^']*'"
+char "'[^']'"
 id "[a-zA-Z_][a-zA-Z0-9_]*"
 operator "[\\+\\-\\*/%&|^<>!$=]+"
-bracket "\\(|\\)|\\[|\\]|\\{|\\}"
-comma ","
+bracket "\\(|\\)|\\[|\\]|\{|\}"
+comma ",|\\|"
 .ignore "[ \t\r\n]+"
 
 ---
 
-<program> ::= { <fun> }
-            | { <expr> }
-            ;
-
-<expr> ::= <casted> <operator> <expr>
-         | <casted>
-         ;
+<program> ::= { <expr> | <fun> } ;
 
 <instructions> ::= "(" { <expr> | <fun> } ")"
+                 | <expr>
+                 | <fun>
                  ;
+
+<expr> ::= <casted> { <operator> } ( <expr> | <operator> | <fun> )
+         | <casted>
+         ;
 
 <casted> ::= "(" <expr> ")"
            | <int>
@@ -37,7 +37,7 @@ comma ","
 <fun> ::= <name> [ [ { <expr> "," } ] <expr> ] ;
 
 
-<comprehensive_list> ::= "[" <expr> "|" <var> "in" <expr> [ "|" <expr> [ "|" <expr> ] ] ] ] "]" ;
+<comprehensive_list> ::= "[" <expr> "|" <id> "in" <expr> [ "|" <expr> [ "|" <expr> ] ] "]" ;
 
 <structure_if> ::= "if" <expr> <instructions> [ "else" <instructions> ] ;
 
@@ -45,9 +45,9 @@ comma ","
 
 <structure_loop> ::= "loop" <instructions> ;
 
-<structure_for> ::= "for" <var> "in" <expr> <instructions> ;
+<structure_for> ::= "for" <id> "in" <expr> <instructions> ;
 
-<structure_match> ::= "{" <expr> ( { "|" <operator> <expr> "=>" <instructions> } | <instructions> ) "}";
+<structure_match> ::= "{" <expr> [ { "|" <operator> <expr> "=>" <instructions> } ] "|" <instructions> "}";
 
 <list> ::= "[" [ { <expr> } ] "]" ;
 
@@ -55,11 +55,11 @@ comma ","
 
 <structure_lambda> ::= [ { [ "&" ] <name> } ] "=>" <instructions> ;
 
-<structure_function> ::= <function_name> "=" <structure_lambda> ;
+<structure_function> ::= <name> "=" <structure_lambda> ;
 
 <structure_typed_lambda> ::= <check_all_type> ":=" <structure_lambda> ;
 
-<structure_typed_function> ::= <function_name> "<-" <structure_typed_lambda> ;
+<structure_typed_function> ::= <name> "<-" <structure_typed_lambda> ;
 
 <structure> ::= <structure_if>
               | <structure_while>

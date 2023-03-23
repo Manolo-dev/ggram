@@ -94,11 +94,11 @@ void create_lexemes(vector<Lexeme> &lexemes) {
     lexemes.push_back(Lexeme("int", "([1-9][0-9]*|0)"));
     lexemes.push_back(Lexeme("float", "([0-9]+\\.[0-9]+)"));
     lexemes.push_back(Lexeme("string", "(\"[^\"]*\")"));
-    lexemes.push_back(Lexeme("char", "('[^']*')"));
+    lexemes.push_back(Lexeme("char", "('[^']')"));
     lexemes.push_back(Lexeme("id", "([a-zA-Z_][a-zA-Z0-9_]*)"));
     lexemes.push_back(Lexeme("operator", "([\\+\\-\\*/%&|^<>!$=]+)"));
-    lexemes.push_back(Lexeme("bracket", "(\\(|\\))"));
-    lexemes.push_back(Lexeme("comma", "(,)"));
+    lexemes.push_back(Lexeme("bracket", "(\\(|\\)|\\[|\\]|\\{|\\})"));
+    lexemes.push_back(Lexeme("comma", "(,|\\|)"));
     lexemes.push_back(Lexeme(".ignore", "([ \t\r\n]+)"));
 }
 
@@ -114,26 +114,37 @@ bool __operator() { if(it == it_e) return 1; if(it->type() != "operator") return
 bool __bracket() { if(it == it_e) return 1; if(it->type() != "bracket") return 1; it++; return 0; }
 bool __comma() { if(it == it_e) return 1; if(it->type() != "comma") return 1; it++; return 0; }
 bool _0_program();
-bool _1_program();
 bool __program();
-bool __expr();
 bool _0_instructions();
-bool _1_instructions();
 bool __instructions();
+bool _0_expr();
+bool __expr();
 bool __casted();
+bool __name();
 bool _0_fun();
 bool __fun();
+bool __comprehensive_list();
+bool __structure_if();
+bool __structure_while();
+bool __structure_loop();
+bool __structure_for();
+bool _0_structure_match();
+bool __structure_match();
+bool _0_list();
+bool __list();
+bool __check_all_type();
+bool _0_structure_lambda();
+bool __structure_lambda();
+bool __structure_function();
+bool __structure_typed_lambda();
+bool __structure_typed_function();
+bool __structure();
 
 bool _0_program() {
     IT t = it;
-    if(__fun()) it = t;
-    else return 0;
-    return 1;
-}
-
-bool _1_program() {
-    IT t = it;
     if(__expr()) it = t;
+    else return 0;
+    if(__fun()) it = t;
     else return 0;
     return 1;
 }
@@ -142,17 +153,6 @@ bool __program() {
     IT t = it;
     if(_loop(_0_program)) it = t;
     else return 0;
-    if(_loop(_1_program)) it = t;
-    else return 0;
-    return 1;
-}
-
-bool __expr() {
-    IT t = it;
-    if(__casted() || __operator() || __expr()) it = t;
-    else return 0;
-    if(__casted()) it = t;
-    else return 0;
     return 1;
 }
 
@@ -160,11 +160,6 @@ bool _0_instructions() {
     IT t = it;
     if(__expr()) it = t;
     else return 0;
-    return 1;
-}
-
-bool _1_instructions() {
-    IT t = it;
     if(__fun()) it = t;
     else return 0;
     return 1;
@@ -174,7 +169,29 @@ bool __instructions() {
     IT t = it;
     if(__("(") || _loop(_0_instructions) || __(")")) it = t;
     else return 0;
-    if(__("(") || _loop(_1_instructions) || __(")")) it = t;
+    if(__expr()) it = t;
+    else return 0;
+    if(__fun()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool _0_expr() {
+    IT t = it;
+    if(__operator()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __expr() {
+    IT t = it;
+    if(__casted() || _loop(_0_expr) || __expr()) it = t;
+    else return 0;
+    if(__casted() || _loop(_0_expr) || __operator()) it = t;
+    else return 0;
+    if(__casted() || _loop(_0_expr) || __fun()) it = t;
+    else return 0;
+    if(__casted()) it = t;
     else return 0;
     return 1;
 }
@@ -195,6 +212,19 @@ bool __casted() {
     else return 0;
     if(__id()) it = t;
     else return 0;
+    if(__comprehensive_list()) it = t;
+    else return 0;
+    if(__structure()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __name() {
+    IT t = it;
+    if(__id()) it = t;
+    else return 0;
+    if(__("operator") || __operator()) it = t;
+    else return 0;
     return 1;
 }
 
@@ -207,11 +237,153 @@ bool _0_fun() {
 
 bool __fun() {
     IT t = it;
-    if(__id() || _loop(_0_fun) || __expr()) it = t;
+    if(__name() || _loop(_0_fun) || __expr()) it = t;
     else return 0;
-    if(__id() || __expr()) it = t;
+    if(__name() || __expr()) it = t;
     else return 0;
-    if(__id()) it = t;
+    if(__name()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __comprehensive_list() {
+    IT t = it;
+    if(__("[") || __expr() || __("|") || __id() || __("in") || __expr() || __("|") || __expr() || __("|") || __expr() || __("]")) it = t;
+    else return 0;
+    if(__("[") || __expr() || __("|") || __id() || __("in") || __expr() || __("|") || __expr() || __("]")) it = t;
+    else return 0;
+    if(__("[") || __expr() || __("|") || __id() || __("in") || __expr() || __("]")) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_if() {
+    IT t = it;
+    if(__("if") || __expr() || __instructions() || __("else") || __instructions()) it = t;
+    else return 0;
+    if(__("if") || __expr() || __instructions()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_while() {
+    IT t = it;
+    if(__("while") || __expr() || __instructions()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_loop() {
+    IT t = it;
+    if(__("loop") || __instructions()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_for() {
+    IT t = it;
+    if(__("for") || __id() || __("in") || __expr() || __instructions()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool _0_structure_match() {
+    IT t = it;
+    if(__("|") || __operator() || __expr() || __("=>") || __instructions()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_match() {
+    IT t = it;
+    if(__("{") || __expr() || _loop(_0_structure_match) || __("|") || __instructions() || __("}")) it = t;
+    else return 0;
+    if(__("{") || __expr() || __("|") || __instructions() || __("}")) it = t;
+    else return 0;
+    return 1;
+}
+
+bool _0_list() {
+    IT t = it;
+    if(__expr()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __list() {
+    IT t = it;
+    if(__("[") || _loop(_0_list) || __("]")) it = t;
+    else return 0;
+    if(__("[") || __("]")) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __check_all_type() {
+    IT t = it;
+    if(__list()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool _0_structure_lambda() {
+    IT t = it;
+    if(__("&") || __name()) it = t;
+    else return 0;
+    if(__name()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_lambda() {
+    IT t = it;
+    if(_loop(_0_structure_lambda) || __("=>") || __instructions()) it = t;
+    else return 0;
+    if(__("=>") || __instructions()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_function() {
+    IT t = it;
+    if(__name() || __("=") || __structure_lambda()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_typed_lambda() {
+    IT t = it;
+    if(__check_all_type() || __(":=") || __structure_lambda()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure_typed_function() {
+    IT t = it;
+    if(__name() || __("<-") || __structure_typed_lambda()) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __structure() {
+    IT t = it;
+    if(__structure_if()) it = t;
+    else return 0;
+    if(__structure_while()) it = t;
+    else return 0;
+    if(__structure_loop()) it = t;
+    else return 0;
+    if(__structure_for()) it = t;
+    else return 0;
+    if(__structure_match()) it = t;
+    else return 0;
+    if(__structure_function()) it = t;
+    else return 0;
+    if(__structure_lambda()) it = t;
+    else return 0;
+    if(__structure_typed_function()) it = t;
+    else return 0;
+    if(__structure_typed_lambda()) it = t;
     else return 0;
     return 1;
 }
@@ -277,3 +449,4 @@ int main() {
 //           .*,/(                                                                
 //            /*//&                                                               
 //             /*./&&                                                             
+
