@@ -99,6 +99,7 @@ void create_lexemes(vector<Lexeme> &lexemes) {
     lexemes.push_back(Lexeme("operator", "([\\+\\-\\*/%&|^<>!$=\\.]+)"));
     lexemes.push_back(Lexeme("bracket", "(\\(|\\)|\\[|\\])"));
     lexemes.push_back(Lexeme("comma", "(,|\\|)"));
+    lexemes.push_back(Lexeme("type_checker_id", "([A-Z][a-zA-Z0-9_]*)"));
     lexemes.push_back(Lexeme(".ignore", "([ \t\r\n]+)"));
 }
 
@@ -113,6 +114,7 @@ bool __id() { if(it == it_e) return 1; if(it->type() != "id") return 1; it++; re
 bool __operator() { if(it == it_e) return 1; if(it->type() != "operator") return 1; it++; return 0; }
 bool __bracket() { if(it == it_e) return 1; if(it->type() != "bracket") return 1; it++; return 0; }
 bool __comma() { if(it == it_e) return 1; if(it->type() != "comma") return 1; it++; return 0; }
+bool __type_checker_id() { if(it == it_e) return 1; if(it->type() != "type_checker_id") return 1; it++; return 0; }
 bool _0_program();
 bool __program();
 bool _0_instructions();
@@ -130,11 +132,12 @@ bool __structure_loop();
 bool __structure_for();
 bool _0_list();
 bool __list();
-bool _0_check_all_type();
-bool __check_all_type();
 bool _0_structure_lambda();
 bool __structure_lambda();
 bool __structure_function();
+bool _0_type_checker();
+bool __type_checker();
+bool _0_structure_typed_lambda();
 bool __structure_typed_lambda();
 bool __structure_typed_function();
 bool __structure();
@@ -300,22 +303,6 @@ bool __list() {
     return 1;
 }
 
-bool _0_check_all_type() {
-    IT t = it;
-    if(__expr()) it = t;
-    else return 0;
-    return 1;
-}
-
-bool __check_all_type() {
-    IT t = it;
-    if(__("[") || _loop(_0_check_all_type) || __("]")) it = t;
-    else return 0;
-    if(__("[") || __("]")) it = t;
-    else return 0;
-    return 1;
-}
-
 bool _0_structure_lambda() {
     IT t = it;
     if(__("&") || __name()) it = t;
@@ -341,9 +328,38 @@ bool __structure_function() {
     return 1;
 }
 
+bool _0_type_checker() {
+    IT t = it;
+    if(__type_checker()) it = t;
+    else return 0;
+    if(__("(") || __expr() || __(")")) it = t;
+    else return 0;
+    return 1;
+}
+
+bool __type_checker() {
+    IT t = it;
+    if(__type_checker_id()) it = t;
+    else return 0;
+    if(__type_checker_id() || __("<") || _loop(_0_type_checker) || __(">")) it = t;
+    else return 0;
+    return 1;
+}
+
+bool _0_structure_typed_lambda() {
+    IT t = it;
+    if(__("&") || __name() || __("") || __type_checker()) it = t;
+    else return 0;
+    if(__name() || __("") || __type_checker()) it = t;
+    else return 0;
+    return 1;
+}
+
 bool __structure_typed_lambda() {
     IT t = it;
-    if(__check_all_type() || __(":=") || __structure_lambda()) it = t;
+    if(_loop(_0_structure_typed_lambda) || __("=>") || __instructions()) it = t;
+    else return 0;
+    if(__("=>") || __instructions()) it = t;
     else return 0;
     return 1;
 }

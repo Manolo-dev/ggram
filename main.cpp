@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <vector>
 #include <stack>
-#include "Error.cpp"
+#include "Error.hpp"
 
 typedef unsigned char u8;
 typedef signed char s8;
@@ -144,6 +144,7 @@ combinations generateCombinations(vector<string>&tree) {
 string parse(vector<string>&tree) {
     string result = "";
     for(vector<string>&x : generateCombinations(tree)) {
+        cout << x << endl;
         result += "    if(";
         for(u64 i = 0; i < x.size(); i++) {
             if(x[i][0] == '{' && x[i][x[i].size() - 1] == '}')
@@ -162,23 +163,24 @@ string parse(vector<string>&tree) {
 
 void getArg(int argc, char *argv[], string &filename, string &output) {
     for(u32 i = 1; i != argc; ++i) {
-        if(strcmp(argv[i],"-h") == 0) {
+        if(strcmp(argv[i], "-h") == 0) {
             cout << "Usage: " << endl;
             cout << "  " << argv[0] << " -h" << endl;
             cout << "  " << argv[0] << " -v" << endl;
-            cout << "  " << argv[0] << " -f \e[4mfile\e[0m -o \e[4mfile\e[0m" << endl;
+            cout << "  " << argv[0] << " -f \e[4mfile\e[0m -o \e[4mfile\e[0m [-d]" << endl;
             cout << "Options:" << endl;
             cout << "  -h  Show this help message" << endl;
             cout << "  -v  Show version" << endl;
             cout << "  -f  File name" << endl;
             cout << "  -o  Output file name" << endl;
             exit(0);
-        } else if(strcmp(argv[i],"-v") == 0) {
+        } else if(strcmp(argv[i], "-v") == 0) {
             cout << "Version: 0.0.1" << endl;
             exit(0);
-        } else if(strcmp(argv[i],"-f") == 0) {
-            if(i+1 < argc) {
-                filename = argv[i+1];
+        } else if(strcmp(argv[i], "-f") == 0) {
+            i++;
+            if(i < argc) {
+                filename = argv[i];
                 string extension = filename.substr(filename.find_last_of(".") + 1);
                 if(extension != "gg") {
                     Error err(ErrorType::INVALID_FILE_EXTENSION, ".gg");
@@ -188,9 +190,10 @@ void getArg(int argc, char *argv[], string &filename, string &output) {
                 Error err(ErrorType::NO_FILENAME_SPECIFIED, "input file");
                 err.throw_error();
             }
-        } else if(strcmp(argv[i],"-o") == 0) {
-            if(i+1 < argc) {
-                output = argv[i+1];
+        } else if(strcmp(argv[i], "-o") == 0) {
+            i++;
+            if(i < argc) {
+                output = argv[i];
                 string extension = output.substr(output.find_last_of(".") + 1);
                 if(extension != "cpp") {
                     Error err(ErrorType::INVALID_FILE_EXTENSION, ".cpp");
@@ -198,6 +201,13 @@ void getArg(int argc, char *argv[], string &filename, string &output) {
                 }
             } else {
                 Error err(ErrorType::NO_FILENAME_SPECIFIED, "output file");
+                err.throw_error();
+            }
+        } else {
+            filename = argv[i];
+            string extension = filename.substr(filename.find_last_of(".") + 1);
+            if(extension != "gg") {
+                Error err(ErrorType::INVALID_FILE_EXTENSION, ".gg");
                 err.throw_error();
             }
         }
@@ -247,7 +257,7 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
         if(line == "---") break; // threat only the first part of the file
 
         smatch match;
-        regex re("^(\\.?[a-zA-Z_][a-zA-Z_0-9]*)\\s*\"(([^\"]|\\\\\")*)\"$");
+        regex re("^(\\.?[a-zA-Z][a-zA-Z_0-9]*)\\s*\"(([^\"]|\\\\\")*)\"$");
 
         if(regex_search(line, match, re)) {
             try {
@@ -316,7 +326,7 @@ void createRulesPart(ifstream &file, ofstream &out, u32 lineNum, vector<pair<str
         if(line[0] == '#') continue; // ingnore comment
         if(line == "---") break; // threat only the second part of the file
         smatch match;
-        regex re("^\\s*<([a-zA-Z_][a-zA-Z_0-9]*)>\\s*::=\\s*(.+)\\s*$");
+        regex re("^\\s*<([a-zA-Z][a-zA-Z_0-9]*)>\\s*::=\\s*(.+)\\s*$");
 
         if(regex_search(line, match, re)) { // TODO: make error handling
             string name = match.str(1);

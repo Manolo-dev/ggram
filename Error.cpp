@@ -8,7 +8,7 @@ Error::Error(ErrorType type, std::string other) {
 Error::Error(ErrorType type, s32 num) {
     *this = Error(type, std::to_string(num));
 }
-Error::Error(ErrorType type, std::string *other) {
+Error::Error(ErrorType type, std::string other[]) {
     std::string error = "\e[1;31mError:\e[0m ";
 
     switch(type){
