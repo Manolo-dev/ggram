@@ -270,6 +270,19 @@ template<typename T> T& next(vector<T> &v) {
     return v.back();
 }
 
+template<typename T> ostream& operator<<(ostream &os, vector<T> &v) {
+    /**
+     * @brief Print a vector
+     * @param os
+     * @param v
+     * @return ostream&
+     */
+    for(auto &e : v) {
+        os << e;
+    }
+    return os;
+}
+
 template<typename T> void operator+(vector<T> &v, vector<T> &v2) {
     /**
      * @brief Concatenate two vectors
@@ -329,10 +342,12 @@ bool _type(string val, Token &master) {
      */
     if(it == it_e) {
         p_err = &(*it);
+        cout << "failed" << endl;
         return 1;
     }
     if(it->type() != val) {
         p_err = &(*it);
+        cout << "failed" << endl;
         return 1;
     }
     master = *it;
@@ -341,34 +356,84 @@ bool _type(string val, Token &master) {
 }
 
 void create_lexemes(vector<Lexeme> &lexemes) {
-    /**
-     * @brief Create the lexemes
-     * @param lexemes
-     */
     lexemes.push_back(Lexeme("int", "([1-9][0-9]*|0)"));
-    lexemes.push_back(Lexeme("id", "([a-z]+)"));
+    lexemes.push_back(Lexeme("id", "([a-zA-Z_][a-zA-Z0-9_]*)"));
+    lexemes.push_back(Lexeme("op", "([+\\-\\*/])"));
+    lexemes.push_back(Lexeme("eq", "(=)"));
     lexemes.push_back(Lexeme(".ignore", "([ \t\r\n]+)"));
 }
 
-bool __int(Token &master) { return _type("int", master); }
-bool __id(Token &master) { return _type("id", master); }
+bool __int(Token &master) { cout << "__int : " << *it << endl; return _type("int", master); }
+bool __id(Token &master) { cout << "__id : " << *it << endl; return _type("id", master); }
+bool __op(Token &master) { cout << "__op : " << *it << endl; return _type("op", master); }
+bool __eq(Token &master) { cout << "__eq : " << *it << endl; return _type("eq", master); }
+bool _0_program(Token &master);
 bool __program(Token &master);
+bool _0_expr(Token &master);
+bool __expr(Token &master);
+bool __term(Token &master);
 
-bool __program(Token &master) {
+bool _0_program(Token &master) { cout << "_0_program : " << *it << endl;
+    IT t = it;
+    master = Token("._0_program");
+    vector<Token> current;
+    current = vector<Token>();
+    if(__expr(next(current))) it = t;
+    else {master.children() + current; return 0;};
+    return 1;
+}
+
+bool __program(Token &master) { cout << "__program : " << *it << endl;
     IT t = it;
     master = Token("program");
     vector<Token> current;
     current = vector<Token>();
-    if(__id(next(current)) || __int(next(current)) || __id(next(current))) it = t;
-    else { master.push(current); return 0; }
+    if(_loop(_0_program, current)) it = t;
+    else {master.children() + current; return 0;};
+    return 1;
+}
 
+bool _0_expr(Token &master) { cout << "_0_expr : " << *it << endl;
+    IT t = it;
+    master = Token("._0_expr");
+    vector<Token> current;
+    current = vector<Token>();
+    if(__op(next(current)) || __term(next(current))) it = t;
+    else {master.children() + current; return 0;};
+    return 1;
+}
+
+bool __expr(Token &master) { cout << "__expr : " << *it << endl;
+    IT t = it;
+    master = Token("expr");
+    vector<Token> current;
+    current = vector<Token>();
+    if(__id(next(current)) || _value("=", next(current)) || __expr(next(current))) it = t;
+    else {master.children() + current; return 0;};
+    current = vector<Token>();
+    if(__term(next(current)) || _loop(_0_expr, current)) it = t;
+    else {master.children() + current; return 0;};
+    return 1;
+}
+
+bool __term(Token &master) { cout << "__term : " << *it << endl;
+    IT t = it;
+    master = Token("term");
+    vector<Token> current;
+    current = vector<Token>();
+    if(__id(next(current))) it = t;
+    else {master.children() + current; return 0;};
+    current = vector<Token>();
+    if(__int(next(current))) it = t;
+    else {master.children() + current; return 0;};
     return 1;
 }
 
 int main() {
     string code;
-    code = "a b c d e";
+    code = "a = 1 b = a + 1 c = b + 1";
     vector<Token> tokens = lex(code);
+    cout << tokens << endl;
     it = tokens.begin();
     it_e = tokens.end(); // end
     p_err = nullptr; // error
@@ -424,3 +489,4 @@ int main() {
 //           .*,/(                                                                
 //            /*//&                                                               
 //             /*./&&                                                             
+

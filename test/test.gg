@@ -54,9 +54,14 @@ type_checker_id "[A-Z][a-zA-Z0-9_]*"
 
 <type_checker> ::= <type_checker_id> | <type_checker_id> "[" { <type_checker> | "(" <expr> ")" } "]" ;
 
-<structure_typed_lambda> ::= [ { [ "&" ] <name> "" <type_checker> } ] "=>" <instructions> ;
+<structure_typed_lambda> ::= [ { [ "&" ] <name> ":" <type_checker> } ] "=>" <instructions> ;
 
 <structure_typed_function> ::= <name> "<-" <structure_typed_lambda> ;
+
+<function_call> ::= <id> [ { <expr> } ] ";"
+                  | <id> [ { <expr> } ] <eol>
+                  | "(" <id> [ { <expr> } ] ")"
+                  ;
 
 <structure> ::= <structure_if>
               | <structure_while>

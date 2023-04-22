@@ -1,0 +1,2 @@
+operator../ = -: a | a + b | b :-
+operator../ <- a b => a + b

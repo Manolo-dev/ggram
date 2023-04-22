@@ -1,20 +1,19 @@
 int main() {
     string code;
-    getline(cin, code);
+    code = "a = 1 b = a + 1 c = b + 1";
     vector<Token> tokens = lex(code);
+    cout << tokens << endl;
     it = tokens.begin();
-    it_e = tokens.end();
+    it_e = tokens.end(); // end
+    p_err = nullptr; // error
+    Token tree;
     
-    if(__program()) {
+    if(__program(tree)) {
         cout << "ERROR" << endl;
+        cout << *p_err << endl;
     } else {
         cout << "OK" << endl;
-        IT t = tokens.begin();
-        while(t != it) {
-            cout << t->value() << " ";
-            t++;
-        }
-        cout << endl;
+        cout << tree << endl;
     }
 
     return 0;

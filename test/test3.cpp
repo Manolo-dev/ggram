@@ -254,6 +254,12 @@ vector<Token> lex(string code) {
     return tokens;
 }
 
+void create_lexemes(vector<Lexeme> &lexemes) {
+    lexemes.push_back(Lexeme("int", "([1-9][0-9]*|0)"));
+    lexemes.push_back(Lexeme("id", "([a-zA-Z_][a-zA-Z0-9_]*)"));
+    lexemes.push_back(Lexeme(".ignore", "([ \t\r\n]+)"));
+}
+
 using IT = vector<Token>::iterator; // Iterator type
 
 IT it; // Iterator for the current tokens checked by the parser
@@ -340,34 +346,34 @@ bool _type(string val, Token &master) {
     return 0;
 }
 
-void create_lexemes(vector<Lexeme> &lexemes) {
-    /**
-     * @brief Create the lexemes
-     * @param lexemes
-     */
-    lexemes.push_back(Lexeme("int", "([1-9][0-9]*|0)"));
-    lexemes.push_back(Lexeme("id", "([a-z]+)"));
-    lexemes.push_back(Lexeme(".ignore", "([ \t\r\n]+)"));
-}
-
 bool __int(Token &master) { return _type("int", master); }
 bool __id(Token &master) { return _type("id", master); }
+bool _0_program(Token &master);
 bool __program(Token &master);
+
+bool _0_program(Token &master) {
+    IT t = it;
+    master = Token("._0_program");
+    vector<Token> current;
+    current = vector<Token>();
+    if(__id(next(current)) || __int(next(current)) || __id(next(current))) it = t;
+    else {master.children() + current; return 0;}
+    return 1;
+}
 
 bool __program(Token &master) {
     IT t = it;
     master = Token("program");
     vector<Token> current;
     current = vector<Token>();
-    if(__id(next(current)) || __int(next(current)) || __id(next(current))) it = t;
-    else { master.push(current); return 0; }
-
+    if(_loop(_0_program, next(current).children())) it = t;
+    else {master.children() + current; return 0;}
     return 1;
 }
 
 int main() {
     string code;
-    code = "a b c d e";
+    code = "a 1 c d 2 e";
     vector<Token> tokens = lex(code);
     it = tokens.begin();
     it_e = tokens.end(); // end
@@ -424,3 +430,4 @@ int main() {
 //           .*,/(                                                                
 //            /*//&                                                               
 //             /*./&&                                                             
+

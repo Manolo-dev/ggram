@@ -145,18 +145,19 @@ string parse(vector<string>&tree) {
     string result = "";
     for(vector<string>&x : generateCombinations(tree)) {
         cout << x << endl;
+        result += "    current = vector<Token>();\n";
         result += "    if(";
         for(u64 i = 0; i < x.size(); i++) {
             if(x[i][0] == '{' && x[i][x[i].size() - 1] == '}')
-                result += "_loop(" + x[i].substr(1, x[i].size() - 2) + ")";
+                result += "_loop(" + x[i].substr(1, x[i].size() - 2) + ", current)";
             else if(x[i][0] == '<' && x[i][x[i].size() - 1] == '>')
-                result += "__" + x[i].substr(1, x[i].size() - 2) + "()";
+                result += "__" + x[i].substr(1, x[i].size() - 2) + "(next(current))";
             else if(x[i][0] == '"' && x[i][x[i].size() - 1] == '"')
-                result += "__(\"" + x[i].substr(1, x[i].size() - 2) + "\")";
+                result += "_value(\"" + x[i].substr(1, x[i].size() - 2) + "\", next(current))";
             if(i < x.size() - 1)
                 result += " || ";
         }
-        result += ") it = t;\n    else return 0;\n";
+        result += ") it = t;\n    else {master.children() + current; return 0;};\n";
     }
     return result;
 }
@@ -240,8 +241,8 @@ void checkFile(string &filename, string &output, ifstream &file, ofstream &out) 
     }
 
     copy("template/head.cpp", out);
-    copy("template/Token.cpp", out);
     copy("template/Lexeme.cpp", out);
+    copy("template/Token.cpp", out);
     copy("template/lex.cpp", out);
 }
 
@@ -284,7 +285,7 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
 
 void typeExpressionGenerator(vector<string> &tokens, ofstream &out) {
     for(auto token : tokens) {
-        out << "bool __" << token << "() { if(it == it_e) return 1; if(it->type() != \"" + token + "\") return 1; it++; return 0; }" << endl;
+        out << "bool __" << token << "(Token &master) { return _type(\"" + token + "\", master); }" << endl;
     }
 }
 
@@ -367,19 +368,22 @@ void createRulesPart(ifstream &file, ofstream &out, u32 lineNum, vector<pair<str
 void declareRule(vector<pair<string, string>> &rules, ofstream &out) {
     for(auto rule : rules) {
         if(rule.first[0] == '.')
-            out << "bool " << rule.first.substr(1) << "();" << endl;
+            out << "bool " << rule.first.substr(1) << "(Token &master);" << endl;
         else
-            out << "bool __" << rule.first << "();" << endl;
+            out << "bool __" << rule.first << "(Token &master);" << endl;
     }
 }
 
 void writeRule(vector<pair<string, string>> &rules, ofstream &out) {
     for(auto rule : rules) {
         if(rule.first[0] == '.')
-            out << endl << "bool " << rule.first.substr(1) << "() {" << endl;
+            out << endl << "bool " << rule.first.substr(1) << "(Token &master) {" << endl;
         else
-            out << endl << "bool __" << rule.first << "() {" << endl;
-        out << "    IT t = it;" << endl << rule.second;
+            out << endl << "bool __" << rule.first << "(Token &master) {" << endl;
+        out << "    IT t = it;" << endl;
+        out << "    master = Token(\"" + rule.first + "\");" << endl;
+        out << "    vector<Token> current;" << endl;
+        out << rule.second;
         out << "    return 1;" << endl;
         out << "}" << endl;
     }
@@ -399,9 +403,8 @@ int main(int argc, char *argv[]) {
     vector<string> tokens;
     u32 lineNum = 0;
 
-    string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
-
     copy("template/valueExpression.cpp", out);
+    string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
     typeExpressionGenerator(tokens, out);
 
     if(last_line != "---")
