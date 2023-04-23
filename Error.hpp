@@ -15,7 +15,7 @@ enum class ErrorType {
 class Error {
 public:
     Error(ErrorType type, std::string other);
-    Error(ErrorType type, s32 num);
+    Error(ErrorType type, int num);
     Error(ErrorType type, std::string *other);
     void throw_error();
 private:

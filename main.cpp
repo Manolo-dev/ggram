@@ -40,7 +40,7 @@ ostream& operator<<(ostream& os, vector<string> const &v) {
 	return os;
 }
 
-string operator*(const string& s, u32 n) {
+string operator*(const string& s, uint32_t n) {
 	stringstream out;
 
 	while(n--)
@@ -48,39 +48,33 @@ string operator*(const string& s, u32 n) {
 	return out.str();
 }
 
-string operator*(u32 n, const string& s) { return s * n; }
+string operator*(uint32_t n, const string& s) { return s * n; }
 
-string join(vector<string> const &strings, string delim = "", string exception = "") {
+string join(vector<string> const &strings, string delim = "") {
 	string result = "";
 	for(size_t i = 0; i < strings.size() - 1; i++) {
-		if(strings[i] == exception) {
-			result += strings[i];
-		} else if(strings[i+1] == exception) {
-			result += strings[i];
-		} else {
-			result += strings[i] + delim;
-		}
+		result += strings[i] + delim;
 	}
-	result += strings[strings.size() - 1];
+	result += strings.back();
 	return result;
 }
 
 template<typename T>
-void extend(vector<T>& dest, vector<T>& src ){
-	for(T& elem : src){
+void extend(vector<T>& dest, const vector<T>& src ){
+	for(const T& elem : src){
 		dest.push_back(elem);
 	}
 }
 
 template<typename T>
-void add_to_each_element(vector<vector<T>>& liste, T& new_elem){
+void add_to_each_element(vector<vector<T>>& liste, const T& new_elem){
 	for(vector<T> & comb : liste ) {
 		comb.push_back(new_elem);
 	}
 }
 
 template<typename T>
-vector<T> flatten(vector<vector<T>> & list_of_lists){
+vector<T> flatten(const vector<vector<T>> & list_of_lists){
 	vector<T> res;
 	for(vector<T> list : list_of_lists){
 		extend(res, list);
@@ -89,7 +83,7 @@ vector<T> flatten(vector<vector<T>> & list_of_lists){
 }
 
 
-combinations generateCombinations(vector<string>&tree) {
+combinations generateCombinations(const vector<string> & tree) {
 	vector<combinations> or_results ;
 	or_results.push_back({{}});
 
@@ -125,25 +119,44 @@ combinations generateCombinations(vector<string>&tree) {
 		} else if(tree[i] == "|") {
 			or_results.push_back({{}});
 		} else {
-			add_to_each_element(or_results.back(), tree[i]);
+			add_to_each_element<string>(or_results.back(), tree[i]);
 		}
 	}
 	return flatten(or_results);
 }
 
-string parse(vector<string>&tree) {
+string parse(const vector<string> & tree) {
 	string result = "";
 	for(vector<string>&x : generateCombinations(tree)) {
 		cout << x << endl;
 		result += "    current = vector<Token>();\n";
 		result += "    if(";
 		for(size_t i = 0; i < x.size(); i++) {
-			if(x[i][0] == '{' && x[i][x[i].size() - 1] == '}')
-				result += "_loop(" + x[i].substr(1, x[i].size() - 2) + ", current)";
-			else if(x[i][0] == '<' && x[i][x[i].size() - 1] == '>')
-				result += "__" + x[i].substr(1, x[i].size() - 2) + "(next(current))";
-			else if(x[i][0] == '"' && x[i][x[i].size() - 1] == '"')
-				result += "_value(\"" + x[i].substr(1, x[i].size() - 2) + "\", next(current))";
+			string prefix, suffix;
+			/*
+			{truc} -> _loop(truc, current)
+			<truc> -> __truc(next(current))
+			"truc" -> _value("truc", next(current))
+			otherwise : INVALID_SYNTAX
+			*/
+			switch( x[i][0] ){		
+				case '{' :
+					if(x[i].back() != '}') Error(ErrorType::INVALID_SYNTAX, "Missing '}'").throw_error();
+					prefix = "_loop("; suffix = ", current)";
+					break;
+				case '<' :
+					if(x[i].back() != '>') Error(ErrorType::INVALID_SYNTAX, "Missing '>'").throw_error();
+					prefix = "__"; suffix = "(next(current))";
+					break;
+				case '"' :
+					if(x[i].back() != '"' || x[i].size() < 2 ) Error(ErrorType::INVALID_SYNTAX, "Missing '\"'").throw_error();
+					prefix = "_value(\""; suffix = "\", next(current))";
+					break;
+				default :
+					Error(ErrorType::INVALID_SYNTAX, "Mauvais !").throw_error();
+			}
+			result += prefix + x[i].substr(1, x[i].size() - 2) + suffix; 
+
 			if(i < x.size() - 1)
 				result += " || ";
 		}
@@ -153,7 +166,7 @@ string parse(vector<string>&tree) {
 }
 
 void getArg(int argc, char *argv[], string &filename, string &output) {
-	for(u32 i = 1; i != argc; ++i) {
+	for(uint32_t i = 1; i != argc; ++i) {
 		if(strcmp(argv[i], "-h") == 0) {
 			cout << "Usage: " << endl;
 			cout << "  " << argv[0] << " -h" << endl;
@@ -236,7 +249,7 @@ void checkFile(string &filename, string &output, ifstream &file, ofstream &out) 
 	copy("template/lex.cpp", out);
 }
 
-string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, u32 &lineNum) {
+string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, uint32_t &lineNum) {
 	outputFile << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
 
 	string line;
@@ -280,11 +293,11 @@ void typeExpressionGenerator(vector<string> &tokens, ofstream &out) {
 }
 
 vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<string, string>>&rules, string name) {
-	u32 j = 0;
+	uint32_t j = 0;
 	vector<string> newRule;
-	for(u32 i = 0; i < currentRule.size(); i++) {
+	for(uint32_t i = 0; i < currentRule.size(); i++) {
 		if(currentRule[i] == "{") {
-			s32 level = 1;
+			int level = 1;
 			vector<string> loopRule;
 			while(level != 0) {
 				i++;
@@ -303,7 +316,7 @@ vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<s
 	return newRule;
 }
 
-void createRulesPart(ifstream &file, ofstream &out, u32 lineNum, vector<pair<string, string>> &rules){
+void createRulesPart(ifstream &file, ofstream &out, uint32_t lineNum, vector<pair<string, string>> &rules){
 	bool semicolon = false;
 	string line;
 	while(1) {
@@ -322,7 +335,7 @@ void createRulesPart(ifstream &file, ofstream &out, u32 lineNum, vector<pair<str
 		if(regex_search(line, match, re)) { // TODO: make error handling
 			string name = match.str(1);
 			string expr = match.str(2);
-			u32 i = 0;
+			int i = 0;
 
 			while(line.find(';') > line.length()) { // run until the end of the expression
 				i++;
@@ -391,7 +404,7 @@ int main(int argc, char *argv[]) {
 	checkFile(filename, outputName, file, out);
 
 	vector<string> tokens;
-	u32 lineNum = 0;
+	uint32_t lineNum = 0;
 
 	copy("template/valueExpression.cpp", out);
 	string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);

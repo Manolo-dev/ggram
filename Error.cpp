@@ -5,7 +5,7 @@ Error::Error(ErrorType type, std::string other) {
     *this = Error(type, temp);
 }
 
-Error::Error(ErrorType type, s32 num) {
+Error::Error(ErrorType type, int num) {
     *this = Error(type, std::to_string(num));
 }
 Error::Error(ErrorType type, std::string other[]) {
