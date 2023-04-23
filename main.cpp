@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <vector>
 #include <stack>
+#include <cstring>
 #include "Error.hpp"
 
 typedef unsigned char u8;
