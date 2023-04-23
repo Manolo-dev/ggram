@@ -243,10 +243,10 @@ void checkFile(string &filename, string &output, ifstream &file, ofstream &out) 
 		err.throw_error();
 	}
 
-	copy("template/head.cpp", out);
-	copy("template/Lexeme.cpp", out);
-	copy("template/Token.cpp", out);
-	copy("template/lex.cpp", out);
+	copy("template/head.cpp.part", out);
+	copy("template/Lexeme.cpp.part", out);
+	copy("template/Token.cpp.part", out);
+	copy("template/lex.cpp.part", out);
 }
 
 string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, uint32_t &lineNum) {
@@ -406,7 +406,7 @@ int main(int argc, char *argv[]) {
 	vector<string> tokens;
 	uint32_t lineNum = 0;
 
-	copy("template/valueExpression.cpp", out);
+	copy("template/valueExpression.cpp.part", out);
 	string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
 	typeExpressionGenerator(tokens, out);
 
@@ -422,7 +422,7 @@ int main(int argc, char *argv[]) {
 	writeRule(rules, out);
 	
 	out << endl;
-	copy("template/main.cpp", out);
+	copy("template/main.cpp.part", out);
 
 	file.close();
 	out.close();
