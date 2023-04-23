@@ -83,12 +83,11 @@ vector<T> flatten(const vector<vector<T>> & list_of_lists){
 }
 
 
-combinations generateCombinations(const vector<string> & tree) {
-	vector<combinations> or_results ;
-	or_results.push_back({{}});
+combinations generateCombinations(vector<string>&tree) {
+	combinations result, branch ;
+	branch.emplace_back();
 
 	for(size_t i = 0; i < tree.size(); i++) {
-
 		if(tree[i] == "(" || tree[i] == "[") {
 			// Keep what's inside the brackets
 			vector<string> inside_brackets;
@@ -98,6 +97,7 @@ combinations generateCombinations(const vector<string> & tree) {
 			
 			while(level > 0) {
 				i++;
+				if(i >= tree.size()) Error(ErrorType::INVALID_SYNTAX, "Missing bracket !").throw_error();
 				if(tree[i] == open_bracket) level++;
 				if(tree[i] == closed_bracket) level--;
 				if(level != 0) inside_brackets.push_back(tree[i]);
@@ -108,21 +108,24 @@ combinations generateCombinations(const vector<string> & tree) {
 			
 			// Add these combinations to the previous results
 			combinations combined_result;
-			for(vector<string> & previous_result : or_results.back()) {
+			for(vector<string> & previous_result : branch) {
 				for(vector<string> & sub_combination : sub_combinations ) {
 					// prefix each inside brackets combination with what was before
 					combined_result.push_back(previous_result);
 					extend(combined_result.back(), sub_combination);
 				}
 			}
-			or_results.back() = combined_result;
+			branch = combined_result;
 		} else if(tree[i] == "|") {
-			or_results.push_back({{}});
-		} else {
-			add_to_each_element<string>(or_results.back(), tree[i]);
+			extend(result, branch);
+			branch.clear();
+			branch.emplace_back();
+		} else {	
+			add_to_each_element(branch, tree[i]);
 		}
 	}
-	return flatten(or_results);
+	extend(result, branch);
+	return result;
 }
 
 string parse(const vector<string> & tree) {
