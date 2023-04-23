@@ -83,7 +83,7 @@ vector<T> flatten(const vector<vector<T>> & list_of_lists){
 }
 
 
-combinations generateCombinations(vector<string>&tree) {
+combinations generateCombinations(const vector<string>&tree) {
 	combinations result, branch ;
 	branch.emplace_back();
 
