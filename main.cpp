@@ -7,18 +7,7 @@
 #include <stack>
 #include <cstring>
 #include "Error.hpp"
-
-typedef unsigned char u8;
-typedef signed char s8;
-typedef unsigned short u16;
-typedef signed short s16;
-typedef unsigned int u32;
-typedef signed int s32;
-typedef unsigned long int u64;
-typedef signed long int s64;
-
-typedef float f32;
-typedef double f64;
+#include <cstdint>
 
 using namespace std;
 using combinations = vector<vector<string>>;
@@ -41,7 +30,7 @@ void copy(string filename, ofstream &output) {
 ostream& operator<<(ostream& os, vector<string> const &v) {
 	os << "[";
 
-	for(u64 i = 0; i < v.size(); i++) {
+	for(size_t i = 0; i < v.size(); i++) {
 		os << v[i];
 		if(i != v.size() - 1) {
 			os << ", ";
@@ -63,7 +52,7 @@ string operator*(u32 n, const string& s) { return s * n; }
 
 string join(vector<string> const &strings, string delim = "", string exception = "") {
 	string result = "";
-	for(u64 i = 0; i < strings.size() - 1; i++) {
+	for(size_t i = 0; i < strings.size() - 1; i++) {
 		if(strings[i] == exception) {
 			result += strings[i];
 		} else if(strings[i+1] == exception) {
@@ -148,7 +137,7 @@ string parse(vector<string>&tree) {
 		cout << x << endl;
 		result += "    current = vector<Token>();\n";
 		result += "    if(";
-		for(u64 i = 0; i < x.size(); i++) {
+		for(size_t i = 0; i < x.size(); i++) {
 			if(x[i][0] == '{' && x[i][x[i].size() - 1] == '}')
 				result += "_loop(" + x[i].substr(1, x[i].size() - 2) + ", current)";
 			else if(x[i][0] == '<' && x[i][x[i].size() - 1] == '>')
