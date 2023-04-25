@@ -113,6 +113,9 @@ combinations generateCombinations(const vector<string>&tree) {
                     // prefix each inside brackets combination with what was before
                     combined_result.push_back(previous_result);
                     extend(combined_result.back(), sub_combination);
+                    if(open_bracket == "["){
+                        combined_result.push_back(previous_result);
+                    }
                 }
             }
             branch = combined_result;
@@ -132,7 +135,7 @@ string parse(const vector<string> & tree) {
     string result = "";
     for(vector<string>&x : generateCombinations(tree)) {
         cout << x << endl;
-        result += "    current = vector<Token>();\n";
+        result += "    current.clear();\n";
         result += "    if(";
         for(size_t i = 0; i < x.size(); i++) {
             string prefix, suffix;
@@ -152,7 +155,7 @@ string parse(const vector<string> & tree) {
                     prefix = "__"; suffix = "(next(current))";
                     break;
                 case '"' :
-                    if(x[i].back() != '"' || x[i].size() < 2 ) Error(ErrorType::INVALID_SYNTAX, "Missing '\"'").throw_error();
+                    if(x[i].back() != '"'  || x[i].size() < 2 ) Error(ErrorType::INVALID_SYNTAX, "Missing '\"' : " + x[i] ).throw_error();
                     prefix = "_value(\""; suffix = "\", next(current))";
                     break;
                 default :
@@ -163,7 +166,7 @@ string parse(const vector<string> & tree) {
             if(i < x.size() - 1)
                 result += " || ";
         }
-        result += ") it = t;\n    else {master.children() + current; return 0;};\n";
+        result += ") it = t;\n    else {master.children() += current; return 0;};\n";
     }
     return result;
 }
@@ -246,10 +249,6 @@ void checkFile(string &filename, string &output, ifstream &file, ofstream &out) 
         err.throw_error();
     }
 
-    copy("template/head.cpp.part", out);
-    copy("template/Lexeme.cpp.part", out);
-    copy("template/Token.cpp.part", out);
-    copy("template/lex.cpp.part", out);
 }
 
 string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, uint32_t &lineNum) {
@@ -264,7 +263,7 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
         if(line == "---") break; // threat only the first part of the file
 
         smatch match;
-        regex re("^(\\.?[a-zA-Z][a-zA-Z_0-9]*)\\s*\"(([^\"]|\\\\\")*)\"$");
+        regex re(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
 
         if(regex_search(line, match, re)) {
             try {
@@ -275,7 +274,7 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
                 err.throw_error();
             }
 
-            outputFile << ("    lexemes.push_back(Lexeme(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\"));") << endl;
+            outputFile << ("    lexemes.emplace_back(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\");") << endl;
 
             if(match.str(1)[0] != '.')
                 tokens.push_back(match.str(1));
@@ -290,7 +289,7 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
 }
 
 void typeExpressionGenerator(vector<string> &tokens, ofstream &out) {
-    for(auto token : tokens) {
+    for(string & token : tokens) {
         out << "bool __" << token << "(Token &master) { return _type(\"" + token + "\", master); }" << endl;
     }
 }
@@ -333,15 +332,14 @@ void createRulesPart(ifstream &file, ofstream &out, uint32_t lineNum, vector<pai
         if(line[0] == '#') continue; // ingnore comment
         if(line == "---") break; // threat only the second part of the file
         smatch match;
-        regex re("^\\s*<([a-zA-Z][a-zA-Z_0-9]*)>\\s*::=\\s*(.+)\\s*$");
+        regex re(R"(^\s*<([a-zA-Z][a-zA-Z_0-9]*)>\s*::=\s*(.+)\s*$)");
 
         if(regex_search(line, match, re)) { // TODO: make error handling
             string name = match.str(1);
             string expr = match.str(2);
-            int i = 0;
 
             while(line.find(';') > line.length()) { // run until the end of the expression
-                i++;
+                lineNum++;
                 if(!getline(file, line)) {
                     Error err(ErrorType::INVALID_RULE, lineNum);
                     err.throw_error();
@@ -352,7 +350,6 @@ void createRulesPart(ifstream &file, ofstream &out, uint32_t lineNum, vector<pai
             line = expr.substr(expr.find(';') + 1, expr.length()); // get the rest of the line
             expr = expr.substr(0, expr.find(';')); // get the expression
 
-            lineNum += i;
             semicolon = line.size() > 0;
 
             regex e("\\s+");
@@ -406,12 +403,18 @@ int main(int argc, char *argv[]) {
     
     checkFile(filename, outputName, file, out);
 
+    copy("template/head.cpp.part", out);
+    copy("template/Lexeme.cpp.part", out);
+    copy("template/Token.cpp.part", out);
+    copy("template/lex.cpp.part", out);
+    copy("template/valueExpression.cpp.part", out);
+
     vector<string> tokens;
     uint32_t lineNum = 0;
 
-    copy("template/valueExpression.cpp.part", out);
     string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
     typeExpressionGenerator(tokens, out);
+    out << endl;
 
     if(last_line != "---")
         return 0; // no rules
