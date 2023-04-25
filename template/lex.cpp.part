@@ -15,13 +15,13 @@ vector<Token> lex(string code) {
 
     while(code.size() > 0) {
         bool found = false;
-        for(long unsigned int i = 0; i != lexemes.size(); ++i) {
-            regex re(lexemes[i].value()); // Regex for the current lexeme
+        for(Lexeme lexeme : lexemes) {
+            regex re(lexeme.value()); // Regex for the current lexeme
             smatch match; // Match for the current lexeme
             if(regex_search(code, match, re)) {
                 if(match.position() == 0 && match.length() > 0) { // If the match is at the good position
-                    if(lexemes[i].type() != ".ignore") { // If the lexeme is not to be ignored
-                        tokens.push_back(Token(lexemes[i].type(), match.str(), line, column));
+                    if(lexeme.type() != ".ignore") { // If the lexeme is not to be ignored
+                        tokens.push_back(Token(lexeme.type(), match.str(), line, column));
                     }
                     if(match.str().find("\n") != string::npos || match.str().find("\r") != string::npos) {
                         // Increment line and reset column
@@ -41,7 +41,7 @@ vector<Token> lex(string code) {
             }
         }
         if(!found) {
-            cerr << "ERROR" << endl;
+            cerr << "No matching pattern :\n" << code << endl;
             exit(1);
         }
     }

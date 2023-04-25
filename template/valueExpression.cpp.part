@@ -10,24 +10,26 @@ template<typename T> T& next(vector<T> &v) {
      * @param v
      * @return T&
      */
-    v.push_back(T());
+    v.emplace_back();
     return v.back();
 }
 
-template<typename T> ostream& operator<<(ostream &os, vector<T> &v) {
+template<typename T> 
+ostream& operator<<(ostream &os, vector<T> &v) {
     /**
      * @brief Print a vector
      * @param os
      * @param v
      * @return ostream&
      */
-    for(auto &e : v) {
+    for(T &e : v) {
         os << e;
     }
     return os;
 }
 
-template<typename T> void operator+(vector<T> &v, vector<T> &v2) {
+template<typename T> 
+void operator+=(vector<T> &v, vector<T> &v2) {
     /**
      * @brief Concatenate two vectors
      * @details The first vector is modified
@@ -49,10 +51,10 @@ bool _loop(bool (*f)(Token &), vector<Token> &master) {
         p_err = &(*it);
         return 1;
     }
-    master + c.children();
+    master += c.children();
     while(it != it_e) {
         if(f(c)) break;
-        master + c.children();
+        master += c.children();
     }
     return 0;
 }

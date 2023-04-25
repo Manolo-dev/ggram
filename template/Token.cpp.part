@@ -4,42 +4,7 @@ class Token {
      * @details This class is used to store the tokens of the lexer and the tree of the parser
      */
 public:
-    Token() {
-        /**
-         * @brief Construct a new Token object
-         */
-        this->_type   = "";
-        this->_value  = "";
-        this->_line   = 0;
-        this->_column = 0;
-        this->_children = vector<Token>();
-    }
-    Token(string type) {
-        /**
-         * @brief Construct a new Token object
-         * @param type
-         * @return Token
-         */
-        this->_type   = type;
-        this->_value  = "";
-        this->_line   = 0;
-        this->_column = 0;
-        this->_children = vector<Token>();
-    }
-    Token(string type, string value) {
-        /**
-         * @brief Construct a new Token object
-         * @param type
-         * @param value
-         * @return Token
-         */
-        this->_type   = type;
-        this->_value  = value;
-        this->_line   = 0;
-        this->_column = 0;
-        this->_children = vector<Token>();
-    }
-    Token(string type, string value, int line, int column) {
+    Token(string type = "", string value = "", int line = 0, int column = 0) {
         /**
          * @brief Construct a new Token object
          * @param type
