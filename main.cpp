@@ -8,6 +8,7 @@
 #include <cstring>
 #include "Error.hpp"
 #include <cstdint>
+#include <cstdio>
 
 using namespace std;
 using combinations = vector<vector<string>>;
@@ -240,7 +241,7 @@ void checkFile(string &filename, string &output, ifstream &file, ofstream &out) 
         err.throw_error();
     }
 
-    filesystem::remove(output);
+    remove(output.c_str());
     out = ofstream(output, ios::app);
 
     if(!out.is_open()) {
