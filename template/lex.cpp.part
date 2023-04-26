@@ -9,40 +9,43 @@ vector<Token> lex(string code) {
     vector<Lexeme> lexemes;
     create_lexemes(lexemes);
 
-    vector<Token> tokens = vector<Token>(); // Vector of tokens
+    vector<Token> tokens{}; // Vector of tokens
     int column = 0;
     int line = 0;
-
+    // Try to split the code in lexeme by removing the first one each time
     while(code.size() > 0) {
+        // Try to match every lexeme with the beginning of the remaining code
+        // If no lexeme match, we raise an error 
         bool found = false;
         for(Lexeme lexeme : lexemes) {
-            regex re(lexeme.value()); // Regex for the current lexeme
-            smatch match; // Match for the current lexeme
-            if(regex_search(code, match, re)) {
-                if(match.position() == 0 && match.length() > 0) { // If the match is at the good position
-                    if(lexeme.type() != ".ignore") { // If the lexeme is not to be ignored
-                        tokens.push_back(Token(lexeme.type(), match.str(), line, column));
-                    }
-                    if(match.str().find("\n") != string::npos || match.str().find("\r") != string::npos) {
-                        // Increment line and reset column
-                        size_t count = count_if(
-                            match.str().begin(),
-                            match.str().end(),
-                            [](char c){ return c == '\n' || c == '\r'; }
-                        ) / 2;
-                        line += count;
-                        column = -count;
-                    }
-                    column += match.length(); // Increment column
-                    code = match.suffix(); // Remove the matched part from the code
-                    found = true;
-                    break;
+            const regex current_regex(lexeme.value()); // Regex for the current lexeme
+            smatch match; 
+            // Try to match current regex at the beginning of the remaining code
+            if( regex_search(code, match, current_regex, 
+                regex_constants::match_continuous | regex_constants::match_not_null) ) {
+
+                // If the lexeme is not to be ignored
+                if(lexeme.type() != ".ignore") { 
+                    tokens.push_back(Token(lexeme.type(), match.str(), line, column));
                 }
+
+                // Update line and column
+                for (const char& c : match.str()){
+                    if(c == '\r' || c == '\n'){
+                        line++;
+                        column = 0;
+                    } else{
+                        column++;
+                    }
+                }
+                // Remove the matched part from the code
+                code = match.suffix(); 
+                found = true;
+                break;
             }
         }
         if(!found) {
-            cerr << "No matching pattern :\n" << code << endl;
-            exit(1);
+            throw runtime_error("No matching pattern :\n" + code) ;
         }
     }
 
