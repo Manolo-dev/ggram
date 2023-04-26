@@ -83,6 +83,20 @@ vector<T> flatten(const vector<vector<T>> & list_of_lists){
     return res;
 }
 
+inline vector<string> get_inside_brackets( const vector<string>& tree, size_t & i,  const string open_bracket, const string closed_bracket ){
+    unsigned int level = 1;
+    vector<string> inside_brackets;
+    
+    while(level > 0) {
+        i++;
+        if(i >= tree.size()) Error(ErrorType::INVALID_SYNTAX, "Missing bracket !").throw_error();
+        if(tree[i] == open_bracket) level++;
+        if(tree[i] == closed_bracket) level--;
+        if(level != 0) inside_brackets.push_back(tree[i]);
+    }
+    return move(inside_brackets);
+}
+
 combinations generateCombinations(const vector<string>&tree) {
     combinations result, branch ;
     branch.emplace_back();
@@ -90,18 +104,9 @@ combinations generateCombinations(const vector<string>&tree) {
     for(size_t i = 0; i < tree.size(); i++) {
         if(tree[i] == "(" || tree[i] == "[") {
             // Keep what's inside the brackets
-            vector<string> inside_brackets;
             const string open_bracket = tree[i];
-            const string closed_bracket = (tree[i] == "(" ? ")" : "]"); 
-            unsigned int level = 1;
-            
-            while(level > 0) {
-                i++;
-                if(i >= tree.size()) Error(ErrorType::INVALID_SYNTAX, "Missing bracket !").throw_error();
-                if(tree[i] == open_bracket) level++;
-                if(tree[i] == closed_bracket) level--;
-                if(level != 0) inside_brackets.push_back(tree[i]);
-            }
+            const string closed_bracket = tree[i] == "(" ? ")" : "]";
+            vector<string> inside_brackets = get_inside_brackets(tree, i, open_bracket, closed_bracket );
 
             // Possible combinations inside the brackets
             combinations sub_combinations = generateCombinations(inside_brackets);
@@ -297,16 +302,10 @@ void typeExpressionGenerator(vector<string> &tokens, ofstream &out) {
 vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<string, string>>&rules, string name) {
     uint32_t j = 0;
     vector<string> newRule;
-    for(uint32_t i = 0; i < currentRule.size(); i++) {
+    for(size_t i = 0; i < currentRule.size(); i++) {
         if(currentRule[i] == "{") {
-            int level = 1;
-            vector<string> loopRule;
-            while(level != 0) {
-                i++;
-                if(currentRule[i] == "{") level++;
-                if(currentRule[i] == "}") level--;
-                if(level != 0) loopRule.push_back(currentRule[i]);
-            }
+            vector<string> loopRule = get_inside_brackets(currentRule, i, "{", "}");
+
             loopRule = loopExpressionGenerator(loopRule, rules, "__" + to_string(j) + name);
             newRule.push_back("{_" + to_string(j) + name + "}");
             rules.push_back(make_pair("._" + to_string(j) + name, parse(loopRule)));
