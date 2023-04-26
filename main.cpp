@@ -136,6 +136,9 @@ combinations generateCombinations(const vector<string>&tree) {
     return result;
 }
 
+static const string POP_FUNCTION_PREFIX = "pop_";
+
+// Generate parsing function
 string parse(const vector<string> & tree) {
     string result = "";
     for(vector<string>&x : generateCombinations(tree)) {
@@ -146,18 +149,18 @@ string parse(const vector<string> & tree) {
             string prefix, suffix;
             /*
             {truc} -> _loop(truc, current)
-            <truc> -> __truc(next(current))
+            <truc> -> pop_truc(next(current))
             "truc" -> _value("truc", next(current))
             otherwise : INVALID_SYNTAX
             */
             switch( x[i][0] ){      
                 case '{' :
                     if(x[i].back() != '}') Error(ErrorType::INVALID_SYNTAX, "Missing '}'").throw_error();
-                    prefix = "_loop("; suffix = ", current)";
+                    prefix = "_loop( " + POP_FUNCTION_PREFIX ; suffix = ", current)";
                     break;
                 case '<' :
                     if(x[i].back() != '>') Error(ErrorType::INVALID_SYNTAX, "Missing '>'").throw_error();
-                    prefix = "__"; suffix = "(next(current))";
+                    prefix = POP_FUNCTION_PREFIX; suffix = "(next(current))";
                     break;
                 case '"' :
                     if(x[i].back() != '"'  || x[i].size() < 2 ) Error(ErrorType::INVALID_SYNTAX, "Missing '\"' : " + x[i] ).throw_error();
@@ -256,10 +259,16 @@ void checkFile(string &filename, string &output, ifstream &file, ofstream &out) 
 
 }
 
-string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outputName, vector<string> &tokens, uint32_t &lineNum) {
+vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t &lineNum) {
     outputFile << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
-
+    
+    vector<string> lexeme_names;
     string line;
+    smatch match; 
+    
+    // match with : lexeme_name   "lexeme_regex"
+    const regex lexem_infos_regex(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
+    
     while(getline(inputFile, line)) {
         lineNum++;
 
@@ -267,121 +276,121 @@ string createLexemsPart(ofstream &outputFile, ifstream &inputFile, string &outpu
         if(line[0] == '#') continue; // ingnore comment
         if(line == "---") break; // threat only the first part of the file
 
-        smatch match;
-        regex re(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
 
-        if(regex_search(line, match, re)) {
-            try {
-                regex check(match.str(2));
-            } catch (regex_error& e) {
-                string arg[] = {match.str(2), to_string(lineNum), e.what()};
-                Error err(ErrorType::REGEX_ERROR, arg);
-                err.throw_error();
-            }
-
+        if(regex_search(line, match, lexem_infos_regex)) {
+            // Write :  lexemes.emplace_back("lexeme_name", "lexeme_regexe");
             outputFile << ("    lexemes.emplace_back(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\");") << endl;
-
+            
             if(match.str(1)[0] != '.')
-                tokens.push_back(match.str(1));
+                lexeme_names.push_back(match.str(1));
         } else {
             Error err(ErrorType::INVALID_SYNTAX, lineNum);
             err.throw_error();
         }
     }
-
     outputFile << "}" << endl << endl;
-    return line;
-}
 
-void typeExpressionGenerator(vector<string> &tokens, ofstream &out) {
-    for(string & token : tokens) {
-        out << "bool __" << token << "(Token &master) { return _type(\"" + token + "\", master); }" << endl;
+    if(line != "---"){
+        Error(ErrorType::INVALID_SYNTAX, lineNum).throw_error();
     }
+    return move(lexeme_names);
 }
 
-vector<string> loopExpressionGenerator(vector<string>&currentRule, vector<pair<string, string>>&rules, string name) {
-    uint32_t j = 0;
+void writePopLexemeTokenFunctions(const vector<string> &token_types, ofstream &out) {
+    for(const string & token_name : token_types) {
+        //Writes bool __token_name(Token & master) { return _type("token_name", master); } 
+        out << "bool " << POP_FUNCTION_PREFIX << token_name << "(Token &master) { return _type(\"" + token_name + "\", master); }" << endl;
+        // //Writes : Token pop_token(IT& curr_it, const IT it_end) { return pop_type("token", curr_it, it_end); }
+        // out << "Token pop_" << token_name << "(IT& it_curr, const IT it_end) { return pop_type(\"" + token_name + "\", it_curr, it_end); }" << endl;
+    }
+    out << endl;
+}
+
+void addRulePopFunctions(const vector<string>& rule, const string name, vector<pair<string, string>>& result ) {
+    size_t j = 0;
     vector<string> newRule;
-    for(size_t i = 0; i < currentRule.size(); i++) {
-        if(currentRule[i] == "{") {
-            vector<string> loopRule = get_inside_brackets(currentRule, i, "{", "}");
+    for(size_t i = 0; i < rule.size(); i++) {
+        if(rule[i] == "{") {
+            vector<string> loopRule = get_inside_brackets(rule, i, "{", "}");
+            
+            const string aux_name = to_string(j) + "_" + name; j++;
+            
+            addRulePopFunctions(loopRule, aux_name, result);
 
-            loopRule = loopExpressionGenerator(loopRule, rules, "__" + to_string(j) + name);
-            newRule.push_back("{_" + to_string(j) + name + "}");
-            rules.push_back(make_pair("._" + to_string(j) + name, parse(loopRule)));
-            j++;
+            newRule.push_back("{" + aux_name + "}");
+            
         } else {
-            newRule.push_back(currentRule[i]);
+            newRule.push_back(rule[i]);
         }
     }
-    return newRule;
+    result.emplace_back(name, parse(newRule));
 }
 
-void createRulesPart(ifstream &file, ofstream &out, uint32_t lineNum, vector<pair<string, string>> &rules){
-    bool semicolon = false;
+
+vector<pair<string, string>>  createRulesPart(ifstream &file, ofstream &out, uint32_t& lineNum){
+    vector<pair<string, string>> all_rules_pop_functions;
     string line;
-    while(1) {
-        if(!semicolon) {
-            if(!getline(file, line))
+    smatch match;
+    
+    // regex match with : <rule_name>  ::= rule_expression
+    const regex rule_infos_regex(R"(^\s*<([a-zA-Z][a-zA-Z_0-9]*)>\s*::=\s*(.+)\s*$)");
+    
+    while(getline(file, line)) {
+        lineNum++;
+        while(line.size() > 0){
+
+            if(line[0] == '#') continue; // ingnore comment
+            if(line == "---") break; // threat only the second part of the file
+            
+
+            if(!regex_search(line, match, rule_infos_regex)) { 
                 break;
-            lineNum++;
-        }
+                // Error(ErrorType::INVALID_SYNTAX, lineNum).throw_error();
+            }
+            const string rule_name = match.str(1);
+            string rule_expr = match.str(2);
 
-        if(line == "") continue; // skip empty line
-        if(line[0] == '#') continue; // ingnore comment
-        if(line == "---") break; // threat only the second part of the file
-        smatch match;
-        regex re(R"(^\s*<([a-zA-Z][a-zA-Z_0-9]*)>\s*::=\s*(.+)\s*$)");
-
-        if(regex_search(line, match, re)) { // TODO: make error handling
-            string name = match.str(1);
-            string expr = match.str(2);
-
-            while(line.find(';') > line.length()) { // run until the end of the expression
+            // rule expression ends at ';''
+            while(line.find(';') > line.length()) {
                 lineNum++;
                 if(!getline(file, line)) {
-                    Error err(ErrorType::INVALID_RULE, lineNum);
-                    err.throw_error();
+                    Error(ErrorType::INVALID_RULE, lineNum).throw_error();
                 }
-                expr += line;
+                rule_expr += line;
             }
-
-            line = expr.substr(expr.find(';') + 1, expr.length()); // get the rest of the line
-            expr = expr.substr(0, expr.find(';')); // get the expression
-
-            semicolon = line.size() > 0;
-
-            regex e("\\s+");
-            regex_token_iterator<string::iterator> j(expr.begin(), expr.end(), e, -1); // split the expression by words
+            // get the rule_expression 
+            rule_expr = rule_expr.substr(0, rule_expr.find(';')); 
+            // what's after is kept to be treated
+            line = rule_expr.substr(rule_expr.find(';') + 1, rule_expr.length());
+            
+            // bool new_elem = true;
+            // for(const char : rule_expr ){
+                
+            // }
+            // split the expression by words
+            regex space_regex("\\s+");
+            regex_token_iterator<string::iterator> j(rule_expr.begin(), rule_expr.end(), space_regex, -1); 
             regex_token_iterator<string::iterator> end;
-
+            
             vector<string> currentRule;
-
-            while(j != end) // convert the expression to vector
+            while(j != end) 
                 currentRule.push_back(*j++);
 
-            currentRule = loopExpressionGenerator(currentRule, rules, "_" + name);
-            rules.push_back(make_pair(name, parse(currentRule)));
-            // pair : first - name, second - expression
+            addRulePopFunctions(currentRule, rule_name, all_rules_pop_functions);
         }
     }
+    return all_rules_pop_functions;
 }
 
 void declareRule(vector<pair<string, string>> &rules, ofstream &out) {
     for(auto rule : rules) {
-        if(rule.first[0] == '.')
-            out << "bool " << rule.first.substr(1) << "(Token &master);" << endl;
-        else
-            out << "bool __" << rule.first << "(Token &master);" << endl;
+            out << "bool " << POP_FUNCTION_PREFIX << rule.first << "(Token &master);" << endl;
     }
 }
 
 void writeRule(vector<pair<string, string>> &rules, ofstream &out) {
     for(auto rule : rules) {
-        if(rule.first[0] == '.')
-            out << endl << "bool " << rule.first.substr(1) << "(Token &master) {" << endl;
-        else
-            out << endl << "bool __" << rule.first << "(Token &master) {" << endl;
+        out << endl << "bool " << POP_FUNCTION_PREFIX << rule.first << "(Token &master) {" << endl;
         out << "    IT t = it;" << endl;
         out << "    master = Token(\"" + rule.first + "\");" << endl;
         out << "    vector<Token> current;" << endl;
@@ -408,22 +417,14 @@ int main(int argc, char *argv[]) {
     copy("template/lex.cpp.part", out);
     copy("template/valueExpression.cpp.part", out);
 
-    vector<string> tokens;
     uint32_t lineNum = 0;
 
-    string last_line = createLexemsPart(out, file, outputName, tokens, lineNum);
-    typeExpressionGenerator(tokens, out);
-    out << endl;
+    vector<string> lexeme_names = createLexemes(out, file, lineNum);
+    writePopLexemeTokenFunctions(lexeme_names, out);
 
-    if(last_line != "---")
-        return 0; // no rules
-
-    vector<pair<string, string>> rules;
-
-    createRulesPart(file, out, lineNum, rules);
+    vector<pair<string, string>> rules = createRulesPart(file, out, lineNum);
 
     declareRule(rules, out);
-
     writeRule(rules, out);
     
     out << endl;
