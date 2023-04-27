@@ -96,7 +96,7 @@ inline vector<string> get_inside_brackets( const vector<string>& tree, size_t & 
         if(tree[i] == closed_bracket) level--;
         if(level != 0) inside_brackets.push_back(tree[i]);
     }
-    return move(inside_brackets);
+    return inside_brackets;
 }
 
 combinations generateCombinations(const vector<string>&tree) {
@@ -247,7 +247,7 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
     if(line != "---"){
         Error(ErrorType::INVALID_SYNTAX, lineNum).throw_error();
     }
-    return move(lexeme_names);
+    return lexeme_names;
 }
 
 void writeLexemesPopFunctions(const vector<string> &token_types, ofstream &out) {
@@ -265,7 +265,9 @@ struct PairRuleFunction {
     string name;
     string function;
 };
+
 typedef vector<string> Rule;
+
 void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFunction>& result ) {
     size_t j = 0;
     vector<string> newRule;
@@ -332,7 +334,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
             regex_token_iterator<string::iterator> j(rule_expr.begin(), rule_expr.end(), space_regex, -1); 
             regex_token_iterator<string::iterator> end;
             
-            vector<string> currentRule;
+            Rule currentRule;
             while(j != end) 
                 currentRule.push_back(*j++);
 
@@ -348,9 +350,10 @@ void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
     }
     // Define rules' pop functions
     for(auto [rule_name ,rule_expr] : rules) {
-        out << "//////////////////////////////////////////////////////////////////////////////////////////////////" << endl;
-        out << "//                       Functions to pop tokens of type : " << rule_name << endl;
-        out << "//////////////////////////////////////////////////////////////////////////////////////////////////" << endl;
+        out << endl;
+        out << "/***************************************************************************************************/" << endl;
+        out << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/"  <<endl;
+        out << "/***************************************************************************************************/" << endl;
         vector<PairRuleFunction> result;
         addRulePopFunctions(rule_expr, rule_name, result );
         for(auto [aux_rule_name, aux_rule_func ] : result){
