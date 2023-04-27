@@ -8,16 +8,6 @@
 #include <cstdint>
 #include <cstdio>
 
-// Ca c'est la manip pour filesystem (mais on pourrait peut-être se limiter à experimental/filesystem ?)
-#if __has_include(<filesystem>)
-  #include <filesystem>
-#elif __has_include(<experimental/filesystem>)
-  #include <experimental/filesystem> 
-  using namespace std::experimental::filesystem;
-#else
-  error "Missing the <filesystem> header."
-#endif
-
 #include <Error.hpp>
 #include <options.h>
 #include <custom_exceptions.h>
