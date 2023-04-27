@@ -6,12 +6,3 @@ test: src/test.cpp src/options.cpp src/Error.cpp
 
 clean:
 	rm -f ggram test/*.cpp
-
-# git add . except directory
-push: clean src/main.cpp src/options.cpp src/Error.cpp
-	git add .
-	git commit -m "update"
-	git push origin master
-
-pull: clean
-	git pull origin master
