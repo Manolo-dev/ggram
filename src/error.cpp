@@ -1,46 +1,52 @@
-#include "Error.hpp"
+#include "error.hpp"
 
-Error::Error(ErrorType type, std::string other) {
-    std::string temp[1] = {other};
-    *this = Error(type, temp);
+GgramError::GgramError() : std::runtime_error::runtime_error("GgramError") {}
+GgramError::~GgramError() throw() {}
+const char* GgramError::what() const throw() {
+    return _message.c_str();
 }
 
-Error::Error(ErrorType type, int num) {
-    *this = Error(type, std::to_string(num));
-}
-Error::Error(ErrorType type, std::string other[]) {
-    std::string error = "\e[1;31mError:\e[0m ";
-
-    switch(type){
-        case ErrorType::INVALID_FILE_EXTENSION:
-            error += "Invalid file extension. Only " + other[0] + " files are allowed.";
-            break;
-        case ErrorType::FILE_NOT_FOUND:
-            error += "The file " + other[0] + " was not found.";
-            break;
-        case ErrorType::NO_FILENAME_SPECIFIED:
-            error += "No " + other[0] + " specified.";
-            break;
-        case ErrorType::REGEX_ERROR:
-            error += "Invalid regex on line \e[1m" + other[0] + "\e[0m: " + other[1] + "\n regex_error code: " + other[2];
-            break;
-        case ErrorType::INVALID_SYNTAX:
-            error += "Invalid syntax on line \e[1m" + other[0] + "\e[0m: " + other[1];
-            break;
-        case ErrorType::INVALID_RULE:
-            error += "Invalid rule on line \e[1m" + other[0] + "\e[0m";
-            break;
-        default:
-            error += "Unknown error.";
-            break;
-
-    }
-    this->_error = error;
-    this->_type = type;
-    
+InvalidFileExtensionError::InvalidFileExtensionError(std::string filename, std::string extension) : _message("Invalid file extension. Only " + extension + " files are allowed.") {}
+InvalidFileExtensionError::~InvalidFileExtensionError() throw() {}
+const char* InvalidFileExtensionError::what() const throw() {
+    return _message.c_str();
 }
 
-void Error::throw_error() {
-    std::cerr << _error << std::endl;
-    exit(1);
+FileNotFound::FileNotFound(std::string filename) : _message("File " + filename + " not found.") {}
+FileNotFound::~FileNotFound() throw() {}
+const char* FileNotFound::what() const throw() {
+    return _message.c_str();
+}
+
+NoFilenameSpecified::NoFilenameSpecified(std::string type_file) : _message("No " + type_file + " filename specified.") {}
+NoFilenameSpecified::~NoFilenameSpecified() throw() {}
+const char* NoFilenameSpecified::what() const throw() {
+    return _message.c_str();
+}
+
+RegexError::RegexError(std::string line, std::string regex, std::string error) : _message("Regex error: " + error + " in line " + line + " with regex " + regex) {}
+RegexError::RegexError(int line, std::string regex, std::string error) : _message("Regex error: " + error + " in line " + std::to_string(line) + " with regex " + regex) {}
+RegexError::~RegexError() throw() {}
+const char* RegexError::what() const throw() {
+    return _message.c_str();
+}
+
+InvalidSyntax::InvalidSyntax(std::string line, std::string error) : _message("Invalid syntax in line " + line + " : " + error) {}
+InvalidSyntax::InvalidSyntax(int line, std::string error) : _message("Invalid syntax in line " + std::to_string(line) + " : " + error) {}
+InvalidSyntax::~InvalidSyntax() throw() {}
+const char* InvalidSyntax::what() const throw() {
+    return _message.c_str();
+}
+
+InvalidRule::InvalidRule(std::string line, std::string rule) : _message("Invalid rule " + rule + " in line " + line) {}
+InvalidRule::InvalidRule(int line, std::string rule) : _message("Invalid rule " + rule + " in line " + std::to_string(line)) {}
+InvalidRule::~InvalidRule() throw() {}
+const char* InvalidRule::what() const throw() {
+    return _message.c_str();
+}
+
+OptionError::OptionError(std::string message) : _message(message) {}
+OptionError::~OptionError() throw() {}
+const char* OptionError::what() const throw() {
+    return _message.c_str();
 }
