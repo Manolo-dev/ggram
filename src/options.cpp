@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "errors.hpp"
+#include "error.hpp"
 #include "options.hpp"
 
 typedef std::vector<char const *> ParamList;
@@ -38,11 +38,11 @@ const OptionDescription* tryGettingOptionFromAnyID(char const *id) {
 void tryOption(OptionDescription const *option_ptr, const std::string &option_id, const ParamList &param_list, Configuration &cfg) {
     try {
         (*option_ptr)(param_list, cfg);
-    } catch (CustomExceptions::OptionError& except) {
+    } catch (OptionError& except) {
         if (option_id == "") {
-            throw CustomExceptions::OptionError("T'as fait de la merde avec la default option");
+            throw OptionError("T'as fait de la merde avec la default option");
         } else {
-            throw CustomExceptions::OptionError(
+            throw OptionError(
                 "-" + option_id + ": " + except.what() +
                 "\n  (type \".\\ggram --help " + option_id + "\" for more information on how to use this option)\n"
             );
@@ -56,7 +56,7 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
     OptionDescription const *option_ptr = &defaultOption_description;
     ParamList param_list = {};
     
-    for(uint32_t i = 1; i != argc; ++i) { // TODO: why is it an uint32_t ?
+    for(int i = 1; i != argc; ++i) { // TODO: why is it an uint32_t ?
         char const * arg = argv[i];
 
         if (arg[0] == '-') {
@@ -74,7 +74,7 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
                 option_ptr = new_option_ptr;
                 param_list = {};
             } else {
-                throw CustomExceptions::OptionError("Unknown option: " + std::string(arg));
+                throw OptionError("Unknown option: " + std::string(arg));
             }
         } else {
             param_list.push_back(arg);
@@ -86,7 +86,7 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
 
 void eddyMalou(const ParamList &param_list, Configuration &cfg) {
     if (param_list.size() != 0) {
-        throw CustomExceptions::OptionError("Too many parameters");
+        throw OptionError("Too many parameters");
     } else {
         std::cout << "On ne peut pas parler de politique administrative scientifique, le colloque à l'égard de la complexité doit vanter les encadrés avec la formule 1+(2x5), mais oui. Pour emphysiquer l'animalculisme, la congolexicomatisation par rapport aux diplomaties peut aider le conpemdium autour des gens qui connaissent beaucoup de choses, tu sais ça." << std::endl;
         exit(1);
@@ -95,14 +95,14 @@ void eddyMalou(const ParamList &param_list, Configuration &cfg) {
 
 void help(const ParamList &param_list, Configuration &cfg) {
     if (param_list.size() > 1) {
-        throw CustomExceptions::OptionError("Too many parameters");
+        throw OptionError("Too many parameters");
     } else if (param_list.size() == 1) {
 
         OptionDescription const *opt = tryGettingOptionFromAnyID(param_list[0]);
         if(opt != nullptr) {
             opt->print();
         } else {
-            throw CustomExceptions::OptionError("Unknown option \"" + std::string(param_list[0]) + "\"");
+            throw OptionError("Unknown option \"" + std::string(param_list[0]) + "\"");
         }
         exit(1);
     } else {
@@ -115,7 +115,7 @@ void help(const ParamList &param_list, Configuration &cfg) {
 
 void version(const ParamList &param_list, Configuration &cfg) {
     if (param_list.size() != 0) {
-        throw CustomExceptions::OptionError("Too many parameters");
+        throw OptionError("Too many parameters");
     } else {
         std::cout << "version 0.0.1" << std::endl;
         exit(1);
@@ -124,21 +124,21 @@ void version(const ParamList &param_list, Configuration &cfg) {
 
 void inputFile(const ParamList &param_list, Configuration &cfg) {
     if (param_list.size() == 0) {
-        throw CustomExceptions::OptionError("Missing parameter");
+        throw OptionError("Missing parameter");
     } else if (param_list.size() == 1) {
         cfg.input_filename = param_list[0];
     } else {
-        throw CustomExceptions::OptionError("Too many parameters");
+        throw OptionError("Too many parameters");
     }
 }
 
 void outputFile(const ParamList &param_list, Configuration &cfg) {
     if (param_list.size() == 0) {
-        throw CustomExceptions::OptionError("Missing parameter");
+        throw OptionError("Missing parameter");
     } else if (param_list.size() == 1) {
         cfg.output_filename = param_list[0];
     } else {
-        throw CustomExceptions::OptionError("Too many parameters");
+        throw OptionError("Too many parameters");
     }
 }
 
@@ -151,7 +151,7 @@ void defaultOption(const ParamList &param_list, Configuration &cfg) {
     } else if (param_list.size() == 1) {
         inputFile(param_list, cfg);
     } else {
-        throw CustomExceptions::OptionError("Too many parameters");
+        throw OptionError("Too many parameters");
     }
 }
 
