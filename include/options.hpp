@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <functional>
 #include <iostream>
 #include <cstring>
 
@@ -11,15 +10,14 @@ typedef std::vector<char const *> ParamList;
 namespace Options {
 
 struct Configuration {
-    std::string input_file = "";
-    std::string output_file = "output.cpp";
+    std::string input_filename = "";
+    std::string output_filename = "parser.cpp";
 };
 
 // I do not use strings and vectors to make it literal so we can have everything constexpr
 struct OptionDescription {
-    static constexpr int max_id_number = 2;
-    const int id_number;
-    char const *id_list[max_id_number];
+    char const *short_id;
+    char const *long_id;
     char const *description;
     void (*function)(const ParamList &, Configuration &); // takes the list of parameters and the actual configuration
     
@@ -28,16 +26,24 @@ struct OptionDescription {
     }
 
     void print(char const line_start[] = "") const {
-        std::cout << line_start << "-" << id_list[0];
-        for (int i=1; i<id_number; i++) {
-            std::cout << ", -" << id_list[i];
+        if (short_id[0] != 0) {
+            std::cout << line_start << "-" << short_id;
+            if (long_id[0] != 0) {
+                std::cout << line_start << ", --" << long_id;
+            }
+        } else if (long_id[0] != 0) {
+            std::cout << line_start << "--" << long_id;
+        } else {
+            std::cout << "when you dont put any command before";
         }
         std::cout << ":\n" << line_start << "  " << description << std::endl;
     }
 };
 
 
-const OptionDescription* tryGettingOptionFromID(char const *id);
+const OptionDescription* tryGettingOptionFromShortID(char const *id);
+const OptionDescription* tryGettingOptionFromLongID(char const *id);
+const OptionDescription* tryGettingOptionFromAnyID(char const *id);
 
 void handleOptions(int argc, char const *argv[], Configuration& cfg);
 
@@ -51,8 +57,8 @@ void handleOptions(int argc, char const *argv[], Configuration& cfg);
 // ------------ Eddy Malou option ------------ //
 void eddyMalou(const ParamList &param_list, Configuration &cfg);
 constexpr OptionDescription eddyMalou_description = {
-    2,
-    {"EddyMalou", "-congolexicomatisation"},
+    "eddyMalou",
+    "congolexicomatisation",
     "Lorsque l'on parle des végétaliens, du végétalisme, le savoir purement technique paraît soutenir l'estime du savoir provenant d'une dynamique syncronique, je vous en prie. Une semaine passée sans parler du peuple c’est errer sans abri, autrement dit la compétence autour de l'ergonométrie se résume à gérer le panafricanisme comparé(e)(s) la rénaque, c’est clair.",
     &eddyMalou
 };
@@ -60,8 +66,8 @@ constexpr OptionDescription eddyMalou_description = {
 // ------------ Help option ------------ //
 void help(const ParamList &param_list, Configuration &cfg);
 constexpr OptionDescription help_description = {
-    2,
-    {"h", "-help"},
+    "h",
+    "help",
     "Show all possible options",
     &help
 };
@@ -69,8 +75,8 @@ constexpr OptionDescription help_description = {
 // ------------ Version option ------------ //
 void version(const ParamList &param_list, Configuration &cfg);
 constexpr OptionDescription version_description = {
-    2,
-    {"-v", "-version"},
+    "v",
+    "version",
     "Show which version of ggram you're using",
     &version
 };
@@ -78,8 +84,8 @@ constexpr OptionDescription version_description = {
 // ------------ Input option ------------ //
 void inputFile(const ParamList &param_list, Configuration &cfg);
 constexpr OptionDescription inputFile_description = {
-    1,
-    {"f"},
+    "f",
+    "",
     "Description yet to be written",
     &inputFile
 };
@@ -87,8 +93,8 @@ constexpr OptionDescription inputFile_description = {
 // ------------ Output option ------------ //
 void outputFile(const ParamList &param_list, Configuration &cfg);
 constexpr OptionDescription outputFile_description = {
-    1,
-    {"o"},
+    "o",
+    "",
     "Description yet to be written",
     &outputFile
 };
@@ -109,9 +115,9 @@ constexpr OptionDescription OptionList[] = {
 // Called with what is before the fisrt id
 void defaultOption(const ParamList &param_list, Configuration &cfg);
 constexpr OptionDescription defaultOption_description = {
-    0,
-    {},
-    "Description yet to be written",
+    "",
+    "",
+    "Same as -f",
     &defaultOption
 };
 
