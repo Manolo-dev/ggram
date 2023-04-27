@@ -73,7 +73,7 @@ The lexer return a vector of Token. A Token is an object containing the terminal
 <rule_name> ::= <rule> ;
 ```
 
-Rule can contain parenthesis for priority, brackets for optionality, braces for repetition and the `|` operator for alternatives. Rule can also be a terminal. Rule can be recursive (but not left recursive). If you want check the value of a token, you can use `"token_value"` as a rule.
+Rule can contain parenthesis for priority, brackets for optionality, braces for repetition and the `|` operator for alternatives. Rule can also be a terminal. Rule can be recursive (but not left recursive). If you want check the value of a token, you can use `"token_value"` as a rule if the token is a terminal and if the token is lexed by the lexer.
 
 The main rule is the one named `program`. Without it, the parser won't be able to parse anything.
 
