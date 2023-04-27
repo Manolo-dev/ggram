@@ -140,10 +140,13 @@ combinations generateCombinations(const vector<string>&tree) {
 
 static const string POP_FUNCTION_PREFIX = "pop_";
 
-// Generate parsing function
-string parse(const vector<string> & tree) {
-    string result = "";
-    for(vector<string>&x : generateCombinations(tree)) {
+ 
+string generateSimpleRulePopFunction(const vector<string> & rule, const string name) {
+    string result = R"(    IT t = it;
+    master = Token( ")" + name + R"(" );
+    vector<Token> current;)";
+    result += "\n";
+    for(vector<string>&x : generateCombinations(rule)) {
         cout << x << endl;
         result += "    current.clear();\n";
         result += "    if(";
@@ -158,7 +161,7 @@ string parse(const vector<string> & tree) {
             switch( x[i][0] ){      
                 case '{' :
                     if(x[i].back() != '}') Error(ErrorType::INVALID_SYNTAX, "Missing '}'").throw_error();
-                    prefix = "_loop( " + POP_FUNCTION_PREFIX ; suffix = ", current)";
+                    prefix = "pop_while( " + POP_FUNCTION_PREFIX ; suffix = ", current)";
                     break;
                 case '<' :
                     if(x[i].back() != '>') Error(ErrorType::INVALID_SYNTAX, "Missing '>'").throw_error();
@@ -166,7 +169,7 @@ string parse(const vector<string> & tree) {
                     break;
                 case '"' :
                     if(x[i].back() != '"'  || x[i].size() < 2 ) Error(ErrorType::INVALID_SYNTAX, "Missing '\"' : " + x[i] ).throw_error();
-                    prefix = "_value(\""; suffix = "\", next(current))";
+                    prefix = "pop_value(\""; suffix = "\", next(current))";
                     break;
                 default :
                     Error(ErrorType::INVALID_SYNTAX, "Mauvais !").throw_error();
@@ -176,8 +179,10 @@ string parse(const vector<string> & tree) {
             if(i < x.size() - 1)
                 result += " || ";
         }
-        result += ") it = t;\n    else {master.children() += current; return 0;};\n";
+        result += ") it = t;\n";
+        result += "    else {master.children() += current; return 0;};\n";
     }
+    result += "    return 1;\n";
     return result;
 }
 
@@ -245,17 +250,23 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
     return move(lexeme_names);
 }
 
-void writePopLexemeTokenFunctions(const vector<string> &token_types, ofstream &out) {
+void writeLexemesPopFunctions(const vector<string> &token_types, ofstream &out) {
     for(const string & token_name : token_types) {
         //Writes bool __token_name(Token & master) { return _type("token_name", master); } 
-        out << "bool " << POP_FUNCTION_PREFIX << token_name << "(Token &master) { return _type(\"" + token_name + "\", master); }" << endl;
+        out << "bool " << POP_FUNCTION_PREFIX << token_name << "(Token &master) { return pop_type(\"" + token_name + "\", master); }" << endl;
         // //Writes : Token pop_token(IT& curr_it, const IT it_end) { return pop_type("token", curr_it, it_end); }
         // out << "Token pop_" << token_name << "(IT& it_curr, const IT it_end) { return pop_type(\"" + token_name + "\", it_curr, it_end); }" << endl;
     }
     out << endl;
 }
 
-void addRulePopFunctions(const vector<string>& rule, const string name, vector<pair<string, string>>& result ) {
+struct PairRuleFunction {
+    PairRuleFunction(string n, string f):name(n), function(f){}
+    string name;
+    string function;
+};
+typedef vector<string> Rule;
+void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFunction>& result ) {
     size_t j = 0;
     vector<string> newRule;
     for(size_t i = 0; i < rule.size(); i++) {
@@ -272,12 +283,12 @@ void addRulePopFunctions(const vector<string>& rule, const string name, vector<p
             newRule.push_back(rule[i]);
         }
     }
-    result.emplace_back(name, parse(newRule));
+    result.emplace_back(name, generateSimpleRulePopFunction(newRule, name));
 }
 
 
-vector<pair<string, string>>  createRulesPart(ifstream &file, ofstream &out, uint32_t& lineNum){
-    vector<pair<string, string>> all_rules_pop_functions;
+vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
+    vector<pair<string, Rule>> rules;
     string line;
     smatch match;
     
@@ -325,27 +336,28 @@ vector<pair<string, string>>  createRulesPart(ifstream &file, ofstream &out, uin
             while(j != end) 
                 currentRule.push_back(*j++);
 
-            addRulePopFunctions(currentRule, rule_name, all_rules_pop_functions);
+            rules.emplace_back(rule_name, currentRule);
         }
     }
-    return all_rules_pop_functions;
+    return rules;
 }
-
-void declareRule(vector<pair<string, string>> &rules, ofstream &out) {
-    for(auto rule : rules) {
-            out << "bool " << POP_FUNCTION_PREFIX << rule.first << "(Token &master);" << endl;
+void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
+    // Declare rules' pop functions
+    for(auto [rule_name, _] : rules){
+        out << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
     }
-}
-
-void writeRule(vector<pair<string, string>> &rules, ofstream &out) {
-    for(auto rule : rules) {
-        out << endl << "bool " << POP_FUNCTION_PREFIX << rule.first << "(Token &master) {" << endl;
-        out << "    IT t = it;" << endl;
-        out << "    master = Token(\"" + rule.first + "\");" << endl;
-        out << "    vector<Token> current;" << endl;
-        out << rule.second;
-        out << "    return 1;" << endl;
-        out << "}" << endl;
+    // Define rules' pop functions
+    for(auto [rule_name ,rule_expr] : rules) {
+        out << "//////////////////////////////////////////////////////////////////////////////////////////////////" << endl;
+        out << "//                       Functions to pop tokens of type : " << rule_name << endl;
+        out << "//////////////////////////////////////////////////////////////////////////////////////////////////" << endl;
+        vector<PairRuleFunction> result;
+        addRulePopFunctions(rule_expr, rule_name, result );
+        for(auto [aux_rule_name, aux_rule_func ] : result){
+            out << endl << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
+            out << aux_rule_func;
+            out << "}" << endl;
+        }
     }
 }
 
@@ -373,12 +385,9 @@ int main(int argc, char const *argv[]) {
     uint32_t lineNum = 0;
 
     vector<string> lexeme_names = createLexemes(out, file, lineNum);
-    writePopLexemeTokenFunctions(lexeme_names, out);
+    writeLexemesPopFunctions(lexeme_names, out);
 
-    vector<pair<string, string>> rules = createRulesPart(file, out, lineNum);
-
-    declareRule(rules, out);
-    writeRule(rules, out);
+    writeRulesPopFunctions(out, readRules(file, lineNum));
     
     out << endl;
     copy("template/main.cpp.part", out);
