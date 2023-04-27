@@ -184,27 +184,25 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
     return result;
 }
 
-void checkFile(string &filename, string &output, ifstream &file, ofstream &out) {
-    if(output == "") {
+void tryToOpenFiles(string &input_filename, string &output_filename, ifstream &file, ofstream &out) {
+    if(output_filename == "") {
         throw NoFilenameSpecified("output file");
     }
 
-    if(filename == "") {
+    if(input_filename == "") {
         throw NoFilenameSpecified("input file");
     }
 
-    file = ifstream(filename);
+    file = ifstream(input_filename);
     if(!file.is_open()) {
-        throw FileNotFound(filename);
+        throw FileNotFound(input_filename);
     }
 
-    remove(output.c_str());
-    out = ofstream(output, ios::app);
-
+    remove(output_filename.c_str()); // TODO: ask for confirmation
+    out = ofstream(output_filename, ios::app);
     if(!out.is_open()) {
-        throw FileNotFound(output);
+        throw FileNotFound(output_filename);
     }
-
 }
 
 vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t &lineNum) {
@@ -370,7 +368,7 @@ int main(int argc, char const *argv[]) {
     ifstream file;
     ofstream out;
     
-    checkFile(cfg.input_file, cfg.output_file, file, out);
+    tryToOpenFiles(cfg.input_filename, cfg.output_filename, file, out);
 
     copy("template/head.cpp.part", out);
     copy("template/Lexeme.cpp.part", out);
