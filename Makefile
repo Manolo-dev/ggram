@@ -16,12 +16,11 @@ $(BUILD_DIR)/src/%.o: src/%.cpp
 $(BUILD_DIR)/$(SOFTWARE_NAME): $(OBJ)
 	$(CPP) $(CFLAGS) -o $(BUILD_DIR)/$(SOFTWARE_NAME) $(OBJ)
 
+release: $(BUILD_DIR)/$(SOFTWARE_NAME)
+	$(CPP) $(CFLAGS) -O3 -o $(BUILD_DIR)/$(SOFTWARE_NAME) $(OBJ)
+
 test: $(BUILD_DIR)/$(SOFTWARE_NAME)
-	make
-	for file in $(TEST_FILE)/*.gg; do
-		echo "Testing $$file";
-		./$(BUILD_DIR)/$(SOFTWARE_NAME) -f $$file;
-	done
+	./$(BUILD_DIR)/$(SOFTWARE_NAME) -f $(TEST_FILE)/test.gg
 
 clean:
 	$(RM) -r $(BUILD_DIR)
