@@ -8,9 +8,8 @@
 #include <cstdint>
 #include <cstdio>
 
-#include <Error.hpp>
-#include <options.h>
-#include <custom_exceptions.h>
+#include "error.hpp"
+#include "options.hpp"
 
 using namespace std;
 using combinations = vector<vector<string>>;
@@ -25,8 +24,7 @@ void copy(string filename, ofstream &output) {
         }
         output << endl;
     } else {
-        Error err(ErrorType::FILE_NOT_FOUND, filename);
-        err.throw_error();
+        throw FileNotFound(filename);
     }
 }
 
@@ -91,7 +89,7 @@ inline vector<string> get_inside_brackets( const vector<string>& tree, size_t & 
     
     while(level > 0) {
         i++;
-        if(i >= tree.size()) Error(ErrorType::INVALID_SYNTAX, "Missing bracket !").throw_error();
+        if(i >= tree.size()) throw InvalidSyntax(i, "Missing closing bracket");
         if(tree[i] == open_bracket) level++;
         if(tree[i] == closed_bracket) level--;
         if(level != 0) inside_brackets.push_back(tree[i]);
@@ -160,19 +158,19 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
             */
             switch( x[i][0] ){      
                 case '{' :
-                    if(x[i].back() != '}') Error(ErrorType::INVALID_SYNTAX, "Missing '}'").throw_error();
+                    if(x[i].back() != '}') throw InvalidSyntax("none", "Missing '}'");
                     prefix = "pop_while( " + POP_FUNCTION_PREFIX ; suffix = ", current)";
                     break;
                 case '<' :
-                    if(x[i].back() != '>') Error(ErrorType::INVALID_SYNTAX, "Missing '>'").throw_error();
+                    if(x[i].back() != '>') throw InvalidSyntax("none", "Missing '>'");
                     prefix = POP_FUNCTION_PREFIX; suffix = "(next(current))";
                     break;
                 case '"' :
-                    if(x[i].back() != '"'  || x[i].size() < 2 ) Error(ErrorType::INVALID_SYNTAX, "Missing '\"' : " + x[i] ).throw_error();
+                    if(x[i].back() != '"'  || x[i].size() < 2 ) throw InvalidSyntax("none", "Missing '\"'");
                     prefix = "pop_value(\""; suffix = "\", next(current))";
                     break;
                 default :
-                    Error(ErrorType::INVALID_SYNTAX, "Mauvais !").throw_error();
+                    throw InvalidSyntax("none","Invalid syntax");
             }
             result += prefix + x[i].substr(1, x[i].size() - 2) + suffix; 
 
@@ -188,27 +186,23 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
 
 void checkFile(string &filename, string &output, ifstream &file, ofstream &out) {
     if(output == "") {
-        Error err(ErrorType::NO_FILENAME_SPECIFIED, "output file");
-        err.throw_error();
+        throw NoFilenameSpecified("output file");
     }
 
     if(filename == "") {
-        Error err(ErrorType::NO_FILENAME_SPECIFIED, "input file");
-        err.throw_error();
+        throw NoFilenameSpecified("input file");
     }
 
     file = ifstream(filename);
     if(!file.is_open()) {
-        Error err(ErrorType::FILE_NOT_FOUND, filename);
-        err.throw_error();
+        throw FileNotFound(filename);
     }
 
     remove(output.c_str());
     out = ofstream(output, ios::app);
 
     if(!out.is_open()) {
-        Error err(ErrorType::FILE_NOT_FOUND, output);
-        err.throw_error();
+        throw FileNotFound(output);
     }
 
 }
@@ -238,14 +232,13 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
             if(match.str(1)[0] != '.')
                 lexeme_names.push_back(match.str(1));
         } else {
-            Error err(ErrorType::INVALID_SYNTAX, lineNum);
-            err.throw_error();
+            throw InvalidSyntax(lineNum, "Invalid lexeme declaration");
         }
     }
     outputFile << "}" << endl << endl;
 
     if(line != "---"){
-        Error(ErrorType::INVALID_SYNTAX, lineNum).throw_error();
+        throw InvalidSyntax(lineNum, "Expected '---'");
     }
     return lexeme_names;
 }
@@ -307,7 +300,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
 
             if(!regex_search(line, match, rule_infos_regex)) { 
                 break;
-                // Error(ErrorType::INVALID_SYNTAX, lineNum).throw_error();
+                // throw InvalidSyntax(line, "Invalid rule definition");
             }
             const string rule_name = match.str(1);
             string rule_expr = match.str(2);
@@ -316,7 +309,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
             while(line.find(';') > line.length()) {
                 lineNum++;
                 if(!getline(file, line)) {
-                    Error(ErrorType::INVALID_RULE, lineNum).throw_error();
+                    throw InvalidSyntax(line, "Expected ';'");
                 }
                 rule_expr += line;
             }
@@ -369,7 +362,7 @@ int main(int argc, char const *argv[]) {
 
     try {
         Options::handleOptions(argc, argv, cfg);
-    } catch (CustomExceptions::OptionError& except) {
+    } catch (OptionError& except) {
         std::cerr << "Option error :\n  " << except.what() << std::endl;
         exit(1);
     }
