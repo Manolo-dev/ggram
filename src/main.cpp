@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cstdint>
 #include <cstdio>
+#include <cctype>
 
 #include "error.hpp"
 #include "options.hpp"
@@ -299,8 +300,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
             
 
             if(!regex_search(line, match, rule_infos_regex)) { 
-                break;
-                // throw InvalidSyntax(line, "Invalid rule definition");
+                break; // TODO : Error handling
             }
             const string rule_name = match.str(1);
             string rule_expr = match.str(2);
@@ -318,19 +318,21 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
             // what's after is kept to be treated
             line = rule_expr.substr(rule_expr.find(';') + 1, rule_expr.length());
             
-            // bool new_elem = true;
-            // for(const char : rule_expr ){
-                
-            // }
-            // split the expression by words
-            regex space_regex("\\s+");
-            regex_token_iterator<string::iterator> j(rule_expr.begin(), rule_expr.end(), space_regex, -1); 
-            regex_token_iterator<string::iterator> end;
-            
             Rule currentRule;
-            while(j != end) 
-                currentRule.push_back(*j++);
-
+            bool new_elem = true;
+            for(const unsigned char c : rule_expr ){
+                if( std::isspace(c) ){
+                    new_elem = true;
+                } else if ( c =='(' || c == ')' || c == '{' || c == '}' || c == '[' || c == ']' || c == '|' ){
+                    currentRule.emplace_back(1, c);
+                    new_elem = true;
+                } else if(new_elem){
+                    currentRule.emplace_back(1, c);
+                    new_elem = false;
+                } else{
+                    currentRule.back() += c;
+                }
+            }
             rules.emplace_back(rule_name, currentRule);
         }
     }
@@ -343,10 +345,10 @@ void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
     }
     // Define rules' pop functions
     for(auto [rule_name ,rule_expr] : rules) {
-        out << endl;
-        out << "/***************************************************************************************************/" << endl;
-        out << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/"  <<endl;
-        out << "/***************************************************************************************************/" << endl;
+        out << "\n";
+        out << "/***************************************************************************************************/\n";
+        out << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/\n";
+        out << "/***************************************************************************************************/\n" ;
         vector<PairRuleFunction> result;
         addRulePopFunctions(rule_expr, rule_name, result );
         for(auto [aux_rule_name, aux_rule_func ] : result){
