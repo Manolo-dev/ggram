@@ -35,16 +35,16 @@ const OptionDescription* tryGettingOptionFromAnyID(char const *id) {
     return option_ptr;
 }
 
-void tryOption(OptionDescription const *option_ptr, const std::string &option_id, const ParamList &param_list, Configuration &cfg) {
+void tryOption(OptionDescription const *option_ptr, const std::string &option_id_with_prefix, const ParamList &param_list, Configuration &cfg) {
     try {
         (*option_ptr)(param_list, cfg);
     } catch (OptionError& except) {
-        if (option_id == "") {
+        if (option_id_with_prefix == "") {
             throw OptionError("T'as fait de la merde avec la default option");
         } else {
             throw OptionError(
-                "-" + option_id + ": " + except.what() +
-                "\n  (type \".\\ggram --help " + option_id + "\" for more information on how to use this option)\n"
+                option_id_with_prefix + ": " + except.what() +
+                "\n  (type \".\\ggram --help " + option_id_with_prefix + "\" for more information on how to use this option)\n"
             );
         }
     }
@@ -52,7 +52,7 @@ void tryOption(OptionDescription const *option_ptr, const std::string &option_id
 
 
 void handleOptions(int argc, char const *argv[], Configuration &cfg) {
-    std::string option_id = "";
+    std::string option_id_with_prefix = "";
     OptionDescription const *option_ptr = &defaultOption_description;
     ParamList param_list = {};
     
@@ -68,9 +68,9 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
             }
 
             if(new_option_ptr != nullptr) {
-                tryOption(option_ptr, option_id, param_list, cfg);
+                tryOption(option_ptr, option_id_with_prefix, param_list, cfg);
 
-                option_id = (std::string)(&arg[1]);
+                option_id_with_prefix = (std::string)(arg);
                 option_ptr = new_option_ptr;
                 param_list = {};
             } else {
@@ -80,7 +80,7 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
             param_list.push_back(arg);
         }
     }
-    tryOption(option_ptr, option_id, param_list, cfg);
+    tryOption(option_ptr, option_id_with_prefix, param_list, cfg);
 }
 
 
