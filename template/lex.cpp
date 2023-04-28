@@ -27,7 +27,7 @@ vector<Token> lex(string code) {
                 }
 
                 // Update line and column
-                for (const char& c : match.str()){
+                for(const char& c : match.str()){
                     if(c == '\r' || c == '\n'){
                         line++;
                         column = 0;

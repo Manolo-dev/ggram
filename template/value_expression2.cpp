@@ -60,7 +60,7 @@ vector<Token> pop_while(popfunction pop, IT& curr_it, const IT it_end) {
     while(curr_it != it_end) {
         try{
             master += pop(curr_it, it_end).children();
-        } catch (syntax_error & e){
+        } catch(syntax_error & e){
             break;
         }
     }
