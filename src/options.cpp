@@ -28,9 +28,9 @@ const OptionDescription* tryGettingOptionFromLongID(char const *id) {
 }
 
 const OptionDescription* tryGettingOptionFromAnyID(char const *id) {
-    const OptionDescription* option_ptr = tryGettingOptionFromShortID(id);
+    OptionDescription* option_ptr = tryGettingOptionFromShortID(id);
     if (option_ptr == nullptr) {
-        tryGettingOptionFromLongID(id);
+        option_ptr = tryGettingOptionFromLongID(id);
     }
     return option_ptr;
 }
