@@ -1,9 +1,10 @@
 *
 !/**/
 !*.*
-test.*
+test/*
 !/test/*.gg
 .vscode
 *.exe
 idea/*
 build/*
+output.cpp

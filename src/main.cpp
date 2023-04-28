@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cstdint>
 #include <cstdio>
+#include <cctype>
 
 #include "error.hpp"
 #include "options.hpp"
@@ -279,6 +280,17 @@ void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFun
     result.emplace_back(name, generateSimpleRulePopFunction(newRule, name));
 }
 
+int find_outside_quotes(const string& s, const char elem, bool& in_quotes){
+    for(int i = 0; i < s.size() ; i++){
+        const char c = s[i];
+        if(c == '"'){
+            in_quotes = !in_quotes;
+        } else if(c == ';' && !in_quotes){
+            return i;
+        }
+    }
+    return -1;
+}
 
 vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
     vector<pair<string, Rule>> rules;
@@ -297,38 +309,69 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
             
 
             if(!regex_search(line, match, rule_infos_regex)) { 
-                break;
-                // throw InvalidSyntax(line, "Invalid rule definition");
+                break; // TODO : Error handling
             }
             const string rule_name = match.str(1);
             string rule_expr = match.str(2);
 
             // rule expression ends at ';''
-            while(line.find(';') > line.length()) {
+            bool in_quotes = false;
+            int point_virgule_pos = find_outside_quotes(rule_expr, ';', in_quotes );
+
+            while(point_virgule_pos == -1){
                 lineNum++;
                 if(!getline(file, line)) {
                     throw InvalidSyntax(line, "Expected ';'");
                 }
+                point_virgule_pos = find_outside_quotes(line, ';', in_quotes );
+                if(point_virgule_pos != -1){
+                    point_virgule_pos += rule_expr.size();
+                }
                 rule_expr += line;
             }
-            // get the rule_expression 
-            rule_expr = rule_expr.substr(0, rule_expr.find(';')); 
-            // what's after is kept to be treated
-            line = rule_expr.substr(rule_expr.find(';') + 1, rule_expr.length());
-            
-            // bool new_elem = true;
-            // for(const char : rule_expr ){
-                
+            // while(line.find(';') > line.length()) {
+            //     lineNum++;
+            //     if(!getline(file, line)) {
+            //         throw InvalidSyntax(line, "Expected ';'");
+            //     }
+            //     rule_expr += line;
             // }
-            // split the expression by words
-            regex space_regex("\\s+");
-            regex_token_iterator<string::iterator> j(rule_expr.begin(), rule_expr.end(), space_regex, -1); 
-            regex_token_iterator<string::iterator> end;
+            // what's after is kept to be treated
+            line = rule_expr.substr(point_virgule_pos + 1, rule_expr.length());
+            // get the rule_expression 
+            rule_expr = rule_expr.substr(0, point_virgule_pos); 
             
-            Rule currentRule;
-            while(j != end) 
-                currentRule.push_back(*j++);
 
+
+            Rule currentRule;
+            bool new_elem = true;
+            bool in_guillemets = false;
+            bool in_chevrons = false;
+            for(const unsigned char c : rule_expr ){
+                
+                if(c == '"'){
+                    if(in_guillemets){
+                        currentRule.back() += c;
+                        in_guillemets = false;
+                        new_elem = true;
+                    } else{
+                        currentRule.emplace_back(1, c);
+                        in_guillemets = true;
+                    }
+                }else if(in_guillemets){
+                    currentRule.back() += c;
+                } else if( std::isspace(c) ){
+                    new_elem = true;
+                } else if ( c =='(' || c == ')' || c == '{' || c == '}' || c == '[' || c == ']' || c == '|' ){
+                    currentRule.emplace_back(1, c);
+                    new_elem = true;
+                } else if(new_elem){
+                    currentRule.emplace_back(1, c);
+                    new_elem = false;
+                } else{
+                    currentRule.back() += c;
+                }
+            }
             rules.emplace_back(rule_name, currentRule);
         }
     }
@@ -341,10 +384,10 @@ void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
     }
     // Define rules' pop functions
     for(auto [rule_name ,rule_expr] : rules) {
-        out << endl;
-        out << "/***************************************************************************************************/" << endl;
-        out << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/"  <<endl;
-        out << "/***************************************************************************************************/" << endl;
+        out << "\n";
+        out << "/***************************************************************************************************/\n";
+        out << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/\n";
+        out << "/***************************************************************************************************/\n" ;
         vector<PairRuleFunction> result;
         addRulePopFunctions(rule_expr, rule_name, result );
         for(auto [aux_rule_name, aux_rule_func ] : result){
