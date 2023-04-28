@@ -9,7 +9,7 @@ typedef std::vector<char const *> ParamList;
 
 namespace Options {
 
-void OptionDescription::operator()(const ParamList &param_list, Configuration &cfg) const {
+void OptionDescription::set_configuration(const ParamList &param_list, Configuration &cfg) const {
     (*function)(param_list, cfg);
 }
 
@@ -55,7 +55,7 @@ const OptionDescription* tryGettingOptionFromAnyID(char const *id) {
 
 void tryOption(OptionDescription const *option_ptr, const std::string &option_id_with_prefix, const ParamList &param_list, Configuration &cfg) {
     try {
-        (*option_ptr)(param_list, cfg);
+        option_ptr -> set_configuration(param_list, cfg);
     } catch (OptionError& except) {
         if (option_id_with_prefix == "") {
             throw OptionError("T'as fait de la merde avec la default option");
@@ -88,7 +88,7 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
             if(new_option_ptr != nullptr) {
                 tryOption(option_ptr, option_id_with_prefix, param_list, cfg);
 
-                option_id_with_prefix = (std::string)(arg);
+                option_id_with_prefix = std::string(arg);
                 option_ptr = new_option_ptr;
                 param_list = {};
             } else {

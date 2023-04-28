@@ -14,14 +14,15 @@ struct Configuration {
     std::string output_filename = "parser.cpp";
 };
 
+typedef void (*set_config_function)(const ParamList &, Configuration &);
 // I do not use strings and vectors to make it literal so we can have everything constexpr
 struct OptionDescription {
     char const *short_id;
     char const *long_id;
     char const *description;
-    void (*function)(const ParamList &, Configuration &); // takes the list of parameters and the actual configuration
+    set_config_function function; // takes the list of parameters and sets the configuration
     
-    void operator()(const ParamList &param_list, Configuration &cfg) const;
+    void set_configuration(const ParamList &, Configuration &) const;
 
     void print(char const line_start[] = "") const;
 };
