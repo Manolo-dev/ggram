@@ -9,6 +9,24 @@ typedef std::vector<char const *> ParamList;
 
 namespace Options {
 
+void OptionDescription::operator()(const ParamList &param_list, Configuration &cfg) const {
+    (*function)(param_list, cfg);
+}
+
+void OptionDescription::print(char const line_start[]) const {
+    if (short_id[0] != 0) {
+        std::cout << line_start << "-" << short_id;
+        if (long_id[0] != 0) {
+            std::cout << line_start << ", --" << long_id;
+        }
+    } else if (long_id[0] != 0) {
+        std::cout << line_start << "--" << long_id;
+    } else {
+        std::cout << "when you dont put any command before";
+    }
+    std::cout << ":\n" << line_start << "  " << description << std::endl;
+}
+
 const OptionDescription* tryGettingOptionFromShortID(char const *id) {
     for(const OptionDescription &opt : OptionList) {
         if(strcmp(id, opt.short_id) == 0) {
@@ -28,7 +46,7 @@ const OptionDescription* tryGettingOptionFromLongID(char const *id) {
 }
 
 const OptionDescription* tryGettingOptionFromAnyID(char const *id) {
-    OptionDescription* option_ptr = tryGettingOptionFromShortID(id);
+    const OptionDescription* option_ptr = tryGettingOptionFromShortID(id);
     if (option_ptr == nullptr) {
         option_ptr = tryGettingOptionFromLongID(id);
     }

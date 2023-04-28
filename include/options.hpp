@@ -21,23 +21,9 @@ struct OptionDescription {
     char const *description;
     void (*function)(const ParamList &, Configuration &); // takes the list of parameters and the actual configuration
     
-    void operator()(const ParamList &param_list, Configuration &cfg) const {
-        (*function)(param_list, cfg);
-    }
+    void operator()(const ParamList &param_list, Configuration &cfg) const;
 
-    void print(char const line_start[] = "") const {
-        if (short_id[0] != 0) {
-            std::cout << line_start << "-" << short_id;
-            if (long_id[0] != 0) {
-                std::cout << line_start << ", --" << long_id;
-            }
-        } else if (long_id[0] != 0) {
-            std::cout << line_start << "--" << long_id;
-        } else {
-            std::cout << "when you dont put any command before";
-        }
-        std::cout << ":\n" << line_start << "  " << description << std::endl;
-    }
+    void print(char const line_start[] = "") const;
 };
 
 
