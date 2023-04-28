@@ -19,8 +19,10 @@ $(BUILD_DIR)/$(SOFTWARE_NAME): $(OBJ)
 release: $(BUILD_DIR)/$(SOFTWARE_NAME)
 	$(CPP) $(CFLAGS) -O3 -o $(BUILD_DIR)/$(SOFTWARE_NAME) $(OBJ)
 
-test: $(BUILD_DIR)/$(SOFTWARE_NAME)
-	./$(BUILD_DIR)/$(SOFTWARE_NAME) -f $(TEST_FILE)/test.gg
+test: $(BUILD_DIR)/$(SOFTWARE_NAME) $(TEST_FILE)/test2.gg
+	./$(BUILD_DIR)/$(SOFTWARE_NAME) -f $(TEST_FILE)/test2.gg -o $(TEST_FILE)/test2.cpp
+	$(CPP) $(CFLAGS) -o $(TEST_FILE)/test2 $(TEST_FILE)/test2.cpp
+	./$(TEST_FILE)/test2
 
 clean:
 	$(RM) -r $(BUILD_DIR)

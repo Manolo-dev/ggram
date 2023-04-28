@@ -146,7 +146,6 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
     vector<Token> current;)";
     result += "\n";
     for(vector<string>&x : generateCombinations(rule)) {
-        cout << x << endl;
         result += "    current.clear();\n";
         result += "    if(";
         for(size_t i = 0; i < x.size(); i++) {
@@ -225,7 +224,7 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
 
 
         if(regex_search(line, match, lexem_infos_regex)) {
-            // Write :  lexemes.emplace_back("lexeme_name", "lexeme_regexe");
+            // Write :  lexemes.emplace_back("lexeme_name", "lexeme_regex");
             outputFile << ("    lexemes.emplace_back(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\");") << endl;
             
             if(match.str(1)[0] != '.')
@@ -283,55 +282,72 @@ void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFun
 
 vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
     vector<pair<string, Rule>> rules;
+    vector<string> allRuleNames;
     string line;
     smatch match;
+    Rule currentRule;
+    stack<string> brackets;
     
-    // regex match with : <rule_name>  ::= rule_expression
-    const regex rule_infos_regex(R"(^\s*<([a-zA-Z][a-zA-Z_0-9]*)>\s*::=\s*(.+)\s*$)");
-    
+    vector<pair<string, regex>> regexes = {
+        {".ignore", regex(R"-([ \n\r\s\t]+)-")},
+        {"rulename", regex(R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-")},
+        {"assign", regex(R"-(::=)-")},
+        {"or", regex(R"-(\|)-")},
+        {"parenth", regex(R"-(\()-")},
+        {"endparenth", regex(R"-(\))-")},
+        {"loop", regex(R"-(\{)-")},
+        {"endloop", regex(R"-(\})-")},
+        {"option", regex(R"-(\[)-")},
+        {"endoption", regex(R"-(\])-")},
+        {"string", regex(R"-(\"([^"]|\\")*\")-")},
+        {"end", regex(R"-(;)-")}
+    };
+
     while(getline(file, line)) {
         lineNum++;
-        while(line.size() > 0){
+        if(line[0] == '#') continue; // ingnore comment
+        if(line == "---") break; // threat only the second part of the file
+        if(line == "") continue; // skip empty line
+        currentRule.clear();
+        while(line.size() > 0) {
+            for(auto [name, regex] : regexes) {
+                if(regex_search(line, match, regex) && match.position() == 0) {
+                    if(name == ".ignore") {
+                        line = match.suffix();
+                    } else if(name == "end") {
+                        if(currentRule.size() < 2)
+                            throw InvalidSyntax(lineNum, "Expected rule name");
+                        if(brackets.size() != 0)
+                            throw InvalidSyntax(lineNum, "Expected ')', '}' or ']'");
+                        rules.emplace_back(currentRule[0].substr(1, currentRule[0].size() - 2), Rule(currentRule.begin() + 2, currentRule.end()));
+                        allRuleNames.push_back(currentRule[0]);
+                        line = match.suffix();
+                    } else {
+                        if(currentRule.size() == 0 && name != "rulename")
+                            throw InvalidSyntax(lineNum, "Expected rule name");
+                        if(currentRule.size() == 1 && name != "assign")
+                            throw InvalidSyntax(lineNum, "Expected '::='");
+                        if(name == "rulename" && find(allRuleNames.begin(), allRuleNames.end(), match.str(0)) != allRuleNames.end())
+                            throw InvalidSyntax(lineNum, "Rule name already used");
+                        
+                        if(name == "parenth" || name == "loop" || name == "option") { brackets.push(name);
+                        } else if(name == "endparenth" || name == "endloop" || name == "endoption") {
+                            if(name == "endparenth" && brackets.top() != "parenth")
+                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
+                            if(brackets.empty())
+                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
+                            if(name == "endloop" && brackets.top() != "loop")
+                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
+                            if(name == "endoption" && brackets.top() != "option")
+                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
+                            brackets.pop();
+                        }
 
-            if(line[0] == '#') continue; // ingnore comment
-            if(line == "---") break; // threat only the second part of the file
-            
-
-            if(!regex_search(line, match, rule_infos_regex)) { 
-                break; // TODO : Error handling
-            }
-            const string rule_name = match.str(1);
-            string rule_expr = match.str(2);
-
-            // rule expression ends at ';''
-            while(line.find(';') > line.length()) {
-                lineNum++;
-                if(!getline(file, line)) {
-                    throw InvalidSyntax(line, "Expected ';'");
+                        currentRule.push_back(match.str(0));
+                        line = match.suffix();
+                    }
                 }
-                rule_expr += line;
             }
-            // get the rule_expression 
-            rule_expr = rule_expr.substr(0, rule_expr.find(';')); 
-            // what's after is kept to be treated
-            line = rule_expr.substr(rule_expr.find(';') + 1, rule_expr.length());
-            
-            Rule currentRule;
-            bool new_elem = true;
-            for(const unsigned char c : rule_expr ){
-                if( std::isspace(c) ){
-                    new_elem = true;
-                } else if ( c =='(' || c == ')' || c == '{' || c == '}' || c == '[' || c == ']' || c == '|' ){
-                    currentRule.emplace_back(1, c);
-                    new_elem = true;
-                } else if(new_elem){
-                    currentRule.emplace_back(1, c);
-                    new_elem = false;
-                } else{
-                    currentRule.back() += c;
-                }
-            }
-            rules.emplace_back(rule_name, currentRule);
         }
     }
     return rules;
@@ -383,7 +399,12 @@ int main(int argc, char const *argv[]) {
     vector<string> lexeme_names = createLexemes(out, file, lineNum);
     writeLexemesPopFunctions(lexeme_names, out);
 
-    writeRulesPopFunctions(out, readRules(file, lineNum));
+    vector<pair<string, Rule>> rules = readRules(file, lineNum);
+    for(auto [rule_name, _] : rules){
+        cout << rule_name << endl;
+        cout << _ << endl;
+    }
+    writeRulesPopFunctions(out, rules);
     
     out << endl;
     copy("template/main.cpp.part", out);
