@@ -50,3 +50,9 @@ OptionError::~OptionError() throw() {}
 const char* OptionError::what() const throw() {
     return _message.c_str();
 }
+
+BnfError::BnfError(std::string message) : _message(message) {}
+BnfError::~BnfError() throw() {}
+const char* BnfError::what() const throw() {
+    return _message.c_str();
+}

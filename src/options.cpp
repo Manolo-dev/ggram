@@ -56,7 +56,7 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
     OptionDescription const *option_ptr = &defaultOption_description;
     ParamList param_list = {};
     
-    for(int i = 1; i != argc; ++i) { // TODO: why is it an uint32_t ?
+    for(int i = 1; i != argc; ++i) {
         char const * arg = argv[i];
 
         if (arg[0] == '-') {

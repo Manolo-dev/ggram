@@ -4,7 +4,13 @@ class Token {
      * @details This class is used to store the tokens of the lexer and the tree of the parser
      */
 public:
-    Token(string type = "", string value = "", int line = 0, int column = 0) {
+    Token(string type = "", string value = "", int line = 0, int column = 0):
+        _type(type),
+        _value(value),
+        _line(line),
+        _column(column),
+        _children()
+    {
         /**
          * @brief Construct a new Token object
          * @param type
@@ -13,12 +19,8 @@ public:
          * @param column
          * @return Token
          */
-        this->_type   = type;
-        this->_value  = value;
-        this->_line   = line;
-        this->_column = column;
-        this->_children = vector<Token>();
     }
+
     void push(Token tree) {
         /**
          * @brief Push a new child to the tree
@@ -30,6 +32,7 @@ public:
         }
         this->_children.push_back(tree);
     }
+    
     void push(vector<Token>& trees) {
         /**
          * @brief Push children to the tree
@@ -39,6 +42,7 @@ public:
             this->push(trees[i]);
         }
     }
+    
     string type() {
         /**
          * @brief Get the Type of the Token
