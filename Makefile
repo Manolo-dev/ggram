@@ -1,5 +1,5 @@
 CPP=g++
-CFLAGS=-Wall -std=c++17 -g -Iinclude -lstdc++fs
+CFLAGS=-Wall -std=c++17 -g -Iinclude
 BUILD_DIR=build
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ=$(foreach file,$(CPP_FILES),$(BUILD_DIR)/$(file:.cpp=.o))
