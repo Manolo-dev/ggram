@@ -7,7 +7,7 @@ int main() {
     it_e = tokens.end(); // end
     p_err = nullptr; // error
     Token tree;
-    
+
     if(pop_program(tree)) {
         cout << "ERROR" << endl;
         cout << *p_err << endl;

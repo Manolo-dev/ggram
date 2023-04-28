@@ -1,4 +1,4 @@
-template<typename T> 
+template<typename T>
 ostream& operator<<(ostream &os, vector<T> &v) {
     /**
      * @brief Print a vector
@@ -12,7 +12,7 @@ ostream& operator<<(ostream &os, vector<T> &v) {
     return os;
 }
 
-template<typename T> 
+template<typename T>
 void operator+=(vector<T> &v, const vector<T> &v2) {
     /**
      * @brief Concatenate two vectors
@@ -23,14 +23,14 @@ void operator+=(vector<T> &v, const vector<T> &v2) {
     v.insert(v.end(), v2.begin(), v2.end());
 }
 
-class syntax_error : runtime_error{ 
+class syntax_error : runtime_error{
 public:
     syntax_error(vector<Token>::iterator start_token) : runtime_error("syntax_error"), error_token(&(*start_token)){
         // cout << "syntax_error created :" << *error_token ;
     }
     Token * get_error_token(){
         return error_token;
-    }    
+    }
 private:
     Token * error_token;
 };

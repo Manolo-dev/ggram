@@ -24,7 +24,7 @@ number "[1-9][0-9]*|0"
 
 ---
 
-<program> ::= 
+<program> ::=
 ```
 
 ## Options

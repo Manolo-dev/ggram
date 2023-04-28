@@ -14,7 +14,7 @@ template<typename T> T& createNext(vector<T> &v) {
     return v.back();
 }
 
-template<typename T> 
+template<typename T>
 ostream& operator<<(ostream &os, vector<T> &v) {
     /**
      * @brief Print a vector
@@ -28,7 +28,7 @@ ostream& operator<<(ostream &os, vector<T> &v) {
     return os;
 }
 
-template<typename T> 
+template<typename T>
 void operator+=(vector<T> &v, vector<T> &v2) {
     /**
      * @brief Concatenate two vectors

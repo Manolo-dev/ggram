@@ -8,7 +8,7 @@ int main() {
     code = "a = 1 \n b = a + 1 c = b + 1";
     vector<Token> tokens = lex(code);
     cout << tokens << endl;
-    
+
     try{
         Token res = parse(tokens);
         cout << "OK" << endl;

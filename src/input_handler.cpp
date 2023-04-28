@@ -77,7 +77,7 @@ namespace InputHandler {
             char const * arg = argv[i];
 
             if(arg[0] == '-') {
-                ParameterDescription const *new_param_ptr;
+
                 if(arg[1] == '-') {
                     new_param_ptr = tryGettingParameterFromLongID(&arg[2]);
                 } else {
@@ -177,7 +177,7 @@ namespace InputHandler {
     // Called with what is before the fisrt Parameter id
     void defaultParameter(const ArgList &arg_list, Configuration &cfg) {
         if(arg_list.size() == 0) {
-            return;
+         
         } else if(arg_list.size() == 1) {
             inputFile(arg_list, cfg);
         } else {

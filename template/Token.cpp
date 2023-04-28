@@ -32,7 +32,7 @@ public:
         }
         this->_children.push_back(tree);
     }
-    
+
     void push(vector<Token>& trees) {
         /**
          * @brief Push children to the tree
@@ -42,7 +42,7 @@ public:
             this->push(trees[i]);
         }
     }
-    
+
     string type() {
         /**
          * @brief Get the Type of the Token

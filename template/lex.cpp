@@ -12,17 +12,17 @@ vector<Token> lex(string code) {
     // Try to split the code in lexeme by removing the first one each time
     while(code.size() > 0) {
         // Try to match every lexeme with the beginning of the remaining code
-        // If no lexeme match, we raise an error 
+        // If no lexeme match, we raise an error
         bool found = false;
         for(const Lexeme &lexeme : LEXEME_LIST) {
             const regex current_regex(lexeme.regex); // Regex for the current lexeme
-            smatch match; 
+            smatch match;
             // Try to match current regex at the beginning of the remaining code
-            if( regex_search(code, match, current_regex, 
+            if( regex_search(code, match, current_regex,
                 regex_constants::match_continuous | regex_constants::match_not_null) ) {
 
                 // If the lexeme is not to be ignored
-                if(strcmp(lexeme.name, ".ignore")) { 
+                if(strcmp(lexeme.name, ".ignore")) {
                     tokens.emplace_back(lexeme.name, match.str(), line, column);
                 }
 
@@ -36,7 +36,7 @@ vector<Token> lex(string code) {
                     }
                 }
                 // Remove the matched part from the code
-                code = match.suffix(); 
+                code = match.suffix();
                 found = true;
                 break;
             }

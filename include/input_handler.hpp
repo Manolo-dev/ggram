@@ -27,7 +27,7 @@ namespace InputHandler {
         char const *long_id;
         char const *description;
         set_config_function function; // takes the list of parameters and sets the configuration
-        
+
         void set_configuration(const ArgList &, Configuration &) const;
 
         void print(char const line_start[] = "") const;
