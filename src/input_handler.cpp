@@ -56,11 +56,11 @@ namespace InputHandler {
     void updateConfigurationWithParameter(ParameterDescription const *Parameter_ptr, const std::string &Parameter_id_with_prefix, const ArgList &arg_list, Configuration &cfg) {
         try {
             Parameter_ptr -> set_configuration(arg_list, cfg);
-        } catch (ParameterError& except) {
+        } catch (InputError& except) {
             if (Parameter_id_with_prefix == "") {
-                throw ParameterError("T'as fait de la merde avec la default Parameter");
+                throw InputError("T'as fait de la merde avec la default Parameter");
             } else {
-                throw ParameterError(
+                throw InputError(
                     Parameter_id_with_prefix + ": " + except.what() +
                     "\n  (type \".\\ggram --help " + Parameter_id_with_prefix + "\" for more information on how to use this Parameter)\n"
                 );
@@ -92,7 +92,7 @@ namespace InputHandler {
                     Parameter_ptr = new_Parameter_ptr;
                     arg_list = {};
                 } else {
-                    throw ParameterError("Unknown Parameter: " + std::string(arg));
+                    throw InputError("Unknown Parameter: " + std::string(arg));
                 }
             } else {
                 arg_list.push_back(arg);
@@ -104,7 +104,7 @@ namespace InputHandler {
 
     void eddyMalou(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() != 0) {
-            throw ParameterError("Too many parameters");
+            throw InputError("Too many parameters");
         } else {
             std::cout << "On ne peut pas parler de politique administrative scientifique, le colloque à l'égard de la complexité doit vanter les encadrés avec la formule 1+(2x5), mais oui. Pour emphysiquer l'animalculisme, la congolexicomatisation par rapport aux diplomaties peut aider le conpemdium autour des gens qui connaissent beaucoup de choses, tu sais ça." << std::endl;
             exit(1);
@@ -113,14 +113,14 @@ namespace InputHandler {
 
     void help(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() > 1) {
-            throw ParameterError("Too many parameters");
+            throw InputError("Too many parameters");
         } else if (arg_list.size() == 1) {
 
             ParameterDescription const *opt = tryGettingParameterFromAnyID(arg_list[0]);
             if(opt != nullptr) {
                 opt->print();
             } else {
-                throw ParameterError("Unknown Parameter \"" + std::string(arg_list[0]) + "\"");
+                throw InputError("Unknown Parameter \"" + std::string(arg_list[0]) + "\"");
             }
             exit(1);
         } else {
@@ -133,7 +133,7 @@ namespace InputHandler {
 
     void version(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() != 0) {
-            throw ParameterError("Too many parameters");
+            throw InputError("Too many parameters");
         } else {
             std::cout << "version 0.0.1" << std::endl;
             exit(1);
@@ -142,21 +142,21 @@ namespace InputHandler {
 
     void inputFile(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() == 0) {
-            throw ParameterError("Missing parameter");
+            throw InputError("Missing parameter");
         } else if (arg_list.size() == 1) {
             cfg.input_filename = arg_list[0];
         } else {
-            throw ParameterError("Too many parameters");
+            throw InputError("Too many parameters");
         }
     }
 
     void outputFile(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() == 0) {
-            throw ParameterError("Missing parameter");
+            throw InputError("Missing parameter");
         } else if (arg_list.size() == 1) {
             cfg.output_filename = arg_list[0];
         } else {
-            throw ParameterError("Too many parameters");
+            throw InputError("Too many parameters");
         }
     }
 
@@ -169,7 +169,7 @@ namespace InputHandler {
         } else if (arg_list.size() == 1) {
             inputFile(arg_list, cfg);
         } else {
-            throw ParameterError("Too many parameters");
+            throw InputError("Too many parameters");
         }
     }
 
