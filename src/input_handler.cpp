@@ -9,60 +9,64 @@
 namespace InputHandler {
     typedef std::vector<char const *> ArgList;
 
-    void ParameterDescription::set_configuration(const ArgList &arg_list, Configuration &cfg) const {
-        (*function)(arg_list, cfg);
-    }
 
-    void ParameterDescription::print(char const line_start[]) const {
-        if (short_id[0] != 0) {
-            std::cout << line_start << "-" << short_id;
-            if (long_id[0] != 0) {
-                std::cout << line_start << ", --" << long_id;
-            }
-        } else if (long_id[0] != 0) {
-            std::cout << line_start << "--" << long_id;
-        } else {
-            std::cout << "when you dont put any command before";
+    // definition of ParameterDescription's functions
+        void ParameterDescription::set_configuration(const ArgList &arg_list, Configuration &cfg) const {
+            (*function)(arg_list, cfg);
         }
-        std::cout << ":\n" << line_start << "  " << description << std::endl;
-    }
+
+        void ParameterDescription::print(char const line_start[]) const {
+            if (short_id[0] != 0) {
+                std::cout << line_start << "-" << short_id;
+                if (long_id[0] != 0) {
+                    std::cout << line_start << ", --" << long_id;
+                }
+            } else if (long_id[0] != 0) {
+                std::cout << line_start << "--" << long_id;
+            } else {
+                std::cout << "when you dont put any command before";
+            }
+            std::cout << ":\n" << line_start << "  " << description << std::endl;
+        }
+
+
 
     const ParameterDescription* tryGettingParameterFromShortID(char const *id) {
-        for(const ParameterDescription &opt : ParameterList) {
-            if(strcmp(id, opt.short_id) == 0) {
-                return &opt;
+        for(const ParameterDescription &param : PARAMETER_LIST) {
+            if(strcmp(id, param.short_id) == 0) {
+                return &param;
             }
         }
         return nullptr;
     }
 
     const ParameterDescription* tryGettingParameterFromLongID(char const *id) {
-        for(const ParameterDescription &opt : ParameterList) {
-            if(strcmp(id, opt.long_id) == 0) {
-                return &opt;
+        for(const ParameterDescription &param : PARAMETER_LIST) {
+            if(strcmp(id, param.long_id) == 0) {
+                return &param;
             }
         }
         return nullptr;
     }
 
     const ParameterDescription* tryGettingParameterFromAnyID(char const *id) {
-        const ParameterDescription* Parameter_ptr = tryGettingParameterFromShortID(id);
-        if (Parameter_ptr == nullptr) {
-            Parameter_ptr = tryGettingParameterFromLongID(id);
+        const ParameterDescription* param_ptr = tryGettingParameterFromShortID(id);
+        if (param_ptr == nullptr) {
+            param_ptr = tryGettingParameterFromLongID(id);
         }
-        return Parameter_ptr;
+        return param_ptr;
     }
 
-    void updateConfigurationWithParameter(ParameterDescription const *Parameter_ptr, const std::string &Parameter_id_with_prefix, const ArgList &arg_list, Configuration &cfg) {
+    void updateConfigurationWithParameter(ParameterDescription const *param_ptr, const std::string &param_id_with_prefix, const ArgList &arg_list, Configuration &cfg) {
         try {
-            Parameter_ptr -> set_configuration(arg_list, cfg);
+            param_ptr -> set_configuration(arg_list, cfg);
         } catch (InputError& except) {
-            if (Parameter_id_with_prefix == "") {
-                throw InputError("T'as fait de la merde avec la default Parameter");
+            if (param_id_with_prefix == "") {
+                throw InputError("T'as fait de la merde avec le defaultParameter");
             } else {
                 throw InputError(
-                    Parameter_id_with_prefix + ": " + except.what() +
-                    "\n  (type \".\\ggram --help " + Parameter_id_with_prefix + "\" for more information on how to use this Parameter)\n"
+                    param_id_with_prefix + ": " + except.what() +
+                    "\n  (type \".\\ggram --help " + param_id_with_prefix + "\" for more information on how to use this Parameter)\n"
                 );
             }
         }
@@ -70,26 +74,26 @@ namespace InputHandler {
 
 
     void handleParameters(int argc, char const *argv[], Configuration &cfg) {
-        std::string Parameter_id_with_prefix = "";
-        ParameterDescription const *Parameter_ptr = &defaultParameter_description;
+        std::string param_id_with_prefix = "";
+        ParameterDescription const *param_ptr = &defaultParameter_description;
         ArgList arg_list = {};
         
         for(int i = 1; i != argc; ++i) {
             char const * arg = argv[i];
 
             if (arg[0] == '-') {
-                ParameterDescription const *new_Parameter_ptr;
+                ParameterDescription const *new_param_ptr;
                 if (arg[1] == '-') {
-                    new_Parameter_ptr = tryGettingParameterFromLongID(&arg[2]);
+                    new_param_ptr = tryGettingParameterFromLongID(&arg[2]);
                 } else {
-                    new_Parameter_ptr = tryGettingParameterFromShortID(&arg[1]);
+                    new_param_ptr = tryGettingParameterFromShortID(&arg[1]);
                 }
 
-                if(new_Parameter_ptr != nullptr) {
-                    updateConfigurationWithParameter(Parameter_ptr, Parameter_id_with_prefix, arg_list, cfg);
+                if(new_param_ptr != nullptr) {
+                    updateConfigurationWithParameter(param_ptr, param_id_with_prefix, arg_list, cfg);
 
-                    Parameter_id_with_prefix = std::string(arg);
-                    Parameter_ptr = new_Parameter_ptr;
+                    param_id_with_prefix = std::string(arg);
+                    param_ptr = new_param_ptr;
                     arg_list = {};
                 } else {
                     throw InputError("Unknown Parameter: " + std::string(arg));
@@ -98,7 +102,7 @@ namespace InputHandler {
                 arg_list.push_back(arg);
             }
         }
-        updateConfigurationWithParameter(Parameter_ptr, Parameter_id_with_prefix, arg_list, cfg);
+        updateConfigurationWithParameter(param_ptr, param_id_with_prefix, arg_list, cfg);
     }
 
 
@@ -116,16 +120,16 @@ namespace InputHandler {
             throw InputError("Too many arguments");
         } else if (arg_list.size() == 1) {
 
-            ParameterDescription const *opt = tryGettingParameterFromAnyID(arg_list[0]);
-            if(opt != nullptr) {
-                opt->print();
+            ParameterDescription const *param_ptr = tryGettingParameterFromAnyID(arg_list[0]);
+            if(param_ptr != nullptr) {
+                param_ptr->print();
             } else {
                 throw InputError("Unknown Parameter \"" + std::string(arg_list[0]) + "\"");
             }
             exit(1);
         } else {
-            for(const ParameterDescription &opt : ParameterList) {
-                opt.print();
+            for(const ParameterDescription &param : PARAMETER_LIST) {
+                param.print();
             }
             exit(1);
         }

@@ -42,9 +42,9 @@ namespace InputHandler {
 
 
 
-    // ------------------------------- //
+    // ---------------------------------- //
     // -- Here come all the Parameters -- //
-    // ------------------------------- //
+    // ---------------------------------- //
 
 
     // ------------ Eddy Malou Parameter ------------ //
@@ -101,8 +101,9 @@ namespace InputHandler {
         &resultParserType
     };
 
-    // ------------ Output command ------------ //
-    constexpr ParameterDescription ParameterList[] = {
+
+
+    constexpr ParameterDescription PARAMETER_LIST[] = {
         eddyMalou_description,
         help_description,
         version_description,
@@ -112,8 +113,7 @@ namespace InputHandler {
     };
 
 
-
-    // ------------ Output Parameter ------------ //
+    // ------------ Default Parameter ------------ //
     // Called with what is before the fisrt id
     void defaultParameter(const ArgList &arg_list, Configuration &cfg);
     constexpr ParameterDescription defaultParameter_description = {
