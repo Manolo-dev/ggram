@@ -171,15 +171,9 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
         for(size_t i = 0; i < x.size(); i++) {
             string prefix, suffix;
             /*
-<<<<<<< HEAD
             {truc} -> pop_while(truc, current) OU pop_while(truc, curr_it, it_end)
-            <truc> -> pop_truc(next(current))  OU pop_truc( curr_it, it_end )
-            "truc" -> pop_value("truc", next(current)) OU pop_value("truc", curr_it, it_end )
-=======
-            {truc} -> _loop(truc, current)
-            <truc> -> pop_truc(createNext(current))
-            "truc" -> _value("truc", createNext(current))
->>>>>>> refs/remotes/origin/nightly
+            <truc> -> pop_truc(createNext(current))  OU pop_truc( curr_it, it_end )
+            "truc" -> pop_value("truc", createNext(current)) OU pop_value("truc", curr_it, it_end )
             otherwise : INVALID_SYNTAX
             */
             switch( x[i][0] ){      
@@ -192,32 +186,26 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
                     #endif
 
                     break;
+                
                 case '<' :
                     if(x[i].back() != '>') throw InvalidSyntax("none", "Missing '>'");
-<<<<<<< HEAD
                     #if VERSION == OLD_ORS 
-                    prefix = POP_FUNCTION_PREFIX; suffix = "(next(current))";
+                    prefix = POP_FUNCTION_PREFIX; suffix = "(createNext(current))";
                     #elif VERSION == TRY_CATCH
                     prefix = POP_FUNCTION_PREFIX; suffix = "(curr_it, it_end)";
                     #endif
                     
                     break;
+
                 case '"' :
                     if(x[i].back() != '"'  || x[i].size() < 2 ) throw InvalidSyntax("none", "Missing '\"'");
                     #if VERSION == OLD_ORS 
-                    prefix = "pop_value(\""; suffix = "\", next(current))";
+                    prefix = "pop_value(\""; suffix = "\", createNext(current))";
                     #elif VERSION == TRY_CATCH
                     prefix = "pop_value(\""; suffix = "\", curr_it, it_end)";
                     #endif
-
-=======
-                    prefix = POP_FUNCTION_PREFIX; suffix = "(createNext(current))";
                     break;
-                case '"' :
-                    if(x[i].back() != '"'  || x[i].size() < 2 ) throw InvalidSyntax("none", "Missing '\"'");
-                    prefix = "pop_value(\""; suffix = "\", createNext(current))";
->>>>>>> refs/remotes/origin/nightly
-                    break;
+                
                 default :
                     throw InvalidSyntax("none","Invalid syntax");
             }
