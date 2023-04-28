@@ -71,12 +71,12 @@ public:
     virtual const char* what() const throw();
 };
 
-class OptionError : public GgramError {
+class InputError : public GgramError {
 private:
     const std::string _message;
 public:
-    OptionError(std::string message);
-    virtual ~OptionError() throw();
+    InputError(std::string message);
+    virtual ~InputError() throw();
     virtual const char* what() const throw();
 };
 

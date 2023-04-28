@@ -45,9 +45,9 @@ const char* InvalidRule::what() const throw() {
     return _message.c_str();
 }
 
-OptionError::OptionError(std::string message) : _message(message) {}
-OptionError::~OptionError() throw() {}
-const char* OptionError::what() const throw() {
+InputError::InputError(std::string message) : _message(message) {}
+InputError::~InputError() throw() {}
+const char* InputError::what() const throw() {
     return _message.c_str();
 }
 

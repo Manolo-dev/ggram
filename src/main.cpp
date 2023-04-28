@@ -11,7 +11,7 @@
 #include <algorithm>
 
 #include "error.hpp"
-#include "options.hpp"
+#include "input_handler.hpp"
 
 using namespace std;
 using combinations = vector<vector<string>>;
@@ -472,12 +472,12 @@ void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
 }
 
 int main(int argc, char const *argv[]) {
-    Options::Configuration cfg;
+    InputHandler::Configuration cfg;
 
     try {
-        Options::handleOptions(argc, argv, cfg);
-    } catch (OptionError& except) {
-        std::cerr << "Option error :\n  " << except.what() << std::endl;
+        InputHandler::handleParameters(argc, argv, cfg);
+    } catch (InputError& except) {
+        std::cerr << "Input error :\n  " << except.what() << std::endl;
         exit(1);
     }
 
