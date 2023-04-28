@@ -288,7 +288,7 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
         }
     }
 
-    outputFile << std::endl << "constexpr Lexeme lexeme_list[" << lexeme_names.size() + special_lexeme_names.size() << "] = {" << std::endl;
+    outputFile << std::endl << "constexpr Lexeme LEXEME_LIST[" << lexeme_names.size() + special_lexeme_names.size() << "] = {" << std::endl;
     for(const string &lexeme_name : lexeme_names) {
         outputFile << "    {\"" + lexeme_name + "\", " + lexeme_name + "_regex}," << std::endl;
     }

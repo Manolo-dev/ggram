@@ -14,7 +14,7 @@ vector<Token> lex(string code) {
         // Try to match every lexeme with the beginning of the remaining code
         // If no lexeme match, we raise an error 
         bool found = false;
-        for(const Lexeme &lexeme : lexeme_list) {
+        for(const Lexeme &lexeme : LEXEME_LIST) {
             const regex current_regex(lexeme.regex); // Regex for the current lexeme
             smatch match; 
             // Try to match current regex at the beginning of the remaining code
