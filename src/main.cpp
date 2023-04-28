@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cctype>
+#include <algorithm>
 
 #include "error.hpp"
 #include "options.hpp"
@@ -152,8 +153,8 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
             string prefix, suffix;
             /*
             {truc} -> _loop(truc, current)
-            <truc> -> pop_truc(next(current))
-            "truc" -> _value("truc", next(current))
+            <truc> -> pop_truc(createNext(current))
+            "truc" -> _value("truc", createNext(current))
             otherwise : INVALID_SYNTAX
             */
             switch( x[i][0] ){      
@@ -163,11 +164,11 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
                     break;
                 case '<' :
                     if(x[i].back() != '>') throw InvalidSyntax("none", "Missing '>'");
-                    prefix = POP_FUNCTION_PREFIX; suffix = "(next(current))";
+                    prefix = POP_FUNCTION_PREFIX; suffix = "(createNext(current))";
                     break;
                 case '"' :
                     if(x[i].back() != '"'  || x[i].size() < 2 ) throw InvalidSyntax("none", "Missing '\"'");
-                    prefix = "pop_value(\""; suffix = "\", next(current))";
+                    prefix = "pop_value(\""; suffix = "\", createNext(current))";
                     break;
                 default :
                     throw InvalidSyntax("none","Invalid syntax");
@@ -206,14 +207,13 @@ void tryToOpenFiles(string &input_filename, string &output_filename, ifstream &f
 }
 
 vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t &lineNum) {
-    outputFile << "void create_lexemes(vector<Lexeme> &lexemes) {" << endl;
-    
     vector<string> lexeme_names;
+    vector<string> special_lexeme_names;
     string line;
     smatch match; 
     
     // match with : lexeme_name   "lexeme_regex"
-    const regex lexem_infos_regex(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
+    const regex lexeme_infos_regex(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
     
     while(getline(inputFile, line)) {
         lineNum++;
@@ -223,21 +223,44 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
         if(line == "---") break; // threat only the first part of the file
 
 
-        if(regex_search(line, match, lexem_infos_regex)) {
-            // Write :  lexemes.emplace_back("lexeme_name", "lexeme_regex");
-            outputFile << ("    lexemes.emplace_back(\"" + match.str(1) + "\", \"(" + match.str(2) + ")\");") << endl;
-            
-            if(match.str(1)[0] != '.')
-                lexeme_names.push_back(match.str(1));
+        if(regex_search(line, match, lexeme_infos_regex)) {
+            std::string lexeme_name = match.str(1);
+            const std::string lexeme_regex = match.str(2);
+    
+            if (std::find(lexeme_names.begin(), lexeme_names.end(), lexeme_name) != lexeme_names.end()) {
+                throw BnfError("Plural lexeme with the same name: " + lexeme_name);
+            }
+
+            if(lexeme_name[0] != '.') {
+                lexeme_names.push_back(lexeme_name);
+            } else {
+                special_lexeme_names.push_back(lexeme_name);
+                lexeme_name[0] = '_'; //change the first character to avoid having a variable name starting with a dot
+            }
+
+            // Write :
+            //   const std::regex <lexeme_name>_regex("<lexeme_regex>");
+            //   constexpr Lexeme <lexeme_name>("<lexeme_name>", <lexeme_name>_regex);
+
+            outputFile << "const std::regex " + lexeme_name + "_regex(\"" + lexeme_regex + "\");" << std::endl;
         } else {
             throw InvalidSyntax(lineNum, "Invalid lexeme declaration");
         }
     }
-    outputFile << "}" << endl << endl;
+
+    outputFile << std::endl << "constexpr Lexeme lexeme_list[" << lexeme_names.size() + special_lexeme_names.size() << "] = {" << std::endl;
+    for(const string &lexeme_name : lexeme_names) {
+        outputFile << "    {\"" + lexeme_name + "\", " + lexeme_name + "_regex}," << std::endl;
+    }
+    for(const string &lexeme_name : special_lexeme_names) {
+        outputFile << "    {\"" + lexeme_name + "\", _" + &(lexeme_name[1]) + "_regex}," << std::endl;
+    }
+    outputFile << "};" << std::endl << std::endl;
 
     if(line != "---"){
         throw InvalidSyntax(lineNum, "Expected '---'");
     }
+
     return lexeme_names;
 }
 
@@ -403,15 +426,17 @@ int main(int argc, char const *argv[]) {
     
     tryToOpenFiles(cfg.input_filename, cfg.output_filename, file, out);
 
-    copy("template/head.cpp.part", out);
-    copy("template/Lexeme.cpp.part", out);
-    copy("template/Token.cpp.part", out);
-    copy("template/lex.cpp.part", out);
-    copy("template/valueExpression.cpp.part", out);
-
     uint32_t lineNum = 0;
 
+    copy("template/head.cpp", out);
+
+    copy("template/lexeme.cpp", out);
     vector<string> lexeme_names = createLexemes(out, file, lineNum);
+
+    copy("template/token.cpp", out);
+    copy("template/lex.cpp", out);
+    copy("template/value_expression.cpp", out);
+
     writeLexemesPopFunctions(lexeme_names, out);
 
     vector<pair<string, Rule>> rules = readRules(file, lineNum);
@@ -422,7 +447,7 @@ int main(int argc, char const *argv[]) {
     writeRulesPopFunctions(out, rules);
     
     out << endl;
-    copy("template/main.cpp.part", out);
+    copy("template/main.cpp", out);
 
     file.close();
     out.close();

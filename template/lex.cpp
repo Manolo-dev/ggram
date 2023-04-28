@@ -1,32 +1,29 @@
-void create_lexemes(vector<Lexeme> &lexemes);
-
 vector<Token> lex(string code) {
     /**
      * @brief Lex the code
      * @param code
      * @return vector<Token>
      */
-    vector<Lexeme> lexemes;
-    create_lexemes(lexemes);
 
     vector<Token> tokens{}; // Vector of tokens
     int column = 0;
     int line = 0;
+
     // Try to split the code in lexeme by removing the first one each time
     while(code.size() > 0) {
         // Try to match every lexeme with the beginning of the remaining code
         // If no lexeme match, we raise an error 
         bool found = false;
-        for(Lexeme lexeme : lexemes) {
-            const regex current_regex(lexeme.value()); // Regex for the current lexeme
+        for(const Lexeme &lexeme : lexeme_list) {
+            const regex current_regex(lexeme.regex); // Regex for the current lexeme
             smatch match; 
             // Try to match current regex at the beginning of the remaining code
             if( regex_search(code, match, current_regex, 
                 regex_constants::match_continuous | regex_constants::match_not_null) ) {
 
                 // If the lexeme is not to be ignored
-                if(lexeme.type() != ".ignore") { 
-                    tokens.push_back(Token(lexeme.type(), match.str(), line, column));
+                if(lexeme.name != ".ignore") { 
+                    tokens.push_back(Token(string(lexeme.name), match.str(), line, column));
                 }
 
                 // Update line and column

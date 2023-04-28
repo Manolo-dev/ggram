@@ -2,11 +2,11 @@ using IT = vector<Token>::iterator; // Iterator type
 
 IT it; // Iterator for the current tokens checked by the parser
 IT it_e; // Iterator for the end of the tokens
-Token * p_err; // Pointer to the badd token for error handling
+Token * p_err; // Pointer to the bad token for error handling
 
-template<typename T> T& next(vector<T> &v) {
+template<typename T> T& createNext(vector<T> &v) {
     /**
-     * @brief Get the next element of the vector
+     * @brief Create a new element at the end of the vector and return a reference to it
      * @param v
      * @return T&
      */
@@ -90,11 +90,3 @@ bool pop_type(string val, Token &master) {
     it++;
     return 0;
 }
-
-/***************************************************************************************************************************/
-/***************************************************************************************************************************/
-/**************************************                                             ****************************************/
-/**************************************       Automatically generated content       ****************************************/
-/**************************************                                             ****************************************/
-/***************************************************************************************************************************/
-/***************************************************************************************************************************/

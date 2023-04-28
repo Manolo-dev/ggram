@@ -79,3 +79,12 @@ public:
     virtual ~OptionError() throw();
     virtual const char* what() const throw();
 };
+
+class BnfError : public GgramError {
+private:
+    const std::string _message;
+public:
+    BnfError(std::string message);
+    virtual ~BnfError() throw();
+    virtual const char* what() const throw();
+};
