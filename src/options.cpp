@@ -53,7 +53,7 @@ const OptionDescription* tryGettingOptionFromAnyID(char const *id) {
     return option_ptr;
 }
 
-void tryOption(OptionDescription const *option_ptr, const std::string &option_id_with_prefix, const ParamList &param_list, Configuration &cfg) {
+void updateConfigurationWithOption(OptionDescription const *option_ptr, const std::string &option_id_with_prefix, const ParamList &param_list, Configuration &cfg) {
     try {
         option_ptr -> set_configuration(param_list, cfg);
     } catch (OptionError& except) {
@@ -86,7 +86,7 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
             }
 
             if(new_option_ptr != nullptr) {
-                tryOption(option_ptr, option_id_with_prefix, param_list, cfg);
+                updateConfigurationWithOption(option_ptr, option_id_with_prefix, param_list, cfg);
 
                 option_id_with_prefix = std::string(arg);
                 option_ptr = new_option_ptr;
@@ -98,7 +98,7 @@ void handleOptions(int argc, char const *argv[], Configuration &cfg) {
             param_list.push_back(arg);
         }
     }
-    tryOption(option_ptr, option_id_with_prefix, param_list, cfg);
+    updateConfigurationWithOption(option_ptr, option_id_with_prefix, param_list, cfg);
 }
 
 
