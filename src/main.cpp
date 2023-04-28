@@ -280,7 +280,7 @@ void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFun
 }
 
 int find_outside_quotes(const string& s, const char elem, bool& in_quotes){
-    for(int i = 0; i < s.size() ; i++){
+    for(size_t i = 0; i < s.size() ; i++){
         const char c = s[i];
         if(c == '"'){
             in_quotes = !in_quotes;
