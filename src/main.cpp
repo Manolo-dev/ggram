@@ -137,37 +137,71 @@ combinations generateCombinations(const vector<string>&tree) {
     return result;
 }
 
+#define OLD_ORS 0
+#define TRY_CATCH 1
+
+#define VERSION TRY_CATCH
+
 static const string POP_FUNCTION_PREFIX = "pop_";
 
  
 string generateSimpleRulePopFunction(const vector<string> & rule, const string name) {
-    string result = R"(    IT t = it;
-    master = Token( ")" + name + R"(" );
-    vector<Token> current;)";
-    result += "\n";
+    string result;
+    #if VERSION == OLD_ORS
+    result += "    IT t = it;\n";
+    result += "    master = Token(\"" + name + "\"); \n";
+    result += "    vector<Token> current;\n";
+    #elif VERSION == TRY_CATCH
+    result += "    const IT start_token = curr_it;\n" ;
+    result += "    Token master(\"" + name + "\", \"\", start_token -> line(), start_token -> column() ); \n";
+    #else 
+    #error "Unexpected value of VERSION"
+    #endif
+
     for(vector<string>&x : generateCombinations(rule)) {
+        #if VERSION == OLD_ORS
         result += "    current.clear();\n";
         result += "    if(";
+        #elif VERSION == TRY_CATCH
+        result += "    try{\n";
+        result += "        return master << " ;
+        #endif
+
         for(size_t i = 0; i < x.size(); i++) {
             string prefix, suffix;
             /*
-            {truc} -> _loop(truc, current)
-            <truc> -> pop_truc(next(current))
-            "truc" -> _value("truc", next(current))
+            {truc} -> pop_while(truc, current) OU pop_while(truc, curr_it, it_end)
+            <truc> -> pop_truc(next(current))  OU pop_truc( curr_it, it_end )
+            "truc" -> pop_value("truc", next(current)) OU pop_value("truc", curr_it, it_end )
             otherwise : INVALID_SYNTAX
             */
             switch( x[i][0] ){      
                 case '{' :
                     if(x[i].back() != '}') throw InvalidSyntax("none", "Missing '}'");
+                    #if VERSION == OLD_ORS 
                     prefix = "pop_while( " + POP_FUNCTION_PREFIX ; suffix = ", current)";
+                    #elif VERSION == TRY_CATCH
+                    prefix = "pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", curr_it, it_end)";
+                    #endif
+
                     break;
                 case '<' :
                     if(x[i].back() != '>') throw InvalidSyntax("none", "Missing '>'");
+                    #if VERSION == OLD_ORS 
                     prefix = POP_FUNCTION_PREFIX; suffix = "(next(current))";
+                    #elif VERSION == TRY_CATCH
+                    prefix = POP_FUNCTION_PREFIX; suffix = "(curr_it, it_end)";
+                    #endif
+                    
                     break;
                 case '"' :
                     if(x[i].back() != '"'  || x[i].size() < 2 ) throw InvalidSyntax("none", "Missing '\"'");
+                    #if VERSION == OLD_ORS 
                     prefix = "pop_value(\""; suffix = "\", next(current))";
+                    #elif VERSION == TRY_CATCH
+                    prefix = "pop_value(\""; suffix = "\", curr_it, it_end)";
+                    #endif
+
                     break;
                 default :
                     throw InvalidSyntax("none","Invalid syntax");
@@ -175,12 +209,24 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
             result += prefix + x[i].substr(1, x[i].size() - 2) + suffix; 
 
             if(i < x.size() - 1)
+                #if VERSION == OLD_ORS 
                 result += " || ";
+                #elif VERSION == TRY_CATCH
+                result += " << ";
+                #endif
         }
+        #if VERSION == OLD_ORS 
         result += ") it = t;\n";
         result += "    else {master.children() += current; return 0;};\n";
+        #elif VERSION == TRY_CATCH
+        result += ";\n    } catch(syntax_error &e) { master.children().clear(); curr_it = start_token; }\n";
+        #endif
     }
+    #if VERSION == OLD_ORS 
     result += "    return 1;\n";
+    #elif VERSION == TRY_CATCH
+    result += "    throw syntax_error(start_token);\n" ;
+    #endif
     return result;
 }
 
@@ -243,10 +289,13 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
 
 void writeLexemesPopFunctions(const vector<string> &token_types, ofstream &out) {
     for(const string & token_name : token_types) {
-        //Writes bool __token_name(Token & master) { return _type("token_name", master); } 
-        out << "bool " << POP_FUNCTION_PREFIX << token_name << "(Token &master) { return pop_type(\"" + token_name + "\", master); }" << endl;
-        // //Writes : Token pop_token(IT& curr_it, const IT it_end) { return pop_type("token", curr_it, it_end); }
-        // out << "Token pop_" << token_name << "(IT& it_curr, const IT it_end) { return pop_type(\"" + token_name + "\", it_curr, it_end); }" << endl;
+        #if VERSION == OLD_ORS 
+            //Writes bool __token_name(Token & master) { return _type("token_name", master); } 
+            out << "bool " << POP_FUNCTION_PREFIX << token_name << "(Token &master) { return pop_type(\"" + token_name + "\", master); }" << endl;
+        #elif VERSION == TRY_CATCH        
+            // //Writes : Token pop_token(IT& curr_it, const IT it_end) { return pop_type("token", curr_it, it_end); }
+            out << "Token pop_" << token_name << "(IT& it_curr, const IT it_end) { return pop_type(\"" + token_name + "\", it_curr, it_end); }" << endl;
+        #endif
     }
     out << endl;
 }
@@ -370,7 +419,11 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
 void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
     // Declare rules' pop functions
     for(auto [rule_name, _] : rules){
+        #if VERSION == OLD_ORS 
         out << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
+        #elif VERSION == TRY_CATCH
+        out << "Token " << POP_FUNCTION_PREFIX << rule_name << "(IT&, const IT);" << endl;
+        #endif
     }
     // Define rules' pop functions
     for(auto [rule_name ,rule_expr] : rules) {
@@ -381,7 +434,12 @@ void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
         vector<PairRuleFunction> result;
         addRulePopFunctions(rule_expr, rule_name, result );
         for(auto [aux_rule_name, aux_rule_func ] : result){
-            out << endl << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
+            out << endl;
+            #if VERSION == OLD_ORS 
+                out << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
+            #elif VERSION == TRY_CATCH
+                out << "Token " << POP_FUNCTION_PREFIX << aux_rule_name << "(IT& curr_it, const IT it_end) {" << endl;
+            #endif
             out << aux_rule_func;
             out << "}" << endl;
         }
@@ -407,7 +465,12 @@ int main(int argc, char const *argv[]) {
     copy("template/Lexeme.cpp.part", out);
     copy("template/Token.cpp.part", out);
     copy("template/lex.cpp.part", out);
+
+    #if VERSION == OLD_ORS 
     copy("template/valueExpression.cpp.part", out);
+    #elif VERSION == TRY_CATCH
+    copy("template/valueExpression2.cpp.part", out);
+    #endif
 
     uint32_t lineNum = 0;
 
@@ -420,9 +483,13 @@ int main(int argc, char const *argv[]) {
         cout << _ << endl;
     }
     writeRulesPopFunctions(out, rules);
-    
-    out << endl;
+    out << std::endl;
+    #if VERSION == OLD_ORS 
     copy("template/main.cpp.part", out);
+    #elif VERSION == TRY_CATCH
+    //out << "}";
+    copy("template/main2.cpp.part", out);
+    #endif
 
     file.close();
     out.close();
