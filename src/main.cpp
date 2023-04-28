@@ -138,35 +138,28 @@ combinations generateCombinations(const vector<string>&tree) {
     return result;
 }
 
-#define OLD_ORS 0
-#define TRY_CATCH 1
-
-#define VERSION TRY_CATCH
-
 static const string POP_FUNCTION_PREFIX = "pop_";
 
  
-string generateSimpleRulePopFunction(const vector<string> & rule, const string name) {
+string generateSimpleRulePopFunction(const vector<string> & rule, const string name, InputHandler::ResultType res_type) {
     string result;
-    #if VERSION == OLD_ORS
-    result += "    IT t = it;\n";
-    result += "    master = Token(\"" + name + "\"); \n";
-    result += "    vector<Token> current;\n";
-    #elif VERSION == TRY_CATCH
-    result += "    const IT start_token = curr_it;\n" ;
-    result += "    Token master(\"" + name + "\", \"\", start_token -> line(), start_token -> column() ); \n";
-    #else 
-    #error "Unexpected value of VERSION"
-    #endif
+    if(res_type == InputHandler::ResultType::ORS){
+        result += "    IT t = it;\n";
+        result += "    master = Token(\"" + name + "\"); \n";
+        result += "    vector<Token> current;\n";
+    } else {
+        result += "    const IT start_token = curr_it;\n" ;
+        result += "    Token master(\"" + name + "\", \"\", start_token -> line(), start_token -> column() ); \n";
+    }
 
     for(vector<string>&x : generateCombinations(rule)) {
-        #if VERSION == OLD_ORS
-        result += "    current.clear();\n";
-        result += "    if(";
-        #elif VERSION == TRY_CATCH
-        result += "    try{\n";
-        result += "        return master << " ;
-        #endif
+        if(res_type == InputHandler::ResultType::ORS){
+            result += "    current.clear();\n";
+            result += "    if(";
+        }else {
+            result += "    try{\n";
+            result += "        return master << " ;
+        }
 
         for(size_t i = 0; i < x.size(); i++) {
             string prefix, suffix;
@@ -179,31 +172,29 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
             switch( x[i][0] ){      
                 case '{' :
                     if(x[i].back() != '}') throw InvalidSyntax("none", "Missing '}'");
-                    #if VERSION == OLD_ORS 
-                    prefix = "pop_while( " + POP_FUNCTION_PREFIX ; suffix = ", current)";
-                    #elif VERSION == TRY_CATCH
-                    prefix = "pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", curr_it, it_end)";
-                    #endif
-
+                    if(res_type == InputHandler::ResultType::ORS){ 
+                        prefix = "pop_while( " + POP_FUNCTION_PREFIX ; suffix = ", current)";
+                    }else{
+                        prefix = "pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", curr_it, it_end)";
+                    }
                     break;
                 
                 case '<' :
                     if(x[i].back() != '>') throw InvalidSyntax("none", "Missing '>'");
-                    #if VERSION == OLD_ORS 
-                    prefix = POP_FUNCTION_PREFIX; suffix = "(createNext(current))";
-                    #elif VERSION == TRY_CATCH
-                    prefix = POP_FUNCTION_PREFIX; suffix = "(curr_it, it_end)";
-                    #endif
-                    
+                    if(res_type == InputHandler::ResultType::ORS){ 
+                        prefix = POP_FUNCTION_PREFIX; suffix = "(createNext(current))";
+                    } else {
+                        prefix = POP_FUNCTION_PREFIX; suffix = "(curr_it, it_end)";
+                    }
                     break;
 
                 case '"' :
                     if(x[i].back() != '"'  || x[i].size() < 2 ) throw InvalidSyntax("none", "Missing '\"'");
-                    #if VERSION == OLD_ORS 
-                    prefix = "pop_value(\""; suffix = "\", createNext(current))";
-                    #elif VERSION == TRY_CATCH
-                    prefix = "pop_value(\""; suffix = "\", curr_it, it_end)";
-                    #endif
+                    if(res_type == InputHandler::ResultType::ORS){
+                        prefix = "pop_value(\""; suffix = "\", createNext(current))";
+                    } else {
+                        prefix = "pop_value(\""; suffix = "\", curr_it, it_end)";
+                    }
                     break;
                 
                 default :
@@ -211,25 +202,26 @@ string generateSimpleRulePopFunction(const vector<string> & rule, const string n
             }
             result += prefix + x[i].substr(1, x[i].size() - 2) + suffix; 
 
-            if(i < x.size() - 1)
-                #if VERSION == OLD_ORS 
-                result += " || ";
-                #elif VERSION == TRY_CATCH
-                result += " << ";
-                #endif
+            if(i < x.size() - 1){
+                if(res_type == InputHandler::ResultType::ORS){ 
+                    result += " || ";
+                } else {
+                    result += " << ";
+                }
+            }
         }
-        #if VERSION == OLD_ORS 
-        result += ") it = t;\n";
-        result += "    else {master.children() += current; return 0;};\n";
-        #elif VERSION == TRY_CATCH
-        result += ";\n    } catch(syntax_error &e) { master.children().clear(); curr_it = start_token; }\n";
-        #endif
+        if(res_type == InputHandler::ResultType::ORS){  
+            result += ") it = t;\n";
+            result += "    else {master.children() += current; return 0;};\n";
+        } else {
+            result += ";\n    } catch(syntax_error &e) { master.children().clear(); curr_it = start_token; }\n";
+        }
     }
-    #if VERSION == OLD_ORS 
-    result += "    return 1;\n";
-    #elif VERSION == TRY_CATCH
-    result += "    throw syntax_error(start_token);\n" ;
-    #endif
+    if(res_type == InputHandler::ResultType::ORS){ 
+        result += "    return 1;\n";
+    } else {
+        result += "    throw syntax_error(start_token);\n" ;
+    }
     return result;
 }
 
@@ -248,7 +240,7 @@ void tryToOpenFiles(string &input_filename, string &output_filename, ifstream &f
     }
 
     remove(output_filename.c_str()); // TODO: ask for confirmation
-    out = ofstream(output_filename, std::ios_base::binary);
+    out = ofstream(output_filename, ios::app);
     if(!out.is_open()) {
         throw FileNotFound(output_filename);
     }
@@ -312,15 +304,15 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
     return lexeme_names;
 }
 
-void writeLexemesPopFunctions(const vector<string> &token_types, ofstream &out) {
+void writeLexemesPopFunctions(const vector<string> &token_types, ofstream &out, InputHandler::ResultType res_type) {
     for(const string & token_name : token_types) {
-        #if VERSION == OLD_ORS 
+        if(res_type == InputHandler::ResultType::ORS){
             //Writes bool __token_name(Token & master) { return _type("token_name", master); } 
             out << "bool " << POP_FUNCTION_PREFIX << token_name << "(Token &master) { return pop_type(\"" + token_name + "\", master); }" << endl;
-        #elif VERSION == TRY_CATCH        
+        } else {   
             // //Writes : Token pop_token(IT& curr_it, const IT it_end) { return pop_type("token", curr_it, it_end); }
             out << "Token pop_" << token_name << "(IT& it_curr, const IT it_end) { return pop_type(\"" + token_name + "\", it_curr, it_end); }" << endl;
-        #endif
+        }
     }
     out << endl;
 }
@@ -333,7 +325,7 @@ struct PairRuleFunction {
 
 typedef vector<string> Rule;
 
-void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFunction>& result ) {
+void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFunction>& result , InputHandler::ResultType res_type ) {
     size_t j = 0;
     vector<string> newRule;
     for(size_t i = 0; i < rule.size(); i++) {
@@ -342,7 +334,7 @@ void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFun
             
             const string aux_name = to_string(j) + "_" + name; j++;
             
-            addRulePopFunctions(loopRule, aux_name, result);
+            addRulePopFunctions(loopRule, aux_name, result, res_type);
 
             newRule.push_back("{" + aux_name + "}");
             
@@ -350,7 +342,7 @@ void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFun
             newRule.push_back(rule[i]);
         }
     }
-    result.emplace_back(name, generateSimpleRulePopFunction(newRule, name));
+    result.emplace_back(name, generateSimpleRulePopFunction(newRule, name, res_type));
 }
 
 int find_outside_quotes(const string& s, const char elem, bool& in_quotes){
@@ -441,14 +433,14 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
         throw InvalidSyntax(lineNum, "Expected ';'");
     return rules;
 }
-void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
+void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules, InputHandler::ResultType res_type){
     // Declare rules' pop functions
     for(auto [rule_name, _] : rules){
-        #if VERSION == OLD_ORS 
-        out << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
-        #elif VERSION == TRY_CATCH
-        out << "Token " << POP_FUNCTION_PREFIX << rule_name << "(IT&, const IT);" << endl;
-        #endif
+        if(res_type == InputHandler::ResultType::ORS){ 
+            out << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
+        } else {
+            out << "Token " << POP_FUNCTION_PREFIX << rule_name << "(IT&, const IT);" << endl;
+        }
     }
     // Define rules' pop functions
     for(auto [rule_name ,rule_expr] : rules) {
@@ -457,14 +449,14 @@ void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
         out << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/\n";
         out << "/***************************************************************************************************/\n" ;
         vector<PairRuleFunction> result;
-        addRulePopFunctions(rule_expr, rule_name, result );
+        addRulePopFunctions(rule_expr, rule_name, result, res_type );
         for(auto [aux_rule_name, aux_rule_func ] : result){
             out << endl;
-            #if VERSION == OLD_ORS 
+            if(res_type == InputHandler::ResultType::ORS){ 
                 out << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
-            #elif VERSION == TRY_CATCH
+            } else {
                 out << "Token " << POP_FUNCTION_PREFIX << aux_rule_name << "(IT& curr_it, const IT it_end) {" << endl;
-            #endif
+            }
             out << aux_rule_func;
             out << "}" << endl;
         }
@@ -496,29 +488,27 @@ int main(int argc, char const *argv[]) {
     copy("template/token.cpp", out);
     copy("template/lex.cpp", out);
     
-    #if VERSION == OLD_ORS 
-    copy("template/value_expression.cpp", out);
-    #elif VERSION == TRY_CATCH
-    copy("template/value_expression2.cpp", out);
-    #endif
+    if(cfg.result_type == InputHandler::ResultType::ORS){ 
+        copy("template/value_expression.cpp", out);
+    } else {
+        copy("template/value_expression2.cpp", out);
+    }
 
-    writeLexemesPopFunctions(lexeme_names, out);
+    writeLexemesPopFunctions(lexeme_names, out, cfg.result_type);
 
     vector<pair<string, Rule>> rules = readRules(file, lineNum);
     for(auto [rule_name, _] : rules){
         cout << rule_name << endl;
         cout << _ << endl;
     }
-    writeRulesPopFunctions(out, rules);
+    writeRulesPopFunctions(out, rules, cfg.result_type);
 
     out << std::endl;
-    #if VERSION == OLD_ORS 
-    copy("template/main.cpp", out);
-    #elif VERSION == TRY_CATCH
-    //out << "}";
-    copy("template/main2.cpp", out);
-    #endif
-
+    if(cfg.result_type == InputHandler::ResultType::ORS){
+        copy("template/main.cpp", out);
+    }  else {
+        copy("template/main2.cpp", out);
+    }
     file.close();
     out.close();
 

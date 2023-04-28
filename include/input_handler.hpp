@@ -7,11 +7,17 @@
 
 
 namespace InputHandler {
+    enum class ResultType {
+        ORS,
+        TRY_CATCHS
+    };
+
     typedef std::vector<char const *> ArgList;
 
     struct Configuration {
         std::string input_filename = "";
         std::string output_filename = "parser.cpp";
+        ResultType result_type = ResultType::TRY_CATCHS;
     };
 
     typedef void (*set_config_function)(const ArgList &, Configuration &);
@@ -86,6 +92,14 @@ namespace InputHandler {
         &outputFile
     };
 
+    // ------------ Result Type Parameter ------------ //
+    void resultParserType(const ArgList &arg_list, Configuration &cfg);
+    constexpr ParameterDescription resultParserType_description = {
+        "r",
+        "restype",
+        "Control the type of code you want for the parser . Values : ORS / or, TRY_CATCHS / tc",
+        &resultParserType
+    };
 
     // ------------ Output command ------------ //
     constexpr ParameterDescription ParameterList[] = {
@@ -93,7 +107,8 @@ namespace InputHandler {
         help_description,
         version_description,
         inputFile_description,
-        outputFile_description
+        outputFile_description,
+        resultParserType_description
     };
 
 

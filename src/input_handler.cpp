@@ -104,7 +104,7 @@ namespace InputHandler {
 
     void eddyMalou(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() != 0) {
-            throw InputError("Too many parameters");
+            throw InputError("Too many arguments");
         } else {
             std::cout << "On ne peut pas parler de politique administrative scientifique, le colloque à l'égard de la complexité doit vanter les encadrés avec la formule 1+(2x5), mais oui. Pour emphysiquer l'animalculisme, la congolexicomatisation par rapport aux diplomaties peut aider le conpemdium autour des gens qui connaissent beaucoup de choses, tu sais ça." << std::endl;
             exit(1);
@@ -113,7 +113,7 @@ namespace InputHandler {
 
     void help(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() > 1) {
-            throw InputError("Too many parameters");
+            throw InputError("Too many arguments");
         } else if (arg_list.size() == 1) {
 
             ParameterDescription const *opt = tryGettingParameterFromAnyID(arg_list[0]);
@@ -133,7 +133,7 @@ namespace InputHandler {
 
     void version(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() != 0) {
-            throw InputError("Too many parameters");
+            throw InputError("Too many arguments");
         } else {
             std::cout << "version 0.0.1" << std::endl;
             exit(1);
@@ -142,24 +142,39 @@ namespace InputHandler {
 
     void inputFile(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() == 0) {
-            throw InputError("Missing parameter");
+            throw InputError("Missing argument");
         } else if (arg_list.size() == 1) {
             cfg.input_filename = arg_list[0];
         } else {
-            throw InputError("Too many parameters");
+            throw InputError("Too many arguments");
         }
     }
 
     void outputFile(const ArgList &arg_list, Configuration &cfg) {
         if (arg_list.size() == 0) {
-            throw InputError("Missing parameter");
+            throw InputError("Missing argument");
         } else if (arg_list.size() == 1) {
             cfg.output_filename = arg_list[0];
         } else {
-            throw InputError("Too many parameters");
+            throw InputError("Too many arguments");
         }
     }
 
+    void resultParserType(const ArgList &arg_list, Configuration &cfg){
+        if(arg_list.size() == 1){
+            if(strcmp(arg_list[0], "TRY_CATCHS") == 0 || strcmp(arg_list[0], "tc") == 0){
+                cfg.result_type = ResultType::TRY_CATCHS;
+            } else if (strcmp(arg_list[0], "ORS") == 0 || strcmp(arg_list[0], "or") == 0){
+                cfg.result_type = ResultType::ORS;
+            } else {
+                throw InputError("Invalid argument :" + std::string(arg_list[0]));
+            }
+        } else if(arg_list.size() > 1) {
+            throw InputError("Too many arguments : excepted one");
+        } else {
+            throw InputError("Missing argument");
+        } 
+    }
 
 
     // Called with what is before the fisrt Parameter id
@@ -169,7 +184,7 @@ namespace InputHandler {
         } else if (arg_list.size() == 1) {
             inputFile(arg_list, cfg);
         } else {
-            throw InputError("Too many parameters");
+            throw InputError("Too many arguments");
         }
     }
 
