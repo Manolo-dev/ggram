@@ -10,5 +10,6 @@
 #include <string>
 #include <vector>
 #include <regex>
+#include <cstring>
 
 using namespace std;

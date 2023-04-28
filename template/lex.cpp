@@ -22,8 +22,8 @@ vector<Token> lex(string code) {
                 regex_constants::match_continuous | regex_constants::match_not_null) ) {
 
                 // If the lexeme is not to be ignored
-                if(lexeme.name != ".ignore") { 
-                    tokens.push_back(Token(string(lexeme.name), match.str(), line, column));
+                if(strcmp(lexeme.name, ".ignore")) { 
+                    tokens.emplace_back(lexeme.name, match.str(), line, column);
                 }
 
                 // Update line and column

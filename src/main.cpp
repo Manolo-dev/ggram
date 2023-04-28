@@ -248,7 +248,7 @@ void tryToOpenFiles(string &input_filename, string &output_filename, ifstream &f
     }
 
     remove(output_filename.c_str()); // TODO: ask for confirmation
-    out = ofstream(output_filename, ios::app);
+    out = ofstream(output_filename, std::ios_base::binary);
     if(!out.is_open()) {
         throw FileNotFound(output_filename);
     }
