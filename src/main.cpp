@@ -280,6 +280,17 @@ void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFun
     result.emplace_back(name, generateSimpleRulePopFunction(newRule, name));
 }
 
+int find_outside_quotes(const string& s, const char elem, bool& in_quotes){
+    for(int i = 0; i < s.size() ; i++){
+        const char c = s[i];
+        if(c == '"'){
+            in_quotes = !in_quotes;
+        } else if(c == ';' && !in_quotes){
+            return i;
+        }
+    }
+    return -1;
+}
 
 vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
     vector<pair<string, Rule>> rules;
@@ -304,22 +315,52 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
             string rule_expr = match.str(2);
 
             // rule expression ends at ';''
-            while(line.find(';') > line.length()) {
+            bool in_quotes = false;
+            int point_virgule_pos = find_outside_quotes(rule_expr, ';', in_quotes );
+
+            while(point_virgule_pos == -1){
                 lineNum++;
                 if(!getline(file, line)) {
                     throw InvalidSyntax(line, "Expected ';'");
                 }
+                point_virgule_pos = find_outside_quotes(line, ';', in_quotes );
+                if(point_virgule_pos != -1){
+                    point_virgule_pos += rule_expr.size();
+                }
                 rule_expr += line;
             }
-            // get the rule_expression 
-            rule_expr = rule_expr.substr(0, rule_expr.find(';')); 
+            // while(line.find(';') > line.length()) {
+            //     lineNum++;
+            //     if(!getline(file, line)) {
+            //         throw InvalidSyntax(line, "Expected ';'");
+            //     }
+            //     rule_expr += line;
+            // }
             // what's after is kept to be treated
-            line = rule_expr.substr(rule_expr.find(';') + 1, rule_expr.length());
+            line = rule_expr.substr(point_virgule_pos + 1, rule_expr.length());
+            // get the rule_expression 
+            rule_expr = rule_expr.substr(0, point_virgule_pos); 
             
+
+
             Rule currentRule;
             bool new_elem = true;
+            bool in_guillemets = false;
+            bool in_chevrons = false;
             for(const unsigned char c : rule_expr ){
-                if( std::isspace(c) ){
+                
+                if(c == '"'){
+                    if(in_guillemets){
+                        currentRule.back() += c;
+                        in_guillemets = false;
+                        new_elem = true;
+                    } else{
+                        currentRule.emplace_back(1, c);
+                        in_guillemets = true;
+                    }
+                }else if(in_guillemets){
+                    currentRule.back() += c;
+                } else if( std::isspace(c) ){
                     new_elem = true;
                 } else if ( c =='(' || c == ')' || c == '{' || c == '}' || c == '[' || c == ']' || c == '|' ){
                     currentRule.emplace_back(1, c);
