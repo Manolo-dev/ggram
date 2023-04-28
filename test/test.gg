@@ -59,7 +59,6 @@ type_checker_id "[A-Z][a-zA-Z0-9_]*"
 <structure_typed_function> ::= <name> "<-" <structure_typed_lambda> ;
 
 <function_call> ::= <id> [ { <expr> } ] ";"
-                  | <id> [ { <expr> } ] <eol>
                   | "(" <id> [ { <expr> } ] ")"
                   ;
 

@@ -279,6 +279,17 @@ void addRulePopFunctions(const Rule& rule, const string name, vector<PairRuleFun
     result.emplace_back(name, generateSimpleRulePopFunction(newRule, name));
 }
 
+int find_outside_quotes(const string& s, const char elem, bool& in_quotes){
+    for(int i = 0; i < s.size() ; i++){
+        const char c = s[i];
+        if(c == '"'){
+            in_quotes = !in_quotes;
+        } else if(c == ';' && !in_quotes){
+            return i;
+        }
+    }
+    return -1;
+}
 
 vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
     vector<pair<string, Rule>> rules;
