@@ -8,6 +8,7 @@ eq "="
 
 <program> ::= { <expr> } ;
 
-<expr> ::= <id> "=" <expr> | <term> [ { <op> <term> } ] ;
+<expr> ::= <id> "=" <expr>
+    | <term> [ { <op> <term> } ] ;
 
 <term> ::= <id> | <int> ;

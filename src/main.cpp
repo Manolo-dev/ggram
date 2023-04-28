@@ -301,6 +301,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
     
     vector<pair<string, regex>> regexes = {
         {".ignore", regex(R"-([ \n\r\s\t]+)-")},
+        {".comment", regex(R"-(#.+$)-")},
         {"rulename", regex(R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-")},
         {"assign", regex(R"-(::=)-")},
         {"or", regex(R"-(\|)-")},
@@ -319,11 +320,10 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
         if(line[0] == '#') continue; // ingnore comment
         if(line == "---") break; // threat only the second part of the file
         if(line == "") continue; // skip empty line
-        currentRule.clear();
         while(line.size() > 0) {
             for(auto [name, regex] : regexes) {
                 if(regex_search(line, match, regex) && match.position() == 0) {
-                    if(name == ".ignore") {
+                    if(name == ".ignore" || name == ".comment") {
                         line = match.suffix();
                     } else if(name == "end") {
                         if(currentRule.size() < 2)
@@ -333,14 +333,14 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
                         rules.emplace_back(currentRule[0].substr(1, currentRule[0].size() - 2), Rule(currentRule.begin() + 2, currentRule.end()));
                         allRuleNames.push_back(currentRule[0]);
                         line = match.suffix();
+                        currentRule.clear();
                     } else {
                         if(currentRule.size() == 0 && name != "rulename")
                             throw InvalidSyntax(lineNum, "Expected rule name");
                         if(currentRule.size() == 1 && name != "assign")
                             throw InvalidSyntax(lineNum, "Expected '::='");
-                        if(name == "rulename" && find(allRuleNames.begin(), allRuleNames.end(), match.str(0)) != allRuleNames.end())
-                            throw InvalidSyntax(lineNum, "Rule name already used");
-                        
+                        if(currentRule.size() == 0 && find(allRuleNames.begin(), allRuleNames.end(), match.str(0)) != allRuleNames.end())
+                            throw InvalidSyntax(lineNum, "Rule '" + match.str(0) + "' already defined");
                         if(name == "parenth" || name == "loop" || name == "option") { brackets.push(name);
                         } else if(name == "endparenth" || name == "endloop" || name == "endoption") {
                             if(name == "endparenth" && brackets.top() != "parenth")
@@ -361,6 +361,10 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
             }
         }
     }
+    if(brackets.size() != 0)
+        throw InvalidSyntax(lineNum, "Expected ')', '}' or ']'");
+    if(currentRule.size() != 0)
+        throw InvalidSyntax(lineNum, "Expected ';'");
     return rules;
 }
 void writeRulesPopFunctions( ofstream &out, vector<pair<string, Rule>> rules){
