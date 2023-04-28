@@ -497,9 +497,9 @@ int main(int argc, char const *argv[]) {
     copy("template/lex.cpp", out);
     
     #if VERSION == OLD_ORS 
-    copy("template/valueExpression.cpp", out);
+    copy("template/value_expression.cpp", out);
     #elif VERSION == TRY_CATCH
-    copy("template/valueExpression2.cpp", out);
+    copy("template/value_expression2.cpp", out);
     #endif
 
     writeLexemesPopFunctions(lexeme_names, out);
