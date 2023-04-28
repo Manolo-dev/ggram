@@ -322,7 +322,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum){
         if(line == "") continue; // skip empty line
         while(line.size() > 0) {
             for(auto [name, regex] : regexes) {
-                if(regex_search(line, match, regex) && match.position() == 0) {
+                if(regex_search(line, match, regex, regex_constants::match_continuous | regex_constants::match_not_null )) {
                     if(name == ".ignore" || name == ".comment") {
                         line = match.suffix();
                     } else if(name == "end") {
