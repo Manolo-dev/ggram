@@ -3,7 +3,9 @@ float "[0-9]+\\.[0-9]+"
 string "\"[^\"]*\""
 char "'[^']'"
 id "[a-zA-Z_][a-zA-Z0-9_]*"
-operator "[\\+\\-\\*/%&|^<>!$=\\.]+"
+assign "(<-)|(=)|(:=)|(=>)|(<-)"
+lambda_op "(-:)|(:-)"
+operator_name "[\\+\\-\\*/%&|^<>!$=\\.]+"
 bracket "\\(|\\)|\\[|\\]"
 comma ",|\\|"
 type_checker_id "[A-Z][a-zA-Z0-9_]*"
@@ -21,6 +23,8 @@ type_checker_id "[A-Z][a-zA-Z0-9_]*"
          | <casted>
          ;
 
+<operator> ::= <operator_name> | "-:" <id> "|" <instructions> "|" <id> ":-" ;
+
 <casted> ::= <int>
            | <float>
            | <string>
@@ -32,7 +36,7 @@ type_checker_id "[A-Z][a-zA-Z0-9_]*"
            | <comprehensive_list>
            ;
 
-<name> ::= <id> | "operator" <operator> ;
+<name> ::= <id> | "operator_name" <operator_name> ;
 
 <fun> ::= <name> [ [ { <expr> "," } ] <expr> ] ;
 
@@ -59,7 +63,7 @@ type_checker_id "[A-Z][a-zA-Z0-9_]*"
 <structure_typed_function> ::= <name> "<-" <structure_typed_lambda> ;
 
 <function_call> ::= <id> [ { <expr> } ] ";"
-                  | "(" <id> [ { <expr> } ] ")" # petit commentaire des familles
+                  | "(" <id> [ { <expr> } ] ")"
                   ;
 
 <structure> ::= <structure_if>
