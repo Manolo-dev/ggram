@@ -88,6 +88,7 @@ vector<T> flatten(const vector<vector<T>> & list_of_lists) {
 inline vector<string> get_inside_brackets(
     const vector<string>& tree, size_t & i,
     const string open_bracket,
+    const string closed_bracket) {
 
     unsigned int level = 1;
     vector<string> inside_brackets;
@@ -130,7 +131,7 @@ combinations generateCombinations(const vector<string>&tree) {
             }
             branch = combined_result;
         } else if(tree[i] == "|") {
-            exte
+            extend(result, branch);
             branch.clear();
             branch.emplace_back();
         } else {
@@ -169,7 +170,7 @@ string generateSimpleRulePopFunction(
             string prefix, suffix;
             /*
             {truc} -> pop_while(truc, current) OU pop_while(truc, curr_it, it_end)
-            <truc> -> pop_truc
+            <truc> -> pop_truc(createNext(current))  OU pop_truc(curr_it, it_end)
             "truc" -> pop_value("truc", createNext(current)) OU pop_value("truc", curr_it, it_end)
             otherwise : INVALID_SYNTAX
             */
@@ -178,7 +179,7 @@ string generateSimpleRulePopFunction(
                     if(x[i].back() != '}') throw InvalidSyntax("none", "Missing '}'");
                     if(res_type == InputHandler::ResultType::ORS) {
                         prefix = "pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", current)";
-
+                    } else {
                         prefix = "pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", curr_it, it_end)";
                     }
                     break;
@@ -196,7 +197,7 @@ string generateSimpleRulePopFunction(
                     if(x[i].back() != '"'  || x[i].size() < 2) throw InvalidSyntax("none", "Missing '\"'");
                     if(res_type == InputHandler::ResultType::ORS) {
                         prefix = "pop_value(\""; suffix = "\", createNext(current))";
-
+                    } else {
                         prefix = "pop_value(\""; suffix = "\", curr_it, it_end)";
                     }
                     break;
@@ -250,10 +251,12 @@ void tryToOpenFiles(string &input_filename, string &output_filename, ifstream &f
     }
 }
 
-vector<string> cr
+vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t &lineNum) {
+    vector<string> lexeme_names;
 
     vector<string> special_lexeme_names;
     string line;
+    smatch match;
 
 
     // match with : lexeme_name   "lexeme_regex"
@@ -266,7 +269,7 @@ vector<string> cr
         if(line[0] == '#') continue; // ingnore comment
         if(line == "---") break; // threat only the first part of the file
 
-
+        if(regex_search(line, match, lexeme_infos_regex)) {
             std::string lexeme_name = match.str(1);
             const std::string lexeme_regex = match.str(2);
 
@@ -331,13 +334,13 @@ void writeLexemesPopFunctions(
         }
     }
     out << endl;
+}
 
-
-
+struct PairRuleFunction {
     PairRuleFunction(string n, string f):name(n), function(f) {}
     string name;
     string function;
-
+};
 
 typedef vector<string> Rule;
 
@@ -436,7 +439,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
                             if(name == "endparenth" && brackets.top() != "parenth")
                                 throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
                             if(brackets.empty())
-                                throw InvalidSyntax(li
+                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
                             if(name == "endloop" && brackets.top() != "loop")
                                 throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
                             if(name == "endoption" && brackets.top() != "option")
@@ -452,7 +455,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
         }
     }
     if(brackets.size() != 0)
-        throw InvalidSyntax(lineNum, "Expected ')', '}' or
+        throw InvalidSyntax(lineNum, "Expected ')', '}' or ']'");
     if(currentRule.size() != 0)
         throw InvalidSyntax(lineNum, "Expected ';'");
     return rules;
@@ -475,7 +478,7 @@ void writeRulesPopFunctions(ofstream &out, vector<pair<string, Rule>> rules, Inp
         vector<PairRuleFunction> result;
         addRulePopFunctions(rule_expr, rule_name, result, res_type);
         for(auto [aux_rule_name, aux_rule_func ] : result) {
-
+            out << endl;
             if(res_type == InputHandler::ResultType::ORS) {
                 out << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
             } else {
@@ -487,7 +490,7 @@ void writeRulesPopFunctions(ofstream &out, vector<pair<string, Rule>> rules, Inp
     }
 }
 
-
+int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
 
     try {
