@@ -1,112 +1,134 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cassert>
 
 #include "error.hpp"
 #include "input_handler.hpp"
 
 namespace InputHandler {
-    typedef std::vector<char const *> ArgList;
 
-    // definition of ParameterDescription's functions
-    void ParameterDescription::set_configuration(const ArgList &arg_list, Configuration &cfg) const {
-        (*function)(arg_list, cfg);
+    //------------------------------------------------------------------------//
+    //------------- definition of ParameterHandler's functions ---------------//
+    //------------------------------------------------------------------------//
+
+    void ParameterHandler::update_configuration(const ArgList &arg_list, Configuration &cfg) const {
+        (*configuration_updater)(arg_list, cfg);
     }
 
-    void ParameterDescription::print(char const line_start[]) const {
-        if(short_id[0] != 0) {
-            std::cout << line_start << "-" << short_id;
-            if(long_id[0] != 0) {
-                std::cout << line_start << ", --" << long_id;
+    // prints the parameter ids the description associated 
+    std::ostream& ParameterHandler::print(std::ostream& os) const {
+        if(short_id != nullptr) {
+            os << "-" << short_id;
+            if(long_id != nullptr) {
+                os << ", --" << long_id;
             }
-        } else if(long_id[0] != 0) {
-            std::cout << line_start << "--" << long_id;
+        } else if(long_id != nullptr) {
+            os << "--" << long_id;
         } else {
-            std::cout << "when you dont put any command before";
+            if(this == &defaultParameterHandler){
+                os << "First arguments";
+            } else {
+                os << "Not accessible";
+            }
         }
-        std::cout << ":\n" << line_start << "  " << description << std::endl;
+        return os << ":\n  " << description << std::endl;
     }
 
-    const ParameterDescription* tryGettingParameterFromShortID(char const *id) {
-        for(const ParameterDescription &param : PARAMETER_LIST) {
-            if(strcmp(id, param.short_id) == 0) {
+    std::ostream& operator<<( std::ostream & os, const ParameterHandler& handler ){
+        return handler.print(os);
+    }
+
+    //------------------------------------------------------------------------//
+    //------------------------ Parameter getters -----------------------------//
+    //------------------------------------------------------------------------//
+    const ParameterHandler* getHandlerFromParam(const char * param_name) {
+        assert(param_name != nullptr);
+        assert(param_name[0] == '-');
+        if(param_name[1] == '-'){
+            return getHandlerFromLongID(&param_name[2]);
+        } else {
+            return getHandlerFromShortID(&param_name[1]);
+        }
+    }
+
+    const ParameterHandler* getHandlerFromShortID(const char * short_id) {
+        if(short_id == nullptr){ return nullptr; }
+        for(const ParameterHandler &param : PARAMETER_LIST) {
+            if(param.short_id != nullptr && strcmp(short_id, param.short_id) == 0) {
                 return &param;
             }
         }
         return nullptr;
     }
 
-    const ParameterDescription* tryGettingParameterFromLongID(char const *id) {
-        for(const ParameterDescription &param : PARAMETER_LIST) {
-            if(strcmp(id, param.long_id) == 0) {
+    const ParameterHandler* getHandlerFromLongID(const char * long_id) {
+        if(long_id == nullptr){ return nullptr; }
+        for(const ParameterHandler &param : PARAMETER_LIST) {
+            if(param.long_id != nullptr && strcmp(long_id, param.long_id) == 0) {
                 return &param;
             }
         }
         return nullptr;
     }
 
-    const ParameterDescription* tryGettingParameterFromAnyID(char const *id) {
-        const ParameterDescription* param_ptr = tryGettingParameterFromShortID(id);
+    const ParameterHandler* getHandlerFromAnyID(const char * id) {
+        const ParameterHandler* param_ptr = getHandlerFromShortID(id);
         if(param_ptr == nullptr) {
-            param_ptr = tryGettingParameterFromLongID(id);
+            param_ptr = getHandlerFromLongID(id);
         }
         return param_ptr;
     }
 
-    void updateConfigurationWithParameter(ParameterDescription const *param_ptr, const std::string &param_id_with_prefix, const ArgList &arg_list, Configuration &cfg) {
-        try {
-            param_ptr -> set_configuration(arg_list, cfg);
-        } catch(InputError& except) {
-            if(param_id_with_prefix == "") {
-                throw InputError("T'as fait de la merde avec le defaultParameter");
-            } else {
-                throw InputError(
-                    param_id_with_prefix + ": " + except.what() +
-                    "\n  (type \".\\ggram --help " + param_id_with_prefix + "\" formore information on how to use this Parameter)\n"
-                );
+    /******************************************************************************************/
+    /*   This is the main function, that detects the parameters and the argument list that    */
+    /* corresponds to each one, and applies all possible parameter handlers in PARAMETER_LIST */
+    /*                    in order to update the default configuration                        */
+    /******************************************************************************************/
+    void handleParameters(int argc, const char *argv[], Configuration &cfg) {
+        ArgList arg_list = {};        
+        int i = 1;
+        // Handles default arguments
+        while (i < argc && argv[i][0] != '-'){
+            arg_list.push_back(argv[i]);
+            i++;
+        }
+        defaultParameterHandler.update_configuration(arg_list, cfg);
+
+        // Handles named parameters' arguments
+        const ParameterHandler * handler_ptr;
+        while(i < argc) {
+            // argv[i] is a parameter name, because if not
+            // it would have been added to the precedent arg_list
+            handler_ptr = getHandlerFromParam(argv[i]);
+            
+            if( handler_ptr == nullptr )
+                throw InputError("Unknown Parameter: " + std::string(argv[i]));
+            
+            i++;
+            arg_list.clear();
+            while (i < argc && argv[i][0] != '-'){
+                arg_list.push_back(argv[i]);
+                i++;
             }
+
+            handler_ptr -> update_configuration(arg_list, cfg);
         }
     }
 
-    void handleParameters(int argc, char const *argv[], Configuration &cfg) {
-        std::string param_id_with_prefix = "";
-        ParameterDescription const *param_ptr = &defaultParameter_description;
-        ArgList arg_list = {};
-        
-        for(int i = 1; i != argc; ++i) {
-            char const * arg = argv[i];
-
-            if(arg[0] == '-') {
-                ParameterDescription const *new_param_ptr;
-
-                if(arg[1] == '-') {
-                    new_param_ptr = tryGettingParameterFromLongID(&arg[2]);
-                } else {
-                    new_param_ptr = tryGettingParameterFromShortID(&arg[1]);
-                }
-
-                if(new_param_ptr != nullptr) {
-                    updateConfigurationWithParameter(param_ptr, param_id_with_prefix, arg_list, cfg);
-
-                    param_id_with_prefix = std::string(arg);
-                    param_ptr = new_param_ptr;
-                    arg_list = {};
-                } else {
-                    throw InputError("Unknown Parameter: " + std::string(arg));
-                }
-            } else {
-                arg_list.push_back(arg);
-            }
-        }
-        updateConfigurationWithParameter(param_ptr, param_id_with_prefix, arg_list, cfg);
-    }
+    // ------------------------------------------------------------------ //
+    // -------------- Here come all the parameter handlers -------------- //
+    // ------------------------------------------------------------------ //
 
     void eddyMalou(const ArgList &arg_list, Configuration &cfg) {
         if(arg_list.size() != 0) {
             throw InputError("Too many arguments");
         } else {
-            std::cout << "On ne peut pas parler de politique administrative scientifique, le colloque à l'égard de la complexité doit vanter les encadrés avec la formule 1+(2x5), mais oui. Pour emphysiquer l'animalculisme, la congolexicomatisation par rapport aux diplomaties peut aider le conpemdium autour des gens qui connaissent beaucoup de choses, tu sais ça." << std::endl;
-            exit(1);
+            std::cout << "On ne peut pas parler de politique administrative scientifique,"
+                << " le colloque à l'égard de la complexité doit vanter les encadrés avec la formule 1+(2x5), mais oui."
+                << " Pour emphysiquer l'animalculisme, la congolexicomatisation par rapport aux diplomaties peut aider"
+                << " le conpemdium autour des gens qui connaissent beaucoup de choses, tu sais ça." << std::endl;
+            exit(0);
         }
     }
 
@@ -115,18 +137,18 @@ namespace InputHandler {
             throw InputError("Too many arguments");
         } else if(arg_list.size() == 1) {
 
-            ParameterDescription const *param_ptr = tryGettingParameterFromAnyID(arg_list[0]);
+            ParameterHandler const *param_ptr = getHandlerFromAnyID(arg_list[0]);
             if(param_ptr != nullptr) {
-                param_ptr->print();
+                std::cout << *param_ptr;
             } else {
                 throw InputError("Unknown Parameter \"" + std::string(arg_list[0]) + "\"");
             }
-            exit(1);
+            exit(0);
         } else {
-            for(const ParameterDescription &param : PARAMETER_LIST) {
-                param.print();
+            for(const ParameterHandler &param : PARAMETER_LIST) {
+                std::cout << param;
             }
-            exit(1);
+            exit(0);
         }
     }
 
@@ -135,7 +157,7 @@ namespace InputHandler {
             throw InputError("Too many arguments");
         } else {
             std::cout << "version 0.0.1" << std::endl;
-            exit(1);
+            exit(0);
         }
     }
 
@@ -175,12 +197,14 @@ namespace InputHandler {
         } 
     }
 
-    // Called with what is before the fisrt Parameter id
     void defaultParameter(const ArgList &arg_list, Configuration &cfg) {
         if(arg_list.size() == 0) {
             return;
         } else if(arg_list.size() == 1) {
             inputFile(arg_list, cfg);
+        } else if(arg_list.size() == 2) {
+            inputFile({arg_list[0]}, cfg);
+            outputFile({arg_list[1]}, cfg);
         } else {
             throw InputError("Too many arguments");
         }

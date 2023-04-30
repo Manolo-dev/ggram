@@ -5,69 +5,97 @@
 #include <iostream>
 #include <cstring>
 
-
+/**
+ * This is the part that handles inputs from the user, these are the steps to add a parameter : 
+ *  - if the parameter adds a new information, you have to add this information 
+ *      to the structure : Configuration , to make it usable in the main program
+ *  - declare a update_config_function in this file 
+ *  - create a constexpr ParameterHandler structure just below
+ *  - DON'T FORGET TO : add the structure tu the PARAMETER_LIST
+ *  - finally define the update_config_function in the .cpp file 
+ *      ( and don't forget to verify that length of the ArgList is correct  )
+ */
 namespace InputHandler {
-    enum class ResultType {
-        ORS,
-        TRY_CATCHS
-    };
-
+    // These lists contains the arguments recieved for a given parameter
     typedef std::vector<char const *> ArgList;
 
+    enum class ResultType { ORS, TRY_CATCHS };
+    // The configuration, will contain everything we got from the input arguments
     struct Configuration {
         std::string input_filename = "";
         std::string output_filename = "parser.cpp";
         ResultType result_type = ResultType::TRY_CATCHS;
     };
 
-    typedef void (*set_config_function)(const ArgList &, Configuration &);
-    // I do not use strings and vectors to make it literal so we can have everything constexpr
-    struct ParameterDescription {
+    // update_config_function is intended to update the configuration
+    // given the arguments of the parameter she has responsability over
+    typedef void (*update_config_function)(const ArgList &, Configuration &);
+    
+    /**
+     * ParameterHandler takes responsability over a parameter namely -short_id and --long_id
+     * and handles the arguments of this parameter to update the configuration
+     * he also  
+     */
+    struct ParameterHandler {
         char const *short_id;
         char const *long_id;
         char const *description;
-        set_config_function function; // takes the list of parameters and sets the configuration
+        update_config_function configuration_updater;
 
-        void set_configuration(const ArgList &, Configuration &) const;
-
-        void print(char const line_start[] = "") const;
+        void update_configuration(const ArgList &, Configuration &) const;
+        std::ostream& print(std::ostream&) const;
     };
+    std::ostream& operator<<( std::ostream&, const ParameterHandler&);
+    
+    //----------------------------- Handler getters ----------------------------------//
+    /** 
+     * They try to search for a handler in PARAMETER_LIST that deals with the parameter
+     * corresponding to the given id, if it finds it, it returns the parameter handler
+     * otherwise it returns a nullptr
+    */
+    const ParameterHandler* getHandlerFromParam(const char * param); // param is either "-short_id" or "--long_id"
+    const ParameterHandler* getHandlerFromShortID(const char * short_id);
+    const ParameterHandler* getHandlerFromLongID(const char * long_id);
+    const ParameterHandler* getHandlerFromAnyID(const char * id);
 
-
-    const ParameterDescription* tryGettingParameterFromShortID(char const *id);
-    const ParameterDescription* tryGettingParameterFromLongID(char const *id);
-    const ParameterDescription* tryGettingParameterFromAnyID(char const *id);
-
+    
+    /******************************************************************************************/
+    /*   This is the main function, that detects the parameters and the argument list that    */
+    /* corresponds to each one, and applies all possible parameter handlers in PARAMETER_LIST */
+    /*                    in order to update the default configuration                        */
+    /******************************************************************************************/
     void handleParameters(int argc, char const *argv[], Configuration& cfg);
 
 
-
-    // ---------------------------------- //
-    // -- Here come all the Parameters -- //
-    // ---------------------------------- //
-
+    // ------------------------------------------------------------------ //
+    // -------------- Here come all the parameter handlers -------------- //
+    // ------------------------------------------------------------------ //
 
     // ------------ Eddy Malou Parameter ------------ //
     void eddyMalou(const ArgList &arg_list, Configuration &cfg);
-    constexpr ParameterDescription eddyMalou_description = {
+    constexpr ParameterHandler eddyMalou_description = {
         "eddyMalou",
         "congolexicomatisation",
-        "Lorsque l'on parle des végétaliens, du végétalisme, le savoir purement technique paraît soutenir l'estime du savoir provenant d'une dynamique syncronique, je vous en prie. Une semaine passée sans parler du peuple c’est errer sans abri, autrement dit la compétence autour de l'ergonométrie se résume à gérer le panafricanisme comparé(e)(s) la rénaque, c’est clair.",
+        "Lorsque l'on parle des végétaliens, du végétalisme,"
+        " le savoir purement technique paraît soutenir l'estime du savoir provenant d'une dynamique syncronique,"
+        " je vous en prie. Une semaine passée sans parler du peuple c’est errer sans abri,"
+        " autrement dit la compétence autour de l'ergonométrie se résume à"
+        " gérer le panafricanisme comparé(e)(s) la rénaque, c’est clair.",
         &eddyMalou
     };
 
     // ------------ Help Parameter ------------ //
     void help(const ArgList &arg_list, Configuration &cfg);
-    constexpr ParameterDescription help_description = {
+    constexpr ParameterHandler help_description = {
         "h",
         "help",
-        "Show all possible Parameters",
+        "Show all possible parameters with their description",
         &help
     };
 
     // ------------ Version Parameter ------------ //
     void version(const ArgList &arg_list, Configuration &cfg);
-    constexpr ParameterDescription version_description = {
+    constexpr ParameterHandler version_description = {
         "v",
         "version",
         "Show which version of ggram you're using",
@@ -76,34 +104,35 @@ namespace InputHandler {
 
     // ------------ Input Parameter ------------ //
     void inputFile(const ArgList &arg_list, Configuration &cfg);
-    constexpr ParameterDescription inputFile_description = {
+    constexpr ParameterHandler inputFile_description = {
         "f",
-        "",
-        "Description yet to be written",
+        nullptr,
+        "takes the input .gg file, to be treated",
         &inputFile
     };
 
     // ------------ Output Parameter ------------ //
     void outputFile(const ArgList &arg_list, Configuration &cfg);
-    constexpr ParameterDescription outputFile_description = {
+    constexpr ParameterHandler outputFile_description = {
         "o",
-        "",
-        "Description yet to be written",
+        nullptr,
+        "takes the output .cpp file, for the result (default : parser.cpp)",
         &outputFile
     };
 
     // ------------ Result Type Parameter ------------ //
     void resultParserType(const ArgList &arg_list, Configuration &cfg);
-    constexpr ParameterDescription resultParserType_description = {
+    constexpr ParameterHandler resultParserType_description = {
         "r",
         "restype",
-        "Control the type of code you want for the parser . Values : ORS / or, TRY_CATCHS / tc",
+        "Control the type of code you want for the parser.\n"
+        "    Values : ORS / or, TRY_CATCHS / tc (default)",
         &resultParserType
     };
 
 
-
-    constexpr ParameterDescription PARAMETER_LIST[] = {
+    // This is the list of all parameter handlers that will be tested on the input
+    constexpr ParameterHandler PARAMETER_LIST[] = {
         eddyMalou_description,
         help_description,
         version_description,
@@ -114,11 +143,11 @@ namespace InputHandler {
 
 
     // ------------ Default Parameter ------------ //
-    // Called with what is before the fisrt id
+    // Called with what is before the first named parameter
     void defaultParameter(const ArgList &arg_list, Configuration &cfg);
-    constexpr ParameterDescription defaultParameter_description = {
-        "",
-        "",
+    constexpr ParameterHandler defaultParameterHandler = {
+        nullptr,
+        nullptr,
         "Same as -f",
         &defaultParameter
     };
