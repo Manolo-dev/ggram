@@ -496,7 +496,7 @@ int main(int argc, char const *argv[]) {
         cout << rule_name << endl;
         cout << _ << endl;
     }
-    writeRulesPopFunctions(rules, out_cpp, out_hpp , cfg.result_type);
+    writeRulesPopFunctions(rules, out_cpp, out_hpp, cfg.result_type);
 
     out_cpp << std::endl;
     if(cfg.result_type == InputHandler::ResultType::ORS) {

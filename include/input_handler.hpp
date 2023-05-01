@@ -81,11 +81,11 @@ namespace InputHandler {
     constexpr ParameterHandler eddyMalou_description = {
         'e',
         "congolexicomatisation",
-        "Lorsque l'on parle des végétaliens, du végétalisme,"
-        " le savoir purement technique paraît soutenir l'estime du savoir provenant d'une dynamique syncronique,"
-        " je vous en prie. Une semaine passée sans parler du peuple c’est errer sans abri,"
-        " autrement dit la compétence autour de l'ergonométrie se résume à"
-        " gérer le panafricanisme comparé(e)(s) la rénaque, c’est clair.",
+        "Lorsque l'on parle des végétaliens, du végétalisme, "
+        "le savoir purement technique paraît soutenir l'estime du savoir provenant d'une dynamique syncronique, "
+        "je vous en prie. Une semaine passée sans parler du peuple c’est errer sans abri, "
+        "autrement dit la compétence autour de l'ergonométrie se résume à "
+        "gérer le panafricanisme comparé(e)(s) la rénaque, c’est clair.",
         &eddyMalou
     };
 
