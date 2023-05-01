@@ -1,7 +1,7 @@
 
 IT it; // Iterator for the current tokens checked by the parser
 IT it_end; // Iterator for the end of the tokens
-IT it_err; // Pointer to the bad token for error handling
+IT it_err; // Iterator for the bad token for error handling
 
 template<typename T> T& createNext(vector<T> &v) {
     /**

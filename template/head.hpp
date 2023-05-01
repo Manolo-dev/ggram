@@ -65,3 +65,4 @@ private:
 };
 
 Token parse(vector<Token>& v);
+Token parse(const string& code);
