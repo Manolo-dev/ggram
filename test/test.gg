@@ -20,7 +20,7 @@ type_checker_id "[A-Z][a-zA-Z0-9_]*"
                  ;
 
 <expr> ::= <casted> { <operator> } ( <expr> | <operator> | <fun> )
-         | <casted>
+         | <casted> [ <assign> <expr> ]
          ;
 
 <operator> ::= <operator_name> | "-:" <id> "|" <instructions> "|" <id> ":-" ;
