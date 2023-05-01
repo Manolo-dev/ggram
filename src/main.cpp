@@ -499,11 +499,9 @@ int main(int argc, char const *argv[]) {
     writeRulesPopFunctions(rules, out_cpp, out_hpp, cfg.result_type);
 
     out_cpp << std::endl;
-    if(cfg.result_type == InputHandler::ResultType::ORS) {
-        copy("template/main.cpp", out_cpp);
-    }  else {
-        copy("template/main2.cpp", out_cpp);
-    }
+    
+    copy("template/main.cpp", out_cpp);
+    
     file.close();
     out_cpp.close();
     out_hpp.close();

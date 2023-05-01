@@ -57,3 +57,15 @@ bool _pop_value(string val, Token &master);
 bool _pop_type(string val, Token &master);
 
 typedef vector<Token>::iterator IT;
+
+class syntax_error : runtime_error{
+public:
+    syntax_error(IT start_token) : runtime_error("syntax_error"), error_token(&(*start_token)){}
+    Token * get_error_token(){
+        return error_token;
+    }
+private:
+    Token * error_token;
+};
+
+Token parse(vector<Token>& v);

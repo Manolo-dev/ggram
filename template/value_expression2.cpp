@@ -23,19 +23,6 @@ void operator+=(vector<T> &v, const vector<T> &v2) {
     v.insert(v.end(), v2.begin(), v2.end());
 }
 
-class syntax_error : runtime_error{
-public:
-    syntax_error(vector<Token>::iterator start_token) : runtime_error("syntax_error"), error_token(&(*start_token)){
-        // cout << "syntax_error created :" << *error_token ;
-    }
-    Token * get_error_token(){
-        return error_token;
-    }
-private:
-    Token * error_token;
-};
-
-
 
 Token operator<<(Token tkn, const Token new_child ){
     tkn.children().push_back(new_child);
@@ -45,8 +32,6 @@ Token operator<<(Token tkn, const vector<Token> new_children ){
     tkn.children() += new_children;
     return tkn;
 }
-
-typedef vector<Token>::iterator IT; // Iterator type
 
 typedef Token (*popfunction)(IT&, const IT);
 vector<Token> _pop_while(popfunction pop, IT& curr_it, const IT it_end) {
@@ -92,6 +77,15 @@ Token _pop_type(string val, IT& curr_it, const IT it_end) {
         throw syntax_error(curr_it);
     }
     return *(curr_it++);
+}
+
+Token parse(vector<Token>& v){
+    IT it = v.begin();
+    Token result = pop_program(it, v.end());
+    if(it != v.end()){
+        throw syntax_error(it);
+    }
+    return result;
 }
 
 /***************************************************************************************************************************/
