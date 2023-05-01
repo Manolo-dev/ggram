@@ -13,31 +13,6 @@ template<typename T> T& createNext(vector<T> &v) {
     return v.back();
 }
 
-template<typename T>
-ostream& operator<<(ostream &os, vector<T> &v) {
-    /**
-     * @brief Print a vector
-     * @param os
-     * @param v
-     * @return ostream&
-     */
-    for(T &e : v) {
-        os << e;
-    }
-    return os;
-}
-
-template<typename T>
-void operator+=(vector<T> &v, vector<T> &v2) {
-    /**
-     * @brief Concatenate two vectors
-     * @details The first vector is modified
-     * @param v
-     * @param v2
-     */
-    v.insert(v.end(), v2.begin(), v2.end());
-}
-
 bool _pop_while(bool (*f)(Token &), vector<Token> &master) {
     /**
      * @brief Loop the expression contained in the curly brackets
@@ -58,7 +33,7 @@ bool _pop_while(bool (*f)(Token &), vector<Token> &master) {
     return 0;
 }
 
-bool _pop_value(string val, Token &master) {
+bool _pop_value(const string& val, Token &master) {
     /**
      * @brief Check if the current token has the right value
      * @param val
@@ -74,7 +49,7 @@ bool _pop_value(string val, Token &master) {
     return 0;
 }
 
-bool _pop_type(string val, Token &master) {
+bool _pop_type(const string& val, Token &master) {
     /**
      * @brief Check if the current token has the right type
      * @param val

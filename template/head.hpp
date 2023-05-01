@@ -26,13 +26,13 @@ public:
 
     void push(Token tree);
     void push(vector<Token>& trees);
-    string type();
-    string value();
-    int line();
-    int column();
+    string type() const;
+    string value() const;
+    int line() const;
+    int column() const;
     vector<Token>& children();
-    ostream& print(ostream& os, int depth = 0) ;
-    friend ostream& operator<<(ostream& os, Token& tree);
+    ostream& print(ostream& os, int depth = 0) const ;
+    friend ostream& operator<<(ostream& os, const Token& tree);
 private:
     string _type; // Type of the token
     string _value; // Value of the token
@@ -51,10 +51,6 @@ struct Lexeme {
     const char *name;
     const std::regex &regex;
 };
-
-bool _pop_while(bool (*f)(Token &), vector<Token> &master);
-bool _pop_value(string val, Token &master);
-bool _pop_type(string val, Token &master);
 
 typedef vector<Token>::iterator IT;
 

@@ -38,28 +38,28 @@ void Token::push(vector<Token>& trees) {
     }
 }
 
-string Token::type() {
+string Token::type() const {
     /**
      * @brief Get the Type of the Token
      * @return string
      */
     return this->_type;
 }
-string Token::value() {
+string Token::value() const {
     /**
      * @brief Get the Value of the Token
      * @return string
      */
     return this->_value;
 }
-int Token::line() {
+int Token::line() const {
     /**
      * @brief Get the Line of the Token
      * @return int
      */
     return this->_line;
 }
-int Token::column() {
+int Token::column() const {
     /**
      * @brief Get the Column of the Token
      * @return int
@@ -73,7 +73,7 @@ vector<Token>& Token::children() {
      */
     return this->_children;
 }
-ostream& Token::print(ostream& os, int depth) {
+ostream& Token::print(ostream& os, int depth) const {
     /**
      * @brief Print the Token tree
      * @param os
@@ -109,7 +109,7 @@ ostream& Token::print(ostream& os, int depth) {
     return os;
 }
 
-ostream& operator<<(ostream& os, Token& tree) {
+ostream& operator<<(ostream& os, const Token& tree) {
     /**
      * @brief Print the Token tree
      * @param os
@@ -117,4 +117,29 @@ ostream& operator<<(ostream& os, Token& tree) {
      * @return ostream&
      */
     return tree.print(os);
+}
+
+template<typename T>
+ostream& operator<<(ostream &os, const vector<T> &v) {
+    /**
+     * @brief Print a vector
+     * @param os
+     * @param v
+     * @return ostream&
+     */
+    for(const T &e : v) {
+        os << e;
+    }
+    return os;
+}
+
+template<typename T>
+void operator+=(vector<T> &v, const vector<T> &v2) {
+    /**
+     * @brief Concatenate two vectors
+     * @details The first vector is modified
+     * @param v
+     * @param v2
+     */
+    v.insert(v.end(), v2.begin(), v2.end());
 }
