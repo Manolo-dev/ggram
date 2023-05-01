@@ -17,7 +17,7 @@
  */
 namespace InputHandler {
     // These lists contains the arguments recieved for a given parameter
-    typedef std::vector<char const *> ArgList;
+    typedef std::vector<std::string> ArgList;
 
     enum class ResultType { ORS, TRY_CATCHS };
     // The configuration, will contain everything we got from the input arguments
@@ -34,10 +34,10 @@ namespace InputHandler {
     /**
      * ParameterHandler takes responsability over a parameter namely -short_id and --long_id
      * and handles the arguments of this parameter to update the configuration
-     * he also  
+     * he also stores a description of the parameter that can be displayed with the --help for example
      */
     struct ParameterHandler {
-        char const *short_id;
+        char const short_id;
         char const *long_id;
         char const *description;
         update_config_function configuration_updater;
@@ -53,10 +53,10 @@ namespace InputHandler {
      * corresponding to the given id, if it finds it, it returns the parameter handler
      * otherwise it returns a nullptr
     */
-    const ParameterHandler* getHandlerFromParam(const char * param); // param is either "-short_id" or "--long_id"
-    const ParameterHandler* getHandlerFromShortID(const char * short_id);
-    const ParameterHandler* getHandlerFromLongID(const char * long_id);
-    const ParameterHandler* getHandlerFromAnyID(const char * id);
+    const ParameterHandler* getHandlerFromParam(const char * const param, std::string& remaining); // param is either "-short_id" or "--long_id"
+    const ParameterHandler* getHandlerFromShortID(const char short_id);
+    const ParameterHandler* getHandlerFromLongID(const char * const long_id);
+    const ParameterHandler* getHandlerFromAnyID(const std::string& id);
 
     
     /******************************************************************************************/
@@ -66,6 +66,9 @@ namespace InputHandler {
     /******************************************************************************************/
     void handleParameters(int argc, char const *argv[], Configuration& cfg);
 
+    // ----------------- Default Parameter Handler ----------------- //
+    // Special Handler ( doesn't need a structure ): called with what is before the first named parameter
+    void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg);
 
     // ------------------------------------------------------------------ //
     // -------------- Here come all the parameter handlers -------------- //
@@ -74,7 +77,7 @@ namespace InputHandler {
     // ------------ Eddy Malou Parameter ------------ //
     void eddyMalou(const ArgList &arg_list, Configuration &cfg);
     constexpr ParameterHandler eddyMalou_description = {
-        "eddyMalou",
+        'e',
         "congolexicomatisation",
         "Lorsque l'on parle des végétaliens, du végétalisme,"
         " le savoir purement technique paraît soutenir l'estime du savoir provenant d'une dynamique syncronique,"
@@ -87,7 +90,7 @@ namespace InputHandler {
     // ------------ Help Parameter ------------ //
     void help(const ArgList &arg_list, Configuration &cfg);
     constexpr ParameterHandler help_description = {
-        "h",
+        'h',
         "help",
         "Show all possible parameters with their description",
         &help
@@ -96,7 +99,7 @@ namespace InputHandler {
     // ------------ Version Parameter ------------ //
     void version(const ArgList &arg_list, Configuration &cfg);
     constexpr ParameterHandler version_description = {
-        "v",
+        'v',
         "version",
         "Show which version of ggram you're using",
         &version
@@ -105,7 +108,7 @@ namespace InputHandler {
     // ------------ Input Parameter ------------ //
     void inputFile(const ArgList &arg_list, Configuration &cfg);
     constexpr ParameterHandler inputFile_description = {
-        "f",
+        'f',
         nullptr,
         "takes the input .gg file, to be treated",
         &inputFile
@@ -114,7 +117,7 @@ namespace InputHandler {
     // ------------ Output Parameter ------------ //
     void outputFile(const ArgList &arg_list, Configuration &cfg);
     constexpr ParameterHandler outputFile_description = {
-        "o",
+        'o',
         nullptr,
         "takes the output .cpp file, for the result (default : parser.cpp)",
         &outputFile
@@ -123,7 +126,7 @@ namespace InputHandler {
     // ------------ Result Type Parameter ------------ //
     void resultParserType(const ArgList &arg_list, Configuration &cfg);
     constexpr ParameterHandler resultParserType_description = {
-        "r",
+        'r',
         "restype",
         "Control the type of code you want for the parser.\n"
         "    Values : ORS / or, TRY_CATCHS / tc (default)",
@@ -140,16 +143,4 @@ namespace InputHandler {
         outputFile_description,
         resultParserType_description
     };
-
-
-    // ------------ Default Parameter ------------ //
-    // Called with what is before the first named parameter
-    void defaultParameter(const ArgList &arg_list, Configuration &cfg);
-    constexpr ParameterHandler defaultParameterHandler = {
-        nullptr,
-        nullptr,
-        "Same as -f",
-        &defaultParameter
-    };
-
 }
