@@ -1,4 +1,3 @@
-using IT = vector<Token>::iterator; // Iterator type
 
 IT it; // Iterator for the current tokens checked by the parser
 IT it_e; // Iterator for the end of the tokens
@@ -39,7 +38,7 @@ void operator+=(vector<T> &v, vector<T> &v2) {
     v.insert(v.end(), v2.begin(), v2.end());
 }
 
-bool pop_while(bool (*f)(Token &), vector<Token> &master) {
+bool _pop_while(bool (*f)(Token &), vector<Token> &master) {
     /**
      * @brief Loop the expression contained in the curly brackets
      * @param f
@@ -59,7 +58,7 @@ bool pop_while(bool (*f)(Token &), vector<Token> &master) {
     return 0;
 }
 
-bool pop_value(string val, Token &master) {
+bool _pop_value(string val, Token &master) {
     /**
      * @brief Check if the current token has the right value
      * @param val
@@ -75,7 +74,7 @@ bool pop_value(string val, Token &master) {
     return 0;
 }
 
-bool pop_type(string val, Token &master) {
+bool _pop_type(string val, Token &master) {
     /**
      * @brief Check if the current token has the right type
      * @param val

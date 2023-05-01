@@ -121,9 +121,30 @@ namespace InputHandler {
         }
     }
 
+    void check_arg_list_size(const ArgList& list, const size_t min_val, const size_t max_val ){
+        if(list.size() > max_val){
+            throw InputError("Too many arguments");
+        }
+        if(list.size() < min_val){
+            throw InputError("Missing arguments");
+        }
+    }
+
+    bool ends_with(const std::string& s , const std::string& end){
+        if(end.size() > s.size()){
+            return false;
+        }
+        for (size_t i = 0; i < end.size(); ++i){
+            if(s[s.size() - i - 1] != end[end.size() - i - 1]){
+                return false;
+            }
+        }
+        return true;
+    }
     // ----------------- Default Parameter Handler ----------------- //
     // Special Handler ( doesn't need a structure ): called with what is before the first named parameter
     void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
+        check_arg_list_size(arg_list, 0, 2);
         if(arg_list.size() == 0) {
             return;
         } else if(arg_list.size() == 1) {
@@ -131,8 +152,6 @@ namespace InputHandler {
         } else if(arg_list.size() == 2) {
             inputFile({arg_list[0]}, cfg);
             outputFile({arg_list[1]}, cfg);
-        } else {
-            throw InputError("Too many arguments");
         }
     }
 
@@ -141,79 +160,83 @@ namespace InputHandler {
     // ------------------------------------------------------------------ //
 
     void eddyMalou(const ArgList &arg_list, Configuration &cfg) {
-        if(arg_list.size() != 0) {
-            throw InputError("Too many arguments");
-        } else {
-            std::cout << "On ne peut pas parler de politique administrative scientifique,"
-                << " le colloque à l'égard de la complexité doit vanter les encadrés avec la formule 1+(2x5), mais oui."
-                << " Pour emphysiquer l'animalculisme, la congolexicomatisation par rapport aux diplomaties peut aider"
-                << " le conpemdium autour des gens qui connaissent beaucoup de choses, tu sais ça." << std::endl;
-            exit(0);
-        }
+        check_arg_list_size(arg_list, 0, 0);
+        std::cout << "On ne peut pas parler de politique administrative scientifique,"
+            << " le colloque à l'égard de la complexité doit vanter les encadrés avec la formule 1+(2x5), mais oui."
+            << " Pour emphysiquer l'animalculisme, la congolexicomatisation par rapport aux diplomaties peut aider"
+            << " le conpemdium autour des gens qui connaissent beaucoup de choses, tu sais ça." << std::endl;
+        exit(0);
     }
 
     void help(const ArgList &arg_list, Configuration &cfg) {
-        if(arg_list.size() > 1) {
-            throw InputError("Too many arguments");
-        } else if(arg_list.size() == 1) {
+        check_arg_list_size(arg_list, 0, 1);
 
-            ParameterHandler const *param_ptr = getHandlerFromAnyID(arg_list[0]);
-            if(param_ptr != nullptr) {
-                std::cout << *param_ptr;
-            } else {
+        if(arg_list.size() == 1) {
+            const ParameterHandler * param_ptr = getHandlerFromAnyID(arg_list[0]);
+            if(param_ptr == nullptr)
                 throw InputError("Unknown Parameter :\"" + arg_list[0] + "\"");
-            }
-            exit(0);
-        } else {
+            std::cout << *param_ptr;
+        } else if(arg_list.size() == 0) {
             for(const ParameterHandler &param : PARAMETER_LIST) {
                 std::cout << param;
             }
-            exit(0);
         }
+        exit(0);
     }
 
     void version(const ArgList &arg_list, Configuration &cfg) {
-        if(arg_list.size() != 0) {
-            throw InputError("Too many arguments");
-        } else {
-            std::cout << "version 0.0.1" << std::endl;
-            exit(0);
-        }
+        check_arg_list_size(arg_list, 0, 0);
+        std::cout << "version 0.0.1" << std::endl;
+        exit(0);
     }
 
     void inputFile(const ArgList &arg_list, Configuration &cfg) {
-        if(arg_list.size() == 0) {
-            throw InputError("Missing argument");
-        } else if(arg_list.size() == 1) {
-            cfg.input_filename = arg_list[0];
-        } else {
-            throw InputError("Too many arguments");
-        }
+        check_arg_list_size(arg_list, 1, 1);
+        cfg.input_filename = arg_list[0];
     }
 
     void outputFile(const ArgList &arg_list, Configuration &cfg) {
-        if(arg_list.size() == 0) {
-            throw InputError("Missing argument");
-        } else if(arg_list.size() == 1) {
-            cfg.output_filename = arg_list[0];
-        } else {
-            throw InputError("Too many arguments");
+        check_arg_list_size(arg_list, 1, 2);
+        if(arg_list.size() == 1){
+            std::filesystem::path filepath = arg_list[0];
+            if(filepath.has_extension() && filepath.extension() != ".cpp" 
+                && filepath.extension() != ".hpp" && filepath.extension() != ".h" ){
+                throw InputError("Invalid file extention for an output file : '" + filepath.extension().string() + "'");
+            }
+            const std::string header_extension =  (filepath.extension() == "h") ? "h" : "hpp";
+            
+            cfg.output_filepath_hpp = filepath.replace_extension(header_extension);
+            cfg.output_filepath_cpp = filepath.replace_extension("cpp");
+
+        } else if(arg_list.size() == 2){
+            std::filesystem::path filepath0 = arg_list[0] ; 
+            std::filesystem::path filepath1 = arg_list[1] ; 
+            if(filepath0.extension() != ".cpp" && filepath1.extension() != ".cpp"  ){
+                throw InputError("Neither of the two output files specified is a .cpp file !");
+            }
+            if(filepath0.extension() == ".cpp"){
+                cfg.output_filepath_cpp = filepath0;
+                cfg.output_filepath_hpp = filepath1;
+            } else {
+                cfg.output_filepath_cpp = filepath1;
+                cfg.output_filepath_hpp = filepath0;
+            }
+            if(cfg.output_filepath_hpp.extension() != ".hpp" && cfg.output_filepath_hpp.extension() != ".h" ){
+                throw InputError("Neither of the two output files specified is a .hpp/.h file !");
+            }
         }
     }
 
+
     void resultParserType(const ArgList &arg_list, Configuration &cfg){
-        if(arg_list.size() == 1){
-            if(arg_list[0] == "TRY_CATCHS" || arg_list[0] == "tc"){
-                cfg.result_type = ResultType::TRY_CATCHS;
-            } else if(arg_list[0] == "ORS" || arg_list[0] == "or"){
-                cfg.result_type = ResultType::ORS;
-            } else {
-                throw InputError("Invalid argument :" + arg_list[0]);
-            }
-        } else if(arg_list.size() > 1) {
-            throw InputError("Too many arguments : excepted one");
+        check_arg_list_size(arg_list, 1, 1);
+        const std::string arg = arg_list[0];
+        if(arg == "TRY_CATCHS" || arg == "tc"){
+            cfg.result_type = ResultType::TRY_CATCHS;
+        } else if(arg == "ORS" || arg == "or"){
+            cfg.result_type = ResultType::ORS;
         } else {
-            throw InputError("Missing argument");
-        } 
+            throw InputError("Invalid argument :" + arg);
+        }
     }
 }

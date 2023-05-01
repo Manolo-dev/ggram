@@ -53,15 +53,6 @@ string operator*(const string& s, uint32_t n) {
 
 string operator*(uint32_t n, const string& s) { return s * n; }
 
-string join(vector<string> const &strings, string delim = "") {
-    string result = "";
-    for(size_t i = 0; i < strings.size() - 1; i++) {
-        result += strings[i] + delim;
-    }
-    result += strings.back();
-    return result;
-}
-
 template<typename T>
 void extend(vector<T>& dest, const vector<T>& src) {
     for(const T& elem : src) {
@@ -76,19 +67,11 @@ void add_to_each_element(vector<vector<T>>& liste, const T& new_elem) {
     }
 }
 
-template<typename T>
-vector<T> flatten(const vector<vector<T>> & list_of_lists) {
-    vector<T> res;
-    for(vector<T> list : list_of_lists) {
-        extend(res, list);
-    }
-    return res;
-}
-
-inline vector<string> get_inside_brackets(
-    const vector<string>& tree, size_t & i,
-    const string open_bracket,
-    const string closed_bracket) {
+inline vector<string> get_inside_brackets
+    (   const vector<string>& tree, 
+        size_t& i,
+        const string open_bracket,
+        const string closed_bracket) {
 
     unsigned int level = 1;
     vector<string> inside_brackets;
@@ -124,6 +107,8 @@ combinations generateCombinations(const vector<string>&tree) {
                     // prefix each inside brackets combination with what was before
                     combined_result.push_back(previous_result);
                     extend(combined_result.back(), sub_combination);
+                    // if inside square brackets, subcombinations are optional 
+                    // so we have to add the pure previous result 
                     if(open_bracket == "[") {
                         combined_result.push_back(previous_result);
                     }
@@ -178,9 +163,9 @@ string generateSimpleRulePopFunction(
                 case '{' :
                     if(x[i].back() != '}') throw InvalidSyntax("none", "Missing '}'");
                     if(res_type == InputHandler::ResultType::ORS) {
-                        prefix = "pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", current)";
+                        prefix = "_pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", current)";
                     } else {
-                        prefix = "pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", curr_it, it_end)";
+                        prefix = "_pop_while(" + POP_FUNCTION_PREFIX ; suffix = ", curr_it, it_end)";
                     }
                     break;
 
@@ -196,9 +181,9 @@ string generateSimpleRulePopFunction(
                 case '"' :
                     if(x[i].back() != '"'  || x[i].size() < 2) throw InvalidSyntax("none", "Missing '\"'");
                     if(res_type == InputHandler::ResultType::ORS) {
-                        prefix = "pop_value(\""; suffix = "\", createNext(current))";
+                        prefix = "_pop_value(\""; suffix = "\", createNext(current))";
                     } else {
-                        prefix = "pop_value(\""; suffix = "\", curr_it, it_end)";
+                        prefix = "_pop_value(\""; suffix = "\", curr_it, it_end)";
                     }
                     break;
 
@@ -230,28 +215,27 @@ string generateSimpleRulePopFunction(
     return result;
 }
 
-void tryToOpenFiles(string &input_filename, string &output_filename, ifstream &file, ofstream &out) {
-    if(output_filename == "") {
-        throw NoFilenameSpecified("output file");
-    }
-
-    if(input_filename == "") {
-        throw NoFilenameSpecified("input file");
-    }
+void tryToOpenFiles(const string &input_filename, const std::filesystem::path &output_filename_cpp, const std::filesystem::path &output_filename_hpp,
+            ifstream &file, ofstream &out_cpp, ofstream &out_hpp ) {
 
     file = ifstream(input_filename);
     if(!file.is_open()) {
         throw FileNotFound(input_filename);
     }
 
-    remove(output_filename.c_str()); // TODO: ask for confirmation
-    out = ofstream(output_filename, ios::app);
-    if(!out.is_open()) {
-        throw FileNotFound(output_filename);
+    remove(output_filename_cpp.string().c_str()); // TODO: ask for confirmation
+    out_cpp = ofstream(output_filename_cpp, ios::app);
+    if(!out_cpp.is_open()) {
+        throw FileNotFound(output_filename_cpp.string());
+    }
+    remove(output_filename_hpp.string().c_str()); // TODO: ask for confirmation
+    out_hpp = ofstream(output_filename_hpp, ios::app);
+    if(!out_hpp.is_open()) {
+        throw FileNotFound(output_filename_hpp.string());
     }
 }
 
-vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t &lineNum) {
+vector<string> createLexemes(ifstream &inputFile, uint32_t &lineNum, ofstream &out_hpp) {
     vector<string> lexeme_names;
 
     vector<string> special_lexeme_names;
@@ -288,24 +272,24 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
             //   const std::regex <lexeme_name>_regex("<lexeme_regex>");
             //   constexpr Lexeme <lexeme_name>("<lexeme_name>", <lexeme_name>_regex);
 
-            outputFile << "const std::regex " + lexeme_name + "_regex(\"" + lexeme_regex + "\");" << std::endl;
+            out_hpp << "const std::regex " + lexeme_name + "_regex(\"" + lexeme_regex + "\");" << std::endl;
         } else {
             throw InvalidSyntax(lineNum, "Invalid lexeme declaration");
         }
     }
 
-    outputFile << std::endl
+    out_hpp << std::endl
                << "constexpr Lexeme LEXEME_LIST["
                << lexeme_names.size() + special_lexeme_names.size()
                << "] = {"
                << std::endl;
     for(const string &lexeme_name : lexeme_names) {
-        outputFile << "    {\"" + lexeme_name + "\", " + lexeme_name + "_regex}," << std::endl;
+        out_hpp << "    {\"" + lexeme_name + "\", " + lexeme_name + "_regex}," << std::endl;
     }
     for(const string &lexeme_name : special_lexeme_names) {
-        outputFile << "    {\"" + lexeme_name + "\", _" + &(lexeme_name[1]) + "_regex}," << std::endl;
+        out_hpp << "    {\"" + lexeme_name + "\", _" + &(lexeme_name[1]) + "_regex}," << std::endl;
     }
-    outputFile << "};" << std::endl << std::endl;
+    out_hpp << "};" << std::endl << std::endl;
 
     if(line != "---") {
         throw InvalidSyntax(lineNum, "Expected '---'");
@@ -314,26 +298,26 @@ vector<string> createLexemes(ofstream &outputFile, ifstream &inputFile, uint32_t
     return lexeme_names;
 }
 
-void writeLexemesPopFunctions(
-    const vector<string> &token_types,
-    ofstream &out, InputHandler::ResultType res_type) {
+void writeLexemesPopFunctions( const vector<string> &token_types,
+    ofstream &out_cpp, InputHandler::ResultType res_type) {
+
     for(const string & token_name : token_types) {
         if(res_type == InputHandler::ResultType::ORS) {
             //Writes bool __token_name(Token & master) { return _type("token_name", master); }
-            out << "bool "
+            out_cpp << "bool "
                 << POP_FUNCTION_PREFIX
                 << token_name
-                << "(Token &master) { return pop_type(\"" + token_name + "\", master); }"
+                << "(Token &master) { return _pop_type(\"" + token_name + "\", master); }"
                 << endl;
         } else {
             // //Writes : Token pop_token(IT& curr_it, const IT it_end) { return pop_type("token", curr_it, it_end); }
-            out << "Token pop_"
+            out_cpp << "Token pop_"
                 << token_name
-                << "(IT& it_curr, const IT it_end) { return pop_type(\"" + token_name + "\", it_curr, it_end); }"
+                << "(IT& it_curr, const IT it_end) { return _pop_type(\"" + token_name + "\", it_curr, it_end); }"
                 << endl;
         }
     }
-    out << endl;
+    out_cpp << endl;
 }
 
 struct PairRuleFunction {
@@ -366,18 +350,6 @@ void addRulePopFunctions(
         }
     }
     result.emplace_back(name, generateSimpleRulePopFunction(newRule, name, res_type));
-}
-
-int find_outside_quotes(const string& s, const char elem, bool& in_quotes) {
-    for(size_t i = 0; i < s.size() ; i++) {
-        const char c = s[i];
-        if(c == '"') {
-            in_quotes = !in_quotes;
-        } else if(c == ';' && !in_quotes) {
-            return i;
-        }
-    }
-    return -1;
 }
 
 vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
@@ -460,84 +432,81 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
         throw InvalidSyntax(lineNum, "Expected ';'");
     return rules;
 }
-void writeRulesPopFunctions(ofstream &out, vector<pair<string, Rule>> rules, InputHandler::ResultType res_type) {
+void writeRulesPopFunctions( vector<pair<string, Rule>> rules, ofstream &out_cpp, ofstream &out_hpp, InputHandler::ResultType res_type) {
     // Declare rules' pop functions
     for(auto [rule_name, _] : rules) {
         if(res_type == InputHandler::ResultType::ORS) {
-            out << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
+            out_hpp << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
         } else {
-            out << "Token " << POP_FUNCTION_PREFIX << rule_name << "(IT&, const IT);" << endl;
+            out_hpp << "Token " << POP_FUNCTION_PREFIX << rule_name << "(IT&, const IT);" << endl;
         }
     }
     // Define rules' pop functions
     for(auto [rule_name, rule_expr] : rules) {
-        out << "\n";
-        out << "/***************************************************************************************************/\n";
-        out << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/\n";
-        out << "/***************************************************************************************************/\n" ;
+        out_cpp << "\n";
+        out_cpp << "/***************************************************************************************************/\n";
+        out_cpp << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/\n";
+        out_cpp << "/***************************************************************************************************/\n" ;
         vector<PairRuleFunction> result;
         addRulePopFunctions(rule_expr, rule_name, result, res_type);
         for(auto [aux_rule_name, aux_rule_func ] : result) {
-            out << endl;
+            out_cpp << endl;
             if(res_type == InputHandler::ResultType::ORS) {
-                out << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
+                out_cpp << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
             } else {
-                out << "Token " << POP_FUNCTION_PREFIX << aux_rule_name << "(IT& curr_it, const IT it_end) {" << endl;
+                out_cpp << "Token " << POP_FUNCTION_PREFIX << aux_rule_name << "(IT& curr_it, const IT it_end) {" << endl;
             }
-            out << aux_rule_func;
-            out << "}" << endl;
+            out_cpp << aux_rule_func;
+            out_cpp << "}" << endl;
         }
     }
 }
 
 int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
-
-    try {
-        InputHandler::handleParameters(argc, argv, cfg);
-    } catch(InputError& except) {
-        std::cerr << "Input error :\n  " << except.what() << std::endl;
-        exit(1);
-    }
+    InputHandler::handleParameters(argc, argv, cfg);
 
     ifstream file;
-    ofstream out;
+    ofstream out_cpp;
+    ofstream out_hpp;
 
-    tryToOpenFiles(cfg.input_filename, cfg.output_filename, file, out);
+    tryToOpenFiles(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp, file, out_cpp, out_hpp);
 
     uint32_t lineNum = 0;
 
-    copy("template/head.cpp", out);
+    copy("template/head.hpp", out_hpp);
 
-    copy("template/lexeme.cpp", out);
-    vector<string> lexeme_names = createLexemes(out, file, lineNum);
+    out_cpp << "#include " << cfg.output_filepath_hpp.filename() << std::endl;
 
-    copy("template/token.cpp", out);
-    copy("template/lex.cpp", out);
+    vector<string> lexeme_names = createLexemes(file, lineNum, out_hpp);
+
+    copy("template/token.cpp", out_cpp);
+    copy("template/lex.cpp", out_cpp);
 
     if(cfg.result_type == InputHandler::ResultType::ORS) {
-        copy("template/value_expression.cpp", out);
+        copy("template/value_expression.cpp", out_cpp);
     } else {
-        copy("template/value_expression2.cpp", out);
+        copy("template/value_expression2.cpp", out_cpp);
     }
 
-    writeLexemesPopFunctions(lexeme_names, out, cfg.result_type);
+    writeLexemesPopFunctions(lexeme_names, out_cpp, cfg.result_type);
 
     vector<pair<string, Rule>> rules = readRules(file, lineNum);
     for(auto [rule_name, _] : rules) {
         cout << rule_name << endl;
         cout << _ << endl;
     }
-    writeRulesPopFunctions(out, rules, cfg.result_type);
+    writeRulesPopFunctions(rules, out_cpp, out_hpp , cfg.result_type);
 
-    out << std::endl;
+    out_cpp << std::endl;
     if(cfg.result_type == InputHandler::ResultType::ORS) {
-        copy("template/main.cpp", out);
+        copy("template/main.cpp", out_cpp);
     }  else {
-        copy("template/main2.cpp", out);
+        copy("template/main2.cpp", out_cpp);
     }
     file.close();
-    out.close();
+    out_cpp.close();
+    out_hpp.close();
 
     return 0;
 }

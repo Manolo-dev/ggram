@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
+#include <filesystem>
 
 /**
  * This is the part that handles inputs from the user, these are the steps to add a parameter : 
@@ -23,7 +24,8 @@ namespace InputHandler {
     // The configuration, will contain everything we got from the input arguments
     struct Configuration {
         std::string input_filename = "";
-        std::string output_filename = "parser.cpp";
+        std::filesystem::path output_filepath_cpp = "parser.cpp";
+        std::filesystem::path output_filepath_hpp = "parser.hpp";
         ResultType result_type = ResultType::TRY_CATCHS;
     };
 

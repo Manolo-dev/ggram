@@ -49,7 +49,7 @@ Token operator<<(Token tkn, const vector<Token> new_children ){
 typedef vector<Token>::iterator IT; // Iterator type
 
 typedef Token (*popfunction)(IT&, const IT);
-vector<Token> pop_while(popfunction pop, IT& curr_it, const IT it_end) {
+vector<Token> _pop_while(popfunction pop, IT& curr_it, const IT it_end) {
     /**
      * @brief Loop the expression contained in the curly brackets
      * @param f
@@ -67,7 +67,7 @@ vector<Token> pop_while(popfunction pop, IT& curr_it, const IT it_end) {
     return master;
 }
 
-Token pop_value(string val, IT& curr_it, const IT it_end) {
+Token _pop_value(string val, IT& curr_it, const IT it_end) {
     /**
      * @brief Check if the current token has the right value
      * @param val
@@ -81,7 +81,7 @@ Token pop_value(string val, IT& curr_it, const IT it_end) {
     return *(curr_it++);
 }
 
-Token pop_type(string val, IT& curr_it, const IT it_end) {
+Token _pop_type(string val, IT& curr_it, const IT it_end) {
     /**
      * @brief Check if the current token has the right type
      * @param val
