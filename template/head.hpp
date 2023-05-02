@@ -22,8 +22,8 @@ class Token {
      * @details This class is used to store the tokens of the lexer and the tree of the parser
      */
 public:
-    Token(string type = "", string value = "", int line = 0, int column = 0);
-
+    Token(string type = "", string value = "", int line = 0, int column = 0, bool error = false);
+    Token(string type, bool error);
     void push(Token tree);
     void push(vector<Token>& trees);
     string type() const;
@@ -39,12 +39,12 @@ public:
     ostream& print(ostream& os, int depth = 0) const ;
     friend ostream& operator<<(ostream& os, const Token& tree);
 private:
-    bool _is_error;
     string _type; // Type of the token
     string _value; // Value of the token
     int _line; // Line of the token
     int _column; // Column of the token
     vector<Token> _children; // Children of the token
+    bool _is_error;
 };
 
 vector<Token> lex(string code);

@@ -6,6 +6,8 @@ OBJ=$(foreach file,$(CPP_FILES),$(BUILD_DIR)/$(file:.cpp=.o))
 TEST_DIR=test
 TEST_FILE=test
 SOFTWARE_NAME=ggram
+TEMPLATE_DIR=template
+TEMPLATE_CPP_FILES := $(wildcard template/*.cpp)
 RM=rm
 
 $(shell mkdir -p $(BUILD_DIR))
@@ -20,7 +22,7 @@ $(BUILD_DIR)/$(SOFTWARE_NAME): $(OBJ)
 release: $(BUILD_DIR)/$(SOFTWARE_NAME)
 	$(CPP) $(CFLAGS) -O3 -o $(BUILD_DIR)/$(SOFTWARE_NAME) $(OBJ)
 
-test: $(BUILD_DIR)/$(SOFTWARE_NAME) $(TEST_DIR)/$(TEST_FILE).gg
+test: $(BUILD_DIR)/$(SOFTWARE_NAME) $(TEST_DIR)/$(TEST_FILE).gg $(TEMPLATE_CPP_FILES)
 	./$(BUILD_DIR)/$(SOFTWARE_NAME) -f $(TEST_DIR)/$(TEST_FILE).gg -o $(TEST_DIR)/$(TEST_FILE).cpp
 	$(CPP) $(CFLAGS) -o $(TEST_DIR)/$(TEST_FILE) $(TEST_DIR)/$(TEST_FILE).cpp
 	./$(TEST_DIR)/$(TEST_FILE)

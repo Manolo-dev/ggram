@@ -8,17 +8,17 @@ Token& operator<<(Token& tkn, const vector<Token>& new_children ){
 }
 
 typedef Token (*popfunction)(IT&, const IT);
-vector<Token> _pop_while(const popfunction pop, IT& curr_it, const IT it_end) {
+vector<Token> _pop_while(const popfunction pop, IT& it_cur, const IT it_end) {
     /**
      * @brief Loop the expression contained in the curly brackets
      * @param f
      * @param master
      * @return bool
      */
-    vector<Token> master = pop(curr_it,it_end).children();
-    while(curr_it != it_end) {
+    vector<Token> master = pop(it_cur,it_end).children();
+    while(it_cur != it_end) {
         try{
-            master += pop(curr_it, it_end).children();
+            master += pop(it_cur, it_end).children();
         } catch(syntax_error&){
             break;
         }
@@ -26,7 +26,7 @@ vector<Token> _pop_while(const popfunction pop, IT& curr_it, const IT it_end) {
     return master;
 }
 
-Token& _pop_value(const string& val, IT& curr_it, const IT it_end) {
+Token& _pop_value(const string& val, IT& it_cur, const IT it_end) {
     /**
      * @brief Check if the current token has the right value
      * @param val
@@ -34,15 +34,15 @@ Token& _pop_value(const string& val, IT& curr_it, const IT it_end) {
      * @return bool
      */
     SEARCH("value :" << val)
-    if(curr_it == it_end || curr_it->value() != val) {
-        FAILED("value: " << curr_it->value()) 
-        throw syntax_error(curr_it);
+    if(it_cur == it_end || it_cur->value() != val) {
+        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value()) ) 
+        throw syntax_error(it_cur);
     }
     FOUND("value")
-    return *(curr_it++);
+    return *(it_cur++);
 }
 
-Token& _pop_type(const string& val, IT& curr_it, const IT it_end) {
+Token& _pop_type(const string& val, IT& it_cur, const IT it_end) {
     /**
      * @brief Check if the current token has the right type
      * @param val
@@ -50,12 +50,12 @@ Token& _pop_type(const string& val, IT& curr_it, const IT it_end) {
      * @return bool
      */
     SEARCH( "type : " << val)
-    if(curr_it == it_end || curr_it->type() != val) {
-        FAILED("type: " << curr_it->type()) 
-        throw syntax_error(curr_it);
+    if(it_cur == it_end || it_cur->type() != val) {
+        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type()) ) 
+        throw syntax_error(it_cur);
     }
     FOUND("type")
-    return *(curr_it++);
+    return *(it_cur++);
 }
 
 Token parse(vector<Token>& v){

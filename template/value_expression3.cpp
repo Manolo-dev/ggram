@@ -22,7 +22,7 @@ Token& operator<<(Token& tkn, const vector<Token>& new_children ){
 }
 
 typedef Token (*popfunction)(IT&, const IT);
-vector<Token> _pop_while(const popfunction pop, IT& curr_it, const IT it_end) {
+vector<Token> _pop_while(const popfunction pop, IT& it_cur, const IT it_end) {
     /**
      * @brief Loop the expression contained in the curly brackets
      * @param f
@@ -30,14 +30,14 @@ vector<Token> _pop_while(const popfunction pop, IT& curr_it, const IT it_end) {
      * @return bool
      */
     SEARCH("while")
-    Token master = pop(curr_it,it_end);
+    Token master = pop(it_cur,it_end);
     if(master.is_error()){
         FAILED("while")
         return {master};
     }
-    while(curr_it != it_end) {
+    while(it_cur != it_end) {
         LOOP
-        const Token res = pop(curr_it, it_end);
+        const Token res = pop(it_cur, it_end);
         if(res.is_error()){
             break;
         }
@@ -47,7 +47,7 @@ vector<Token> _pop_while(const popfunction pop, IT& curr_it, const IT it_end) {
     return master.children();
 }
 
-Token _pop_value(const string& val, IT& curr_it, const IT it_end) {
+Token _pop_value(const string& val, IT& it_cur, const IT it_end) {
     /**
      * @brief Check if the current token has the right value
      * @param val
@@ -55,15 +55,19 @@ Token _pop_value(const string& val, IT& curr_it, const IT it_end) {
      * @return bool
      */
     SEARCH("value :" << val)
-    if(curr_it == it_end || curr_it->value() != val) {
-        FAILED("value: " << curr_it->value()) 
-        return curr_it -> make_error_copy();
+    if(it_cur == it_end){
+        FAILED("value: EOF") 
+        return Token("EOF", true);
+    }
+    if( it_cur->value() != val) {
+        FAILED("value: " << it_cur->value()) 
+        return it_cur -> make_error_copy();
     }
     FOUND("value")
-    return *(curr_it++);
+    return *(it_cur++);
 }
 
-Token _pop_type(const string& val, IT& curr_it, const IT it_end) {
+Token _pop_type(const string& val, IT& it_cur, const IT it_end) {
     /**
      * @brief Check if the current token has the right type
      * @param val
@@ -71,12 +75,16 @@ Token _pop_type(const string& val, IT& curr_it, const IT it_end) {
      * @return bool
      */
     SEARCH( "type : " << val)
-    if(curr_it == it_end || curr_it->type() != val) {
-        FAILED("type: " << curr_it->type()) 
-        return curr_it -> make_error_copy();
+    if(it_cur == it_end){
+        FAILED("type: EOF") 
+        return Token("EOF", true);
+    }
+    if( it_cur->type() != val) {
+        FAILED("type: " << it_cur->type()) 
+        return it_cur -> make_error_copy();
     }
     FOUND("type")
-    return *(curr_it++);
+    return *(it_cur++);
 }
 
 Token parse(vector<Token>& v){

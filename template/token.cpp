@@ -1,11 +1,11 @@
 
-Token::Token(string type, string value, int line, int column):
+Token::Token(string type, string value, int line, int column, bool error):
     _type(type),
     _value(value),
     _line(line),
     _column(column),
     _children(),
-    _is_error(false)
+    _is_error(error)
 {
     /**
      * @brief Construct a new Token object
@@ -16,6 +16,7 @@ Token::Token(string type, string value, int line, int column):
      * @return Token
      */
 }
+Token::Token(string type, bool error): Token(type, "", 0, 0, error) {}
 
 void Token::make_error(){
     _is_error = true;
