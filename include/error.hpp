@@ -1,10 +1,9 @@
 #pragma once
 
 #include <string>
-#include <iostream>
-#include <exception>
 #include <stdexcept>
 
+// ----------------------------- GgramError ------------------------------ //
 class GgramError : public std::runtime_error {
 private:
     const std::string _message;
@@ -14,6 +13,7 @@ public:
     virtual const char* what() const throw();
 };
 
+// ---------------------- InvalidFileExtensionError ---------------------- //
 class InvalidFileExtensionError : public GgramError {
 private:
     const std::string _message;
@@ -23,6 +23,7 @@ public:
     virtual const char* what() const throw();
 };
 
+// ---------------------------- FileNotFound ----------------------------- //
 class FileNotFound : public GgramError {
 private:
     const std::string _message;
@@ -32,6 +33,7 @@ public:
     virtual const char* what() const throw();
 };
 
+// ------------------------- NoFilenameSpecified ------------------------- //
 class NoFilenameSpecified : public GgramError {
 private:
     const std::string _message;
@@ -41,6 +43,7 @@ public:
     virtual const char* what() const throw();
 };
 
+// ----------------------------- RegexError ------------------------------ //
 class RegexError : public GgramError {
 private:
     const std::string _message;
@@ -51,6 +54,7 @@ public:
     virtual const char* what() const throw();
 };
 
+// ---------------------------- InvalidSyntax ---------------------------- //
 class InvalidSyntax : public GgramError {
 private:
     const std::string _message;
@@ -61,6 +65,7 @@ public:
     virtual const char* what() const throw();
 };
 
+// ----------------------------- InvalidRule ----------------------------- //
 class InvalidRule : public GgramError {
 private:
     const std::string _message;
@@ -71,6 +76,7 @@ public:
     virtual const char* what() const throw();
 };
 
+// ----------------------------- InputError ------------------------------ //
 class InputError : public GgramError {
 private:
     const std::string _message;
@@ -80,6 +86,7 @@ public:
     virtual const char* what() const throw();
 };
 
+// ------------------------------ BnfError ------------------------------- //
 class BnfError : public GgramError {
 private:
     const std::string _message;

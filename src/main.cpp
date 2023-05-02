@@ -3,12 +3,6 @@
 #include <string>
 #include <regex>
 #include <vector>
-#include <stack>
-#include <cstring>
-#include <cstdint>
-#include <cstdio>
-#include <cctype>
-#include <algorithm>
 
 #include "error.hpp"
 #include "input_handler.hpp"

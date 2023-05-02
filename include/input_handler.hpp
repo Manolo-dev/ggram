@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <cstring>
 #include <filesystem>
 
 /**
@@ -55,9 +54,9 @@ namespace InputHandler {
      * corresponding to the given id, if it finds it, it returns the parameter handler
      * otherwise it returns a nullptr
     */
-    const ParameterHandler* getHandlerFromParam(const char * const param, std::string& remaining); // param is either "-short_id" or "--long_id"
+    const ParameterHandler* getHandlerFromParam(const std::string& param, std::string& remaining); // param is either "-short_id" or "--long_id"
     const ParameterHandler* getHandlerFromShortID(const char short_id);
-    const ParameterHandler* getHandlerFromLongID(const char * const long_id);
+    const ParameterHandler* getHandlerFromLongID(const std::string& long_id);
     const ParameterHandler* getHandlerFromAnyID(const std::string& id);
 
     

@@ -1,8 +1,3 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <cassert>
-
 #include "error.hpp"
 #include "input_handler.hpp"
 
@@ -38,14 +33,15 @@ namespace InputHandler {
     //------------------------------------------------------------------------//
     //------------------------ Parameter getters -----------------------------//
     //------------------------------------------------------------------------//
-    const ParameterHandler* getHandlerFromParam(const char * const param_name,  std::string& remaining) {
-        assert(param_name != nullptr);
-        assert(param_name[0] == '-');
-        if(param_name[1] == '-'){
+    const ParameterHandler* getHandlerFromParam(const std::string& param_name,  std::string& remaining) {
+        if( param_name.size() < 2 || param_name[0] != '-' ){ 
             remaining = "";
-            return getHandlerFromLongID(&param_name[2]);
+            return nullptr; 
+        } else if( param_name[1] == '-' ){
+            remaining = "";
+            return getHandlerFromLongID(param_name.substr(2));
         } else {
-            remaining = std::string(&param_name[2]);
+            remaining = param_name.substr(2);
             return getHandlerFromShortID(param_name[1]);
         }
     }
@@ -59,10 +55,10 @@ namespace InputHandler {
         return nullptr;
     }
 
-    const ParameterHandler* getHandlerFromLongID(const char * const long_id) {
-        if(long_id == nullptr){ return nullptr; }
+    const ParameterHandler* getHandlerFromLongID(const std::string& long_id) {
+        
         for(const ParameterHandler &param : PARAMETER_LIST) {
-            if(param.long_id != nullptr && strcmp(long_id, param.long_id) == 0) {
+            if(param.long_id != nullptr && long_id == param.long_id) {
                 return &param;
             }
         }
@@ -76,7 +72,7 @@ namespace InputHandler {
             param_ptr = getHandlerFromShortID(id[0]);
         }
         if(param_ptr == nullptr) {
-            param_ptr = getHandlerFromLongID(id.c_str());
+            param_ptr = getHandlerFromLongID(id);
         }
         return param_ptr;
     }
@@ -129,29 +125,18 @@ namespace InputHandler {
             throw InputError("Missing arguments");
         }
     }
-
-    bool ends_with(const std::string& s , const std::string& end){
-        if(end.size() > s.size()){
-            return false;
-        }
-        for (size_t i = 0; i < end.size(); ++i){
-            if(s[s.size() - i - 1] != end[end.size() - i - 1]){
-                return false;
-            }
-        }
-        return true;
-    }
     // ----------------- Default Parameter Handler ----------------- //
     // Special Handler ( doesn't need a structure ): called with what is before the first named parameter
     void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
-        check_arg_list_size(arg_list, 0, 2);
+        check_arg_list_size(arg_list, 0, 3);
         if(arg_list.size() == 0) {
             return;
-        } else if(arg_list.size() == 1) {
-            inputFile(arg_list, cfg);
-        } else if(arg_list.size() == 2) {
-            inputFile({arg_list[0]}, cfg);
+        }
+        inputFile({arg_list[0]}, cfg);
+        if(arg_list.size() == 2) {
             outputFile({arg_list[1]}, cfg);
+        } else if(arg_list.size() == 3) {
+            outputFile({arg_list[1], arg_list[2]}, cfg);
         }
     }
 
