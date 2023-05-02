@@ -20,13 +20,13 @@ namespace InputHandler {
     // These lists contains the arguments recieved for a given parameter
     typedef std::vector<std::string> ArgList;
 
-    enum class ResultType { ORS, TRY_CATCHS };
+    enum class ResultType { ORS, TRY_CATCHS, ERROR_TOKEN };
     // The configuration, will contain everything we got from the input arguments
     struct Configuration {
         std::string input_filename = "";
         std::filesystem::path output_filepath_cpp = "parser.cpp";
         std::filesystem::path output_filepath_hpp = "parser.hpp";
-        ResultType result_type = ResultType::TRY_CATCHS;
+        ResultType result_type = ResultType::ERROR_TOKEN;
     };
 
     // update_config_function is intended to update the configuration
@@ -131,7 +131,7 @@ namespace InputHandler {
         'r',
         "restype",
         "Control the type of code you want for the parser.\n"
-        "    Values : ORS / or, TRY_CATCHS / tc (default)",
+        "    Values : ORS / or, TRY_CATCHS / tc, ERROR_TOKEN / etk (default)",
         &resultParserType
     };
 

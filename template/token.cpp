@@ -4,7 +4,8 @@ Token::Token(string type, string value, int line, int column):
     _value(value),
     _line(line),
     _column(column),
-    _children()
+    _children(),
+    _is_error(false)
 {
     /**
      * @brief Construct a new Token object
@@ -14,6 +15,14 @@ Token::Token(string type, string value, int line, int column):
      * @param column
      * @return Token
      */
+}
+
+void Token::make_error(){
+    _is_error = true;
+}
+
+bool Token::is_error() const{
+    return _is_error;
 }
 
 void Token::push(Token tree) {

@@ -20,16 +20,20 @@ bool _pop_while(bool (*f)(Token &), vector<Token> &master) {
      * @param master
      * @return bool
      */
+    SEARCH("while")
     Token c;
     if(f(c)) {
+        FAILED("while")
         it_err = it;
         return 1;
     }
     master += c.children();
     while(it != it_end) {
+        LOOP
         if(f(c)) break;
         master += c.children();
     }
+    FOUND("while")
     return 0;
 }
 
@@ -40,12 +44,15 @@ bool _pop_value(const string& val, Token &master) {
      * @param master
      * @return bool
      */
+    SEARCH("value :" << val)
     if(it == it_end || it->value() != val) {
+        FAILED("value: " << it->value()) 
         it_err = it;
         return 1;
     }
     master = *it;
     it++;
+    FOUND("value")
     return 0;
 }
 
@@ -56,12 +63,15 @@ bool _pop_type(const string& val, Token &master) {
      * @param master
      * @return bool
      */
+    SEARCH( "type : " << val)
     if(it == it_end || it->type() != val) {
+        FAILED("type: " << it->type()) 
         it_err = it;
         return 1;
     }
     master = *it;
     it++;
+    FOUND("type")
     return 0;
 }
 
