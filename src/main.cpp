@@ -141,10 +141,10 @@ string generateSimpleRulePopFunction(
             result += "    vector<Token> current;\n";
             break;
         case InputHandler::ResultType::ERROR_TOKEN :
-            result += "    SEARCH(" + name + ")"; 
+            result += "    SEARCH(\"" + name + "\")"; 
         case InputHandler::ResultType::TRY_CATCHS : 
             result += "    const IT start_token = curr_it;\n" ;
-            result += "    Token master(\"" + name + "\", \"\", start_token -> line(), start_token -> column()); \n";
+            result += "    Token master(\"" + name + "\", \"\", start_token -> line(), start_token -> column()); \n\n";
             break;
         default:
             throw runtime_error("Not yet implemented here !");
@@ -236,8 +236,10 @@ string generateSimpleRulePopFunction(
                     result += " || ";
                     break;
                 case InputHandler::ResultType::TRY_CATCHS :
-                case InputHandler::ResultType::ERROR_TOKEN : 
                     result += " << ";
+                    break;
+                case InputHandler::ResultType::ERROR_TOKEN : 
+                    result += ";\n    if(!master.is_error())\n        master <<";
                     break;
                 default:
                     throw runtime_error("Not yet implemented here !");
@@ -252,10 +254,10 @@ string generateSimpleRulePopFunction(
                 result += ";\n    } catch(syntax_error &e) { master.children().clear(); curr_it = start_token; }\n";
                 break;
             case InputHandler::ResultType::ERROR_TOKEN :
-                result += "    if(!master.is_error()){";
-                result += "        FOUND(\"" + name + "\")";
-                result += "        return master ;" ;
-                result += "    } master.clear(); curr_it = start_token;";
+                result += ";\n    if(!master.is_error()){\n";
+                result += "        FOUND(\"" + name + "\")\n";
+                result += "        return master ;\n" ;
+                result += "    } master.clear(); curr_it = start_token;\n\n";
                 break;
             default:
                 throw runtime_error("Not yet implemented here !");

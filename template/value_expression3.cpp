@@ -3,7 +3,8 @@ Token& operator<<(Token& tkn, const Token& new_child ){
         return tkn;
     }
     if(new_child.is_error()){
-        return new_child;
+        tkn = new_child;
+        return tkn;
     }
     tkn.children().push_back(new_child);
     return tkn;
@@ -13,14 +14,15 @@ Token& operator<<(Token& tkn, const vector<Token>& new_children ){
         return tkn;
     }
     if(new_children[0].is_error()){
-        return new_children[0];
+        tkn = new_children[0];
+        return tkn;
     }
     tkn.children() += new_children;
     return tkn;
 }
 
 typedef Token (*popfunction)(IT&, const IT);
-vector<Token>&& _pop_while(const popfunction pop, IT& curr_it, const IT it_end) {
+vector<Token> _pop_while(const popfunction pop, IT& curr_it, const IT it_end) {
     /**
      * @brief Loop the expression contained in the curly brackets
      * @param f
@@ -45,7 +47,7 @@ vector<Token>&& _pop_while(const popfunction pop, IT& curr_it, const IT it_end) 
     return master.children();
 }
 
-Token& _pop_value(const string& val, IT& curr_it, const IT it_end) {
+Token _pop_value(const string& val, IT& curr_it, const IT it_end) {
     /**
      * @brief Check if the current token has the right value
      * @param val
@@ -61,7 +63,7 @@ Token& _pop_value(const string& val, IT& curr_it, const IT it_end) {
     return *(curr_it++);
 }
 
-Token& _pop_type(const string& val, IT& curr_it, const IT it_end) {
+Token _pop_type(const string& val, IT& curr_it, const IT it_end) {
     /**
      * @brief Check if the current token has the right type
      * @param val
@@ -74,7 +76,7 @@ Token& _pop_type(const string& val, IT& curr_it, const IT it_end) {
         return curr_it -> make_error_copy();
     }
     FOUND("type")
-    return *(curr_it++)
+    return *(curr_it++);
 }
 
 Token parse(vector<Token>& v){

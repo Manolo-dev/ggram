@@ -236,7 +236,7 @@ namespace InputHandler {
         } else if(arg == "ORS" || arg == "or"){
             cfg.result_type = ResultType::ORS;
         } else if(arg == "ERROR_TOKEN" || arg == "etk"){
-            cfg.result_type = ResultType::ORS;
+            cfg.result_type = ResultType::ERROR_TOKEN;
         } else {
             throw InputError("Invalid argument :" + arg);
         }

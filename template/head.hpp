@@ -31,8 +31,11 @@ public:
     int line() const;
     int column() const;
     bool is_error() const;
+    void clear();
     void make_error();
+    Token make_error_copy();
     vector<Token>& children();
+    const vector<Token>& children() const;
     ostream& print(ostream& os, int depth = 0) const ;
     friend ostream& operator<<(ostream& os, const Token& tree);
 private:
@@ -77,7 +80,7 @@ Token parse(const string& code);
     unsigned int indent_lvl = 0;
     string indentation(){
         string res = "";
-        for (int i = 0; i < indent_lvl; ++i)
+        for (int i = 0; i < indent_lvl && i < 20; ++i)
         {
             res += "   ";
         }

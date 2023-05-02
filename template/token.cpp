@@ -25,6 +25,15 @@ bool Token::is_error() const{
     return _is_error;
 }
 
+void Token::clear(){
+    _children.clear();
+    _is_error = false;
+}
+Token Token::make_error_copy(){
+    Token res(_type, _value,_line, _column );
+    res.make_error();
+    return res;
+}
 void Token::push(Token tree) {
     /**
      * @brief Push a new child to the tree
@@ -76,6 +85,13 @@ int Token::column() const {
     return this->_column;
 }
 vector<Token>& Token::children() {
+    /**
+     * @brief Get the Children of the Token in the form of a vector
+     * @return vector<Token>
+     */
+    return this->_children;
+}
+const vector<Token>& Token::children() const {
     /**
      * @brief Get the Children of the Token in the form of a vector
      * @return vector<Token>
