@@ -135,16 +135,16 @@ string generateSimpleRulePopFunction(
     string result;
     switch( res_type ){
         case InputHandler::ResultType::ORS :
-            result += "    SEARCH(\"" + name + "\")"; 
-            result += "    IT t = it;\n";
-            result += "    master = Token(\"" + name + "\"); \n";
+            result += "    const IT it_start = it_cur;\n" ;
+            result += "    master = Token(\"" + name + "\", \"\", it_start -> line(), it_start -> column()); \n";
             result += "    vector<Token> current;\n";
+            result += "    SEARCH(\"" + name + "\")\n"; 
             break;
         case InputHandler::ResultType::ERROR_TOKEN :
-            result += "    SEARCH(\"" + name + "\")"; 
+            result += "    SEARCH(\"" + name + "\")\n"; 
         case InputHandler::ResultType::TRY_CATCHS : 
-            result += "    const IT start_token = curr_it;\n" ;
-            result += "    Token master(\"" + name + "\", \"\", start_token -> line(), start_token -> column()); \n\n";
+            result += "    const IT it_start = it_cur;\n" ;
+            result += "    Token master(\"" + name + "\", \"\", it_start -> line(), it_start -> column()); \n\n";
             break;
         default:
             throw runtime_error("Not yet implemented here !");
@@ -170,9 +170,9 @@ string generateSimpleRulePopFunction(
         for(size_t i = 0; i < x.size(); i++) {
             string prefix, suffix;
             /*
-            {truc} -> pop_while(truc, current) OU pop_while(truc, curr_it, it_end)
-            <truc> -> pop_truc(createNext(current))  OU pop_truc(curr_it, it_end)
-            "truc" -> pop_value("truc", createNext(current)) OU pop_value("truc", curr_it, it_end)
+            {truc} -> pop_while(truc, current) OU pop_while(truc, it_cur, it_end)
+            <truc> -> pop_truc(createNext(current))  OU pop_truc(it_cur, it_end)
+            "truc" -> pop_value("truc", createNext(current)) OU pop_value("truc", it_cur, it_end)
             otherwise : INVALID_SYNTAX
             */
             
@@ -186,7 +186,7 @@ string generateSimpleRulePopFunction(
                             break;
                         case InputHandler::ResultType::TRY_CATCHS : 
                         case InputHandler::ResultType::ERROR_TOKEN : 
-                            suffix = ", curr_it, it_end)";
+                            suffix = ", it_cur, it_end)";
                             break;
                         default:
                             throw runtime_error("Not yet implemented here !");
@@ -202,7 +202,7 @@ string generateSimpleRulePopFunction(
                             break;
                         case InputHandler::ResultType::TRY_CATCHS :
                         case InputHandler::ResultType::ERROR_TOKEN : 
-                            suffix = "(curr_it, it_end)";
+                            suffix = "(it_cur, it_end)";
                             break;
                         default:
                             throw runtime_error("Not yet implemented here !");
@@ -218,7 +218,7 @@ string generateSimpleRulePopFunction(
                             break;
                         case InputHandler::ResultType::TRY_CATCHS : 
                         case InputHandler::ResultType::ERROR_TOKEN : 
-                            suffix = "\", curr_it, it_end)";
+                            suffix = "\", it_cur, it_end)";
                             break;
                         default:
                             throw runtime_error("Not yet implemented here !");
@@ -247,17 +247,17 @@ string generateSimpleRulePopFunction(
         }
         switch( res_type ){
             case InputHandler::ResultType::ORS :
-                result += ") it = t;\n";
+                result += ") it_cur = it_start;\n";
                 result += "    else {master.children() += current; FOUND(\"" + name + "\") return 0;};\n";
                 break;
             case InputHandler::ResultType::TRY_CATCHS : 
-                result += ";\n    } catch(syntax_error &e) { master.children().clear(); curr_it = start_token; }\n";
+                result += ";\n    } catch(syntax_error &e) { master.children().clear(); it_cur = it_start; }\n";
                 break;
             case InputHandler::ResultType::ERROR_TOKEN :
                 result += ";\n    if(!master.is_error()){\n";
                 result += "        FOUND(\"" + name + "\")\n";
                 result += "        return master ;\n" ;
-                result += "    } master.clear(); curr_it = start_token;\n\n";
+                result += "    } master.clear(); it_cur = it_start;\n\n";
                 break;
             default:
                 throw runtime_error("Not yet implemented here !");
@@ -269,7 +269,7 @@ string generateSimpleRulePopFunction(
             result += "    return 1;\n";
             break;
         case InputHandler::ResultType::TRY_CATCHS : 
-            result += "    throw syntax_error(start_token);\n" ;
+            result += "    throw syntax_error(it_start);\n" ;
             break;
         case InputHandler::ResultType::ERROR_TOKEN : 
             result += "    master.make_error();\n";
@@ -381,7 +381,7 @@ void writeLexemesPopFunctions( const vector<string> &token_types,
                 break;
             case InputHandler::ResultType::TRY_CATCHS : 
             case InputHandler::ResultType::ERROR_TOKEN : 
-                // //Writes : Token pop_token(IT& curr_it, const IT it_end) { return pop_type("token", curr_it, it_end); }
+                // //Writes : Token pop_token(IT& it_cur, const IT it_end) { return pop_type("token", it_cur, it_end); }
                 out_cpp << "Token pop_"
                     << token_name
                     << "(IT& it_curr, const IT it_end) { return _pop_type(\"" + token_name + "\", it_curr, it_end); }"
@@ -533,7 +533,7 @@ void writeRulesPopFunctions( vector<pair<string, Rule>> rules, ofstream &out_cpp
                     break;
                 case InputHandler::ResultType::TRY_CATCHS : 
                 case InputHandler::ResultType::ERROR_TOKEN : 
-                    out_cpp << "Token " << POP_FUNCTION_PREFIX << aux_rule_name << "(IT& curr_it, const IT it_end) {" << endl;
+                    out_cpp << "Token " << POP_FUNCTION_PREFIX << aux_rule_name << "(IT& it_cur, const IT it_end) {" << endl;
                     break;
                 default:
                     throw runtime_error("Not yet implemented here !");
@@ -582,10 +582,10 @@ int main(int argc, char const *argv[]) {
     writeLexemesPopFunctions(lexeme_names, out_cpp, cfg.result_type);
 
     vector<pair<string, Rule>> rules = readRules(file, lineNum);
-    for(auto [rule_name, _] : rules) {
-        cout << rule_name << endl;
-        cout << _ << endl;
-    }
+    // for(auto [rule_name, _] : rules) {
+    //     cout << rule_name << endl;
+    //     cout << _ << endl;
+    // }
     writeRulesPopFunctions(rules, out_cpp, out_hpp, cfg.result_type);
 
     out_cpp << std::endl;
