@@ -72,7 +72,7 @@ std::string operator*(const std::string &s, uint32_t n) {
 	return out.str();
 }
 
-std::string operator*(uint32_t n, const std::string &s) {
+std::string operator*(size_t n, const std::string &s) {
 	return s * n;
 }
 
@@ -606,7 +606,7 @@ void writeRulesPopFunctions(
 		files << FileHandler::WriteMode::CPP
 			  << "/*                       Functions to pop tokens of "
 				 "type : "
-			  << rule_name << (40 - rule_name.size()) * std::string(" ")
+			  << rule_name << (40UL - rule_name.size()) * std::string(" ")
 			  << "*/\n";
 		files << FileHandler::WriteMode::CPP
 			  << "/****************************************************"
