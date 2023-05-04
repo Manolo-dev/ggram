@@ -84,7 +84,7 @@ namespace InputHandler {
     void handleParameters(int argc, const char *argv[], Configuration &cfg) {
 		if (argc == 1) {
 			help({}, cfg);
-		}     
+		}
         int i = 1;
         // Handles default arguments
         while(i < argc && argv[i][0] != '-'){

@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <filesystem>
+#include <array>
 
 /**
  * This is the part that handles inputs from the user, these are the steps to add a parameter : 
@@ -138,7 +139,7 @@ namespace InputHandler {
 
 
     // This is the list of all parameter handlers that will be tested on the input
-    constexpr ParameterHandler PARAMETER_LIST[] = {
+    constexpr std::array<ParameterHandler, 6> PARAMETER_LIST = {
         eddyMalou_description,
         help_description,
         version_description,
