@@ -3,6 +3,7 @@
 #include <string>
 #include <regex>
 #include <vector>
+#include <array>
 
 #include "error.hpp"
 #include "input_handler.hpp"
@@ -17,6 +18,24 @@ struct PairRuleFunction {
     string name;
     string function;
 };
+
+enum LexemeName {IGNORE, COMMENT, RULENAME, ASSIGN, OR, PARENTH, ENDPARENTH, LOOP, ENDLOOP, OPTION, ENDOPTION, STRING, END};
+
+array<pair<LexemeName, regex>, 13> LEX_GGRAM_FILE = {{ // iteration on that, that why it isn't map
+    {LexemeName::IGNORE,     regex(R"-([ \n\r\s\t]+)-")           },
+    {LexemeName::COMMENT,    regex(R"-(#.+$)-")                   },
+    {LexemeName::RULENAME,   regex(R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-")},
+    {LexemeName::ASSIGN,     regex(R"-(::=)-")                    },
+    {LexemeName::OR,         regex(R"-(\|)-")                     },
+    {LexemeName::PARENTH,    regex(R"-(\()-")                     },
+    {LexemeName::ENDPARENTH, regex(R"-(\))-")                     },
+    {LexemeName::LOOP,       regex(R"-(\{)-")                     },
+    {LexemeName::ENDLOOP,    regex(R"-(\})-")                     },
+    {LexemeName::OPTION,     regex(R"-(\[)-")                     },
+    {LexemeName::ENDOPTION,  regex(R"-(\])-")                     },
+    {LexemeName::STRING,     regex(R"-(\"([^"]|\\")*\")-")        },
+    {LexemeName::END,        regex(R"-(;)-")                      }
+}};
 
 ostream& operator<<(ostream& os, vector<string> const &v) {
     os << "[";
@@ -281,8 +300,7 @@ vector<string> createLexemes(FileHandler &files, uint32_t &lineNum) {
     string line;
     smatch match;
 
-
-    // match with : lexeme_name   "lexeme_regex"
+    // match with : lexeme_name "lexeme_regex"
     const regex lexeme_infos_regex(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
 
     while(files.getline(line)) {
@@ -392,23 +410,7 @@ vector<pair<string, Rule>> readRules(FileHandler &files, uint32_t& lineNum) {
     string line;
     smatch match;
     Rule currentRule;
-    stack<string> brackets;
-
-    vector<pair<string, regex>> regexes = {
-        {".ignore", regex(R"-([ \n\r\s\t]+)-")},
-        {".comment", regex(R"-(#.+$)-")},
-        {"rulename", regex(R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-")},
-        {"assign", regex(R"-(::=)-")},
-        {"or", regex(R"-(\|)-")},
-        {"parenth", regex(R"-(\()-")},
-        {"endparenth", regex(R"-(\))-")},
-        {"loop", regex(R"-(\{)-")},
-        {"endloop", regex(R"-(\})-")},
-        {"option", regex(R"-(\[)-")},
-        {"endoption", regex(R"-(\])-")},
-        {"string", regex(R"-(\"([^"]|\\")*\")-")},
-        {"end", regex(R"-(;)-")}
-    };
+    stack<LexemeName> brackets;
 
     while(files.getline(line)) {
         lineNum++;
@@ -416,11 +418,11 @@ vector<pair<string, Rule>> readRules(FileHandler &files, uint32_t& lineNum) {
         if(line == "---") break; // threat only the second part of the file
         if(line == "") continue; // skip empty line
         while(line.size() > 0) {
-            for(const auto &[name, regex] : regexes) {
+            for(auto [name, regex] : LEX_GGRAM_FILE) {
                 if(regex_search(line, match, regex, regex_constants::match_continuous | regex_constants::match_not_null)) {
-                    if(name == ".ignore" || name == ".comment") {
+                    if(name == LexemeName::IGNORE || name == LexemeName::COMMENT) {
                         line = match.suffix();
-                    } else if(name == "end") {
+                    } else if(name == LexemeName::END) {
                         if(currentRule.size() < 2)
                             throw InvalidSyntax(lineNum, "Expected rule name");
                         if(brackets.size() != 0)
@@ -432,24 +434,24 @@ vector<pair<string, Rule>> readRules(FileHandler &files, uint32_t& lineNum) {
                         line = match.suffix();
                         currentRule.clear();
                     } else {
-                        if(currentRule.size() == 0 && name != "rulename")
+                        if(currentRule.size() == 0 && name != LexemeName::RULENAME)
                             throw InvalidSyntax(lineNum, "Expected rule name");
-                        if(currentRule.size() == 1 && name != "assign")
+                        if(currentRule.size() == 1 && name != LexemeName::ASSIGN)
                             throw InvalidSyntax(lineNum, "Expected '::='");
                         if(currentRule.size() == 0
                             && find(allRuleNames.begin(), allRuleNames.end(), match.str(0)) != allRuleNames.end())
                             throw InvalidSyntax(lineNum, "Rule '" + match.str(0) + "' already defined");
-                        if(name == "parenth" || name == "loop" || name == "option") {
+                        if(name == LexemeName::PARENTH || name == LexemeName::LOOP || name == LexemeName::OPTION) {
                             brackets.push(name);
-                        } else if(name == "endparenth" || name == "endloop" || name == "endoption") {
-                            if(name == "endparenth" && brackets.top() != "parenth")
-                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
+                        } else if(name == LexemeName::ENDPARENTH || name == LexemeName::ENDLOOP || name == LexemeName::ENDOPTION) {
+                            if(name == LexemeName::ENDPARENTH && brackets.top() != LexemeName::PARENTH)
+                                throw InvalidSyntax(lineNum, "Unexpected '" + match.str(0) + "'");
                             if(brackets.empty())
-                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
-                            if(name == "endloop" && brackets.top() != "loop")
-                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
-                            if(name == "endoption" && brackets.top() != "option")
-                                throw InvalidSyntax(lineNum, "Unexpected '" + name + "'");
+                                throw InvalidSyntax(lineNum, "Unexpected '" + match.str(0) + "'");
+                            if(name == LexemeName::ENDLOOP && brackets.top() != LexemeName::LOOP)
+                                throw InvalidSyntax(lineNum, "Unexpected '" + match.str(0) + "'");
+                            if(name == LexemeName::ENDOPTION && brackets.top() != LexemeName::OPTION)
+                                throw InvalidSyntax(lineNum, "Unexpected '" + match.str(0) + "'");
                             brackets.pop();
                         }
 
@@ -460,16 +462,14 @@ vector<pair<string, Rule>> readRules(FileHandler &files, uint32_t& lineNum) {
             }
         }
     }
-    if(!brackets.empty())
-        throw InvalidSyntax(lineNum, "Expected ')', '}' or ']'");
-    if(!currentRule.empty())
+    if(currentRule.empty())
         throw InvalidSyntax(lineNum, "Expected ';'");
     return rules;
 }
 void writeRulesPopFunctions(const vector<pair<string, Rule>> &rules, FileHandler &files, InputHandler::ResultType res_type) {
     // Declare rules' pop functions
-    for(const auto &[rule_name, _] : rules) {
-        switch(res_type){
+    for(auto [rule_name, _] : rules) {
+        switch(res_type) {
             case InputHandler::ResultType::ORS :
                 files << FileHandler::WriteMode::HPP << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
                 break;

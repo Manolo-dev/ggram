@@ -80,8 +80,7 @@ Token parse(const string& code);
     unsigned int indent_lvl = 0;
     string indentation(){
         string res = "";
-        for (int i = 0; i < indent_lvl && i < 20; ++i)
-        {
+        for (int i = 0; i < indent_lvl && i < 20; ++i) {
             res += "   ";
         }
         return res;
