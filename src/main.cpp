@@ -6,6 +6,7 @@
 
 #include "error.hpp"
 #include "input_handler.hpp"
+#include "file_handler.hpp"
 
 using namespace std;
 using combinations = vector<vector<string>>;
@@ -16,33 +17,6 @@ struct PairRuleFunction {
     string name;
     string function;
 };
-
-struct FileHandler {
-	ifstream input_file;
-    ofstream out_cpp;
-    ofstream out_hpp;
-
-	~FileHandler() {
-		input_file.close();
-		out_cpp.close();
-		out_hpp.close();
-	}
-};
-
-
-void copy(string filename, ofstream &output) {
-    ifstream input(filename);
-
-    if(input.is_open()) {
-        string line;
-        while(getline(input, line)) {
-            output << line << endl;
-        }
-        output << endl;
-    } else {
-        throw FileNotFound(filename);
-    }
-}
 
 ostream& operator<<(ostream& os, vector<string> const &v) {
     os << "[";
@@ -165,7 +139,7 @@ string generateSimpleRulePopFunction(
             result += "    Token master(\"" + name + "\", \"\", it_start -> line(), it_start -> column()); \n\n";
             break;
         default:
-            throw runtime_error("Not yet implemented here !");
+            throw std::invalid_argument("Not yet implemented here !");
     }
 
     for(vector<string>&x : generateCombinations(rule)) {
@@ -182,7 +156,7 @@ string generateSimpleRulePopFunction(
                 result += "    master << ";
                 break;
             default:
-                throw runtime_error("Not yet implemented here !");
+                throw std::invalid_argument("Not yet implemented here !");
         }
 
         for(size_t i = 0; i < x.size(); i++) {
@@ -207,7 +181,7 @@ string generateSimpleRulePopFunction(
                             suffix = ", it_cur, it_end)";
                             break;
                         default:
-                            throw runtime_error("Not yet implemented here !");
+                            throw std::invalid_argument("Not yet implemented here !");
                     }
                     break;
 
@@ -223,7 +197,7 @@ string generateSimpleRulePopFunction(
                             suffix = "(it_cur, it_end)";
                             break;
                         default:
-                            throw runtime_error("Not yet implemented here !");
+                            throw std::invalid_argument("Not yet implemented here !");
                     }
                     break;
 
@@ -239,7 +213,7 @@ string generateSimpleRulePopFunction(
                             suffix = "\", it_cur, it_end)";
                             break;
                         default:
-                            throw runtime_error("Not yet implemented here !");
+                            throw std::invalid_argument("Not yet implemented here !");
                     }
                     break;
                 default :
@@ -260,7 +234,7 @@ string generateSimpleRulePopFunction(
                     result += ";\n    if(!master.is_error())\n        master <<";
                     break;
                 default:
-                    throw runtime_error("Not yet implemented here !");
+                    throw std::invalid_argument("Not yet implemented here !");
             }
         }
         switch(res_type){
@@ -278,7 +252,7 @@ string generateSimpleRulePopFunction(
                 result += "    } master.clear(); it_cur = it_start;\n\n";
                 break;
             default:
-                throw runtime_error("Not yet implemented here !");
+                throw std::invalid_argument("Not yet implemented here !");
         }
     }
     switch(res_type){
@@ -295,29 +269,9 @@ string generateSimpleRulePopFunction(
             result += "    return master;\n";
             break;
         default:
-            throw runtime_error("Not yet implemented here !");
+            throw std::invalid_argument("Not yet implemented here !");
     }
     return result;
-}
-
-void tryToOpenFiles(const string &input_filename, const std::filesystem::path &output_filename_cpp, const std::filesystem::path &output_filename_hpp,
-            FileHandler & files) {
-
-    files.input_file = ifstream(input_filename);
-    if(!files.input_file.is_open()) {
-        throw FileNotFound(input_filename);
-    }
-
-    remove(output_filename_cpp.string().c_str()); // TODO: ask for confirmation
-    files.out_cpp = ofstream(output_filename_cpp, ios::app);
-    if(!files.out_cpp.is_open()) {
-        throw FileNotFound(output_filename_cpp.string());
-    }
-    remove(output_filename_hpp.string().c_str()); // TODO: ask for confirmation
-    files.out_hpp = ofstream(output_filename_hpp, ios::app);
-    if(!files.out_hpp.is_open()) {
-        throw FileNotFound(output_filename_hpp.string());
-    }
 }
 
 vector<string> createLexemes(FileHandler &files, uint32_t &lineNum) {
@@ -331,7 +285,7 @@ vector<string> createLexemes(FileHandler &files, uint32_t &lineNum) {
     // match with : lexeme_name   "lexeme_regex"
     const regex lexeme_infos_regex(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
 
-    while(getline(files.input_file, line)) {
+    while(files.getline(line)) {
         lineNum++;
 
         if(line == "") continue; // skip empty line
@@ -357,25 +311,25 @@ vector<string> createLexemes(FileHandler &files, uint32_t &lineNum) {
             //   const std::regex <lexeme_name>_regex("<lexeme_regex>");
             //   constexpr Lexeme <lexeme_name>("<lexeme_name>", <lexeme_name>_regex);
 
-            files.out_hpp << "const std::regex " + lexeme_name + "_regex(\"" + lexeme_regex + "\");" << std::endl;
+            files<< FileHandler::WriteMode::HPP << "const std::regex " + lexeme_name + "_regex(\"" + lexeme_regex + "\");" << std::endl;
         } else {
             throw InvalidSyntax(lineNum, "Invalid lexeme declaration");
         }
     }
 
-    files.out_hpp << std::endl
+    files << FileHandler::WriteMode::CPP << std::endl
                << "constexpr Lexeme LEXEME_LIST["
                << lexeme_names.size() + special_lexeme_names.size()
                << "] = {"
                << std::endl;
 
     for(const string &lexeme_name : lexeme_names) {
-        files.out_hpp << "    {\"" + lexeme_name + "\", " + lexeme_name + "_regex}," << std::endl;
+        files << FileHandler::WriteMode::HPP << "    {\"" + lexeme_name + "\", " + lexeme_name + "_regex}," << std::endl;
     }
     for(const string &lexeme_name : special_lexeme_names) {
-        files.out_hpp << "    {\"" + lexeme_name + "\", _" + &(lexeme_name[1]) + "_regex}," << std::endl;
+        files << FileHandler::WriteMode::HPP << "    {\"" + lexeme_name + "\", _" + &(lexeme_name[1]) + "_regex}," << std::endl;
     }
-    files.out_hpp << "};" << std::endl << std::endl;
+    files << FileHandler::WriteMode::HPP << "};" << std::endl << std::endl;
 
     if(line != "---") {
         throw InvalidSyntax(lineNum, "Expected '---'");
@@ -385,13 +339,13 @@ vector<string> createLexemes(FileHandler &files, uint32_t &lineNum) {
 }
 
 void writeLexemesPopFunctions(const vector<string> &token_types,
-    ofstream &out_cpp, InputHandler::ResultType res_type) {
+    FileHandler &files, InputHandler::ResultType res_type) {
 
     for(const string & token_name : token_types) {
         switch(res_type) {
             case InputHandler::ResultType::ORS : 
                 //Writes bool __token_name(Token & master) { return _type("token_name", master); }
-                out_cpp << "bool "
+                files << FileHandler::WriteMode::CPP << "bool "
                     << POP_FUNCTION_PREFIX
                     << token_name
                     << "(Token &master) { return _pop_type(\"" + token_name + "\", master); }"
@@ -400,16 +354,16 @@ void writeLexemesPopFunctions(const vector<string> &token_types,
             case InputHandler::ResultType::TRY_CATCHS : 
             case InputHandler::ResultType::ERROR_TOKEN : 
                 // //Writes : Token pop_token(IT& it_cur, const IT it_end) { return pop_type("token", it_cur, it_end); }
-                out_cpp << "Token pop_"
+                files << FileHandler::WriteMode::CPP << "Token pop_"
                     << token_name
                     << "(IT& it_curr, const IT it_end) { return _pop_type(\"" + token_name + "\", it_curr, it_end); }"
                     << endl;
                 break;
             default :
-                throw runtime_error("Not yet implemented here !");
+                throw std::invalid_argument("Not yet implemented here !");
         }
     }
-    out_cpp << endl;
+    files << FileHandler::WriteMode::CPP << endl;
 }
 
 void addRulePopFunctions(
@@ -432,7 +386,7 @@ void addRulePopFunctions(
     result.emplace_back(name, generateSimpleRulePopFunction(newRule, name, res_type));
 }
 
-vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
+vector<pair<string, Rule>> readRules(FileHandler &files, uint32_t& lineNum) {
     vector<pair<string, Rule>> rules;
     vector<string> allRuleNames;
     string line;
@@ -456,7 +410,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
         {"end", regex(R"-(;)-")}
     };
 
-    while(getline(file, line)) {
+    while(files.getline(line)) {
         lineNum++;
         if(line[0] == '#') continue; // ingnore comment
         if(line == "---") break; // threat only the second part of the file
@@ -517,39 +471,39 @@ void writeRulesPopFunctions(const vector<pair<string, Rule>> &rules, FileHandler
     for(const auto &[rule_name, _] : rules) {
         switch(res_type){
             case InputHandler::ResultType::ORS :
-                files.out_hpp << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
+                files << FileHandler::WriteMode::HPP << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
                 break;
             case InputHandler::ResultType::TRY_CATCHS : 
             case InputHandler::ResultType::ERROR_TOKEN : 
-                files.out_hpp << "Token " << POP_FUNCTION_PREFIX << rule_name << "(IT&, const IT);" << endl;
+                files << FileHandler::WriteMode::HPP << "Token " << POP_FUNCTION_PREFIX << rule_name << "(IT&, const IT);" << endl;
                 break;
             default:
-                throw runtime_error("Not yet implemented here !");
+                throw std::invalid_argument("Not yet implemented here !");
         }
     }
     // Define rules' pop functions
     for(const auto &[rule_name, rule_expr] : rules) {
-        files.out_cpp << "\n";
-        files.out_cpp << "/***************************************************************************************************/\n";
-        files.out_cpp << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/\n";
-        files.out_cpp << "/***************************************************************************************************/\n" ;
+        files << FileHandler::WriteMode::CPP << "\n";
+        files << FileHandler::WriteMode::CPP << "/***************************************************************************************************/\n";
+        files << FileHandler::WriteMode::CPP << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/\n";
+        files << FileHandler::WriteMode::CPP << "/***************************************************************************************************/\n" ;
         vector<PairRuleFunction> result;
         addRulePopFunctions(rule_expr, rule_name, result, res_type);
         for(const auto &[aux_rule_name, aux_rule_func ] : result) {
-            files.out_cpp << endl;
+            files << FileHandler::WriteMode::CPP << endl;
             switch(res_type){
                 case InputHandler::ResultType::ORS :
-                    files.out_cpp << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
+                    files << FileHandler::WriteMode::CPP << "bool " << POP_FUNCTION_PREFIX << aux_rule_name << "(Token &master) {" << endl;
                     break;
                 case InputHandler::ResultType::TRY_CATCHS : 
                 case InputHandler::ResultType::ERROR_TOKEN : 
-                    files.out_cpp << "Token " << POP_FUNCTION_PREFIX << aux_rule_name << "(IT& it_cur, const IT it_end) {" << endl;
+                    files << FileHandler::WriteMode::CPP << "Token " << POP_FUNCTION_PREFIX << aux_rule_name << "(IT& it_cur, const IT it_end) {" << endl;
                     break;
                 default:
-                    throw runtime_error("Not yet implemented here !");
+                    throw std::invalid_argument("Not yet implemented here !");
             }
-            files.out_cpp << aux_rule_func;
-            files.out_cpp << "}" << endl;
+            files << FileHandler::WriteMode::CPP << aux_rule_func;
+            files << FileHandler::WriteMode::CPP << "}" << endl;
         }
     }
 }
@@ -560,45 +514,45 @@ int main(int argc, char const *argv[]) {
 
 	FileHandler files;
 
-    tryToOpenFiles(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp, files);
+	files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);
 
     uint32_t lineNum = 0;
 
-    copy("template/head.hpp", files.out_hpp);
+	files.copy("template/head.hpp", FileHandler::WriteMode::HPP);
 
-    files.out_cpp << "#include " << cfg.output_filepath_hpp.filename() << std::endl;
+    files << FileHandler::WriteMode::CPP << "#include " << cfg.output_filepath_hpp.filename() << std::endl;
 
     vector<string> lexeme_names = createLexemes(files, lineNum);
 
-    copy("template/token.cpp", files.out_cpp);
-    copy("template/lex.cpp", files.out_cpp);
+	files.copy("template/token.cpp", FileHandler::WriteMode::CPP);
+	files.copy("template/lex.cpp", FileHandler::WriteMode::CPP);
 
     switch(cfg.result_type){
         case InputHandler::ResultType::ORS :
-            copy("template/value_expression.cpp", files.out_cpp);
+            files.copy("template/value_expression.cpp", FileHandler::WriteMode::CPP);
             break;
         case InputHandler::ResultType::TRY_CATCHS : 
-            copy("template/value_expression2.cpp", files.out_cpp);
+            files.copy("template/value_expression2.cpp", FileHandler::WriteMode::CPP);
             break;
         case InputHandler::ResultType::ERROR_TOKEN : 
-            copy("template/value_expression3.cpp", files.out_cpp);
+            files.copy("template/value_expression3.cpp", FileHandler::WriteMode::CPP);
             break;
         default:
-            throw runtime_error("Not yet implemented here !");
+            throw std::invalid_argument("Not yet implemented here !");
     }
 
-    writeLexemesPopFunctions(lexeme_names, files.out_cpp, cfg.result_type);
+    writeLexemesPopFunctions(lexeme_names, files, cfg.result_type);
 
-    vector<pair<string, Rule>> rules = readRules(files.input_file, lineNum);
+    vector<pair<string, Rule>> rules = readRules(files, lineNum);
     // for(auto [rule_name, _] : rules) {
     //     cout << rule_name << endl;
     //     cout << _ << endl;
     // }
     writeRulesPopFunctions(rules, files, cfg.result_type);
 
-    files.out_cpp << std::endl;
+    files << FileHandler::WriteMode::CPP << std::endl;
     
-    copy("template/main.cpp", files.out_cpp);
+    files.copy("template/main.cpp", FileHandler::WriteMode::CPP);
 
     return 0;
 }
