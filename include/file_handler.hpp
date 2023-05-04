@@ -9,7 +9,7 @@
  */
 class FileWriter {
   public:
-	template <class T> FileWriter &operator<<(const T &t) {
+	template<class T> FileWriter &operator<<(const T &t) {
 		file << t;
 		return *this;
 	}

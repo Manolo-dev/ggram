@@ -20,7 +20,7 @@
  */
 namespace InputHandler {
 // These lists contains the arguments recieved for a given parameter
-typedef std::vector<std::string> ArgList;
+using ArgList = std::vector<std::string>;
 
 enum class ResultType { ORS, TRY_CATCHS, ERROR_TOKEN };
 // The configuration, will contain everything we got from the input arguments
