@@ -100,10 +100,10 @@ void add_to_each_element(vector<vector<T>>& liste, const T& new_elem) {
 }
 
 inline vector<string> get_inside_brackets
-    (  const vector<string>& tree, 
-        size_t& i,
-        const string_view &open_bracket,
-        const string_view &closed_bracket) {
+    (const vector<string>& tree, 
+     size_t& i,
+     const string_view &open_bracket,
+     const string_view &closed_bracket) {
 
     unsigned int level = 1;
     vector<string> inside_brackets;
@@ -478,11 +478,11 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
                         line = match.suffix();
                         currentRule.clear();
                     } else {
-                        if(currentRule.size() == 0 && name != LexemeName::RULENAME)
+                        if(currentRule.empty() && name != LexemeName::RULENAME)
                             throw InvalidSyntax(lineNum, "Expected rule name");
                         if(currentRule.size() == 1 && name != LexemeName::ASSIGN)
                             throw InvalidSyntax(lineNum, "Expected '::='");
-                        if(currentRule.size() == 0
+                        if(currentRule.empty()
                             && find(allRuleNames.begin(), allRuleNames.end(), match.str(0)) != allRuleNames.end())
                             throw InvalidSyntax(lineNum, "Rule '" + match.str(0) + "' already defined");
                         if(name == LexemeName::PARENTH || name == LexemeName::LOOP || name == LexemeName::OPTION) {
@@ -506,7 +506,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
             }
         }
     }
-    if(currentRule.empty())
+    if(!currentRule.empty())
         throw InvalidSyntax(lineNum, "Expected ';'");
     return rules;
 }

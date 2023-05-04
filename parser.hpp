@@ -111,3 +111,6 @@ constexpr Lexeme LEXEME_LIST[5] = {
     {".ignore", _ignore_regex},
 };
 
+Token pop_program(IT&, const IT);
+Token pop_expr(IT&, const IT);
+Token pop_term(IT&, const IT);
