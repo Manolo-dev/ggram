@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include <iostream>
 #include <filesystem>
@@ -13,7 +14,7 @@
  *  - create a constexpr ParameterHandler structure just below
  *  - DON'T FORGET TO : add the structure tu the PARAMETER_LIST
  *  - finally define the update_config_function in the .cpp file 
- *      ( and don't forget to verify that length of the ArgList is correct  )
+ *      (and don't forget to verify that length of the ArgList is correct  )
  */
 namespace InputHandler {
     // These lists contains the arguments recieved for a given parameter
@@ -46,7 +47,7 @@ namespace InputHandler {
         void update_configuration(const ArgList &, Configuration &) const;
         std::ostream& print(std::ostream&) const;
     };
-    std::ostream& operator<<( std::ostream&, const ParameterHandler&);
+    std::ostream& operator<<(std::ostream&, const ParameterHandler&);
     
     //----------------------------- Handler getters ----------------------------------//
     /** 
@@ -54,10 +55,11 @@ namespace InputHandler {
      * corresponding to the given id, if it finds it, it returns the parameter handler
      * otherwise it returns a nullptr
     */
-    const ParameterHandler* getHandlerFromParam(const std::string& param, std::string& remaining); // param is either "-short_id" or "--long_id"
+    const ParameterHandler* getHandlerFromParam(const std::string_view& param, std::string& remaining); 
+	// param is either "-short_id" or "--long_id"
     const ParameterHandler* getHandlerFromShortID(const char short_id);
-    const ParameterHandler* getHandlerFromLongID(const std::string& long_id);
-    const ParameterHandler* getHandlerFromAnyID(const std::string& id);
+    const ParameterHandler* getHandlerFromLongID(const std::string_view& long_id);
+    const ParameterHandler* getHandlerFromAnyID(const std::string_view& id);
 
     
     /******************************************************************************************/
@@ -68,7 +70,7 @@ namespace InputHandler {
     void handleParameters(int argc, char const *argv[], Configuration& cfg);
 
     // ----------------- Default Parameter Handler ----------------- //
-    // Special Handler ( doesn't need a structure ): called with what is before the first named parameter
+    // Special Handler (doesn't need a structure ): called with what is before the first named parameter
     void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg);
 
     // ------------------------------------------------------------------ //
@@ -76,7 +78,7 @@ namespace InputHandler {
     // ------------------------------------------------------------------ //
 
     // ------------ Eddy Malou Parameter ------------ //
-    void eddyMalou(const ArgList &arg_list, Configuration &cfg);
+    [[ noreturn ]] void eddyMalou(const ArgList &arg_list, Configuration &);
     constexpr ParameterHandler eddyMalou_description = {
         'e',
         "congolexicomatisation",
@@ -89,7 +91,7 @@ namespace InputHandler {
     };
 
     // ------------ Help Parameter ------------ //
-    void help(const ArgList &arg_list, Configuration &cfg);
+    [[ noreturn ]] void help(const ArgList &arg_list, Configuration &);
     constexpr ParameterHandler help_description = {
         'h',
         "help",
@@ -98,7 +100,7 @@ namespace InputHandler {
     };
 
     // ------------ Version Parameter ------------ //
-    void version(const ArgList &arg_list, Configuration &cfg);
+    [[ noreturn ]] void version(const ArgList &arg_list, Configuration &);
     constexpr ParameterHandler version_description = {
         'v',
         "version",

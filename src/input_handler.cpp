@@ -26,23 +26,23 @@ namespace InputHandler {
         return os << ":\n  " << description << std::endl;
     }
 
-    std::ostream& operator<<( std::ostream & os, const ParameterHandler& handler ){
+    std::ostream& operator<<(std::ostream & os, const ParameterHandler& handler ){
         return handler.print(os);
     }
 
     //------------------------------------------------------------------------//
     //------------------------ Parameter getters -----------------------------//
     //------------------------------------------------------------------------//
-    const ParameterHandler* getHandlerFromParam(const std::string& param_name,  std::string& remaining) {
-        if( param_name.size() < 2 || param_name[0] != '-' ){ 
+    const ParameterHandler* getHandlerFromParam(const std::string_view& param, std::string& remaining) {
+        if(param.size() < 2 || param[0] != '-' ){ 
             remaining = "";
             return nullptr; 
-        } else if( param_name[1] == '-' ){
+        } else if(param[1] == '-' ){
             remaining = "";
-            return getHandlerFromLongID(param_name.substr(2));
+            return getHandlerFromLongID(param.substr(2));
         } else {
-            remaining = param_name.substr(2);
-            return getHandlerFromShortID(param_name[1]);
+            remaining = param.substr(2);
+            return getHandlerFromShortID(param[1]);
         }
     }
 
@@ -55,8 +55,7 @@ namespace InputHandler {
         return nullptr;
     }
 
-    const ParameterHandler* getHandlerFromLongID(const std::string& long_id) {
-        
+    const ParameterHandler* getHandlerFromLongID(const std::string_view& long_id) {
         for(const ParameterHandler &param : PARAMETER_LIST) {
             if(param.long_id != nullptr && long_id == param.long_id) {
                 return &param;
@@ -65,7 +64,7 @@ namespace InputHandler {
         return nullptr;
     }
 
-    const ParameterHandler* getHandlerFromAnyID(const std::string& id) {
+    const ParameterHandler* getHandlerFromAnyID(const std::string_view& id) {
 
         const ParameterHandler* param_ptr = nullptr;
         if(id.size() == 1){
@@ -85,29 +84,28 @@ namespace InputHandler {
     void handleParameters(int argc, const char *argv[], Configuration &cfg) {
 		if (argc == 1) {
 			help({}, cfg);
-		}
-        ArgList arg_list = {};        
+		}     
         int i = 1;
         // Handles default arguments
-        while (i < argc && argv[i][0] != '-'){
-            arg_list.emplace_back(argv[i]);
+        while(i < argc && argv[i][0] != '-'){
             i++;
         }
+		ArgList arg_list = {argv + 1, argv + i};
         defaultParameterHandler(arg_list, cfg);
 
         // Handles named parameters' arguments
         const ParameterHandler * handler_ptr;
+		std::string remaining;
         while(i < argc) {
-            std::string remaining;
             // argv[i] is a parameter name, because if not
             // it would have been added to the precedent arg_list
             handler_ptr = getHandlerFromParam(argv[i], remaining);
 
-            if( handler_ptr == nullptr )
+            if(handler_ptr == nullptr )
                 throw InputError("Unknown Parameter : " + std::string(argv[i]));
             
             arg_list.clear();
-            if( remaining != "" ){
+            if(remaining != "" ){
                 arg_list.emplace_back(remaining);
             }
             i++;
@@ -129,7 +127,7 @@ namespace InputHandler {
         }
     }
     // ----------------- Default Parameter Handler ----------------- //
-    // Special Handler ( doesn't need a structure ): called with what is before the first named parameter
+    // Special Handler (doesn't need a structure ): called with what is before the first named parameter
     void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
         check_arg_list_size(arg_list, 0, 3);
         if(arg_list.size() == 0) {
@@ -147,7 +145,7 @@ namespace InputHandler {
     // -------------- Here come all the parameter handlers -------------- //
     // ------------------------------------------------------------------ //
 
-    void eddyMalou(const ArgList &arg_list, Configuration &cfg) {
+    [[ noreturn ]] void eddyMalou(const ArgList &arg_list, Configuration&) {
         check_arg_list_size(arg_list, 0, 0);
         std::cout << "On ne peut pas parler de politique administrative scientifique,"
             << " le colloque à l'égard de la complexité doit vanter les encadrés avec la formule 1+(2x5), mais oui."
@@ -156,7 +154,7 @@ namespace InputHandler {
         exit(0);
     }
 
-    void help(const ArgList &arg_list, Configuration &cfg) {
+    [[ noreturn ]] void help(const ArgList &arg_list, Configuration&) {
         check_arg_list_size(arg_list, 0, 1);
 
         if(arg_list.size() == 1) {
@@ -172,7 +170,7 @@ namespace InputHandler {
         exit(0);
     }
 
-    void version(const ArgList &arg_list, Configuration &cfg) {
+    [[ noreturn ]] void version(const ArgList &arg_list, Configuration&) {
         check_arg_list_size(arg_list, 0, 0);
         std::cout << "version 0.0.1" << std::endl;
         exit(0);
