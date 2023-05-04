@@ -30,7 +30,6 @@ struct FileHandler {
 	}
 };
 
-
 enum LexemeName {IGNORE, COMMENT, RULENAME, ASSIGN, OR, PARENTH, ENDPARENTH, LOOP, ENDLOOP, OPTION, ENDOPTION, STRING, END};
 
 array<pair<LexemeName, regex>, 13> LEX_GGRAM_FILE = {{ // iteration on that, that why it isn't map
