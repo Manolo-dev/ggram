@@ -9,8 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options(
-	"$<$<CONFIG:DEBUG>:-Wall -Wextra -Wpedantic -Werror -g>"
-	"$<$<CONFIG:RELEASE>:-Wall -Wextra -Wpedantic -Werror -O3>"
+	-Wall -Wextra -Wpedantic -Werror
 )
 
 include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
