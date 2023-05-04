@@ -46,7 +46,7 @@ bool _pop_value(const string& val, Token &master) {
      */
     SEARCH("value :" << val)
     if(it_cur == it_end || it_cur->value() != val) {
-        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value()) ) 
+        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value())(
         it_err = it_cur;
         return 1;
     }
@@ -63,9 +63,9 @@ bool _pop_type(const string& val, Token &master) {
      * @param master
      * @return bool
      */
-    SEARCH( "type : " << val)
+    SEARCH("type : " << val)
     if(it_cur == it_end || it_cur->type() != val) {
-        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type()) ) 
+        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type())(
         it_err = it_cur;
         return 1;
     }

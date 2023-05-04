@@ -31,7 +31,7 @@ void Token::clear(){
     _is_error = false;
 }
 Token Token::make_error_copy(){
-    Token res(_type, _value,_line, _column );
+    Token res(_type, _value,_line, _column);
     res.make_error();
     return res;
 }

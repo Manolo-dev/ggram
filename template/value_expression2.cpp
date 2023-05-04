@@ -1,8 +1,8 @@
-Token& operator<<(Token& tkn, const Token& new_child ){
+Token& operator<<(Token& tkn, const Token& new_child){
     tkn.children().push_back(new_child);
     return tkn;
 }
-Token& operator<<(Token& tkn, const vector<Token>& new_children ){
+Token& operator<<(Token& tkn, const vector<Token>& new_children){
     tkn.children() += new_children;
     return tkn;
 }
@@ -35,7 +35,7 @@ Token& _pop_value(const string& val, IT& it_cur, const IT it_end) {
      */
     SEARCH("value :" << val)
     if(it_cur == it_end || it_cur->value() != val) {
-        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value()) ) 
+        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value())(
         throw syntax_error(it_cur);
     }
     FOUND("value")
@@ -49,9 +49,9 @@ Token& _pop_type(const string& val, IT& it_cur, const IT it_end) {
      * @param master
      * @return bool
      */
-    SEARCH( "type : " << val)
+    SEARCH("type : " << val)
     if(it_cur == it_end || it_cur->type() != val) {
-        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type()) ) 
+        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type())(
         throw syntax_error(it_cur);
     }
     FOUND("type")
