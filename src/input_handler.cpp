@@ -83,6 +83,9 @@ namespace InputHandler {
     /*                    in order to update the default configuration                        */
     /******************************************************************************************/
     void handleParameters(int argc, const char *argv[], Configuration &cfg) {
+		if (argc == 1) {
+			help({}, cfg);
+		}
         ArgList arg_list = {};        
         int i = 1;
         // Handles default arguments
