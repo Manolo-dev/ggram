@@ -96,3 +96,18 @@ Token parse(const string& code);
     #define LOOP
 #endif
 
+
+const std::regex int_regex("[1-9][0-9]*|0");
+const std::regex id_regex("[a-zA-Z_][a-zA-Z0-9_]*");
+const std::regex op_regex("[+\\-\\*/]");
+const std::regex eq_regex("=");
+const std::regex _ignore_regex("[ \t\r\n]+");
+
+constexpr Lexeme LEXEME_LIST[5] = {
+    {"int", int_regex},
+    {"id", id_regex},
+    {"op", op_regex},
+    {"eq", eq_regex},
+    {".ignore", _ignore_regex},
+};
+
