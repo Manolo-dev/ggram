@@ -12,7 +12,7 @@ using combinations = vector<vector<string>>;
 typedef vector<string> Rule;
 
 struct PairRuleFunction {
-    PairRuleFunction(string n, string f):name(n), function(f) {}
+    PairRuleFunction(const string &n, const string &f):name(n), function(f) {}
     string name;
     string function;
 };
@@ -72,18 +72,22 @@ void add_to_each_element(vector<vector<T>>& liste, const T& new_elem) {
 inline vector<string> get_inside_brackets
     (  const vector<string>& tree, 
         size_t& i,
-        const string open_bracket,
-        const string closed_bracket) {
+        const string_view &open_bracket,
+        const string_view &closed_bracket) {
 
     unsigned int level = 1;
     vector<string> inside_brackets;
 
     while(level > 0) {
         i++;
-        if(i >= tree.size()) throw InvalidSyntax(i, "Missing closing bracket");
-        if(tree[i] == open_bracket) level++;
-        if(tree[i] == closed_bracket) level--;
-        if(level != 0) inside_brackets.push_back(tree[i]);
+        if(i >= tree.size()) 
+			throw InvalidSyntax(i, "Missing closing bracket");
+        if(tree[i] == open_bracket)
+			level++;
+        if(tree[i] == closed_bracket)
+			level--;
+        if(level != 0) 
+			inside_brackets.push_back(tree[i]);
     }
     return inside_brackets;
 }
@@ -398,7 +402,7 @@ void writeLexemesPopFunctions(const vector<string> &token_types,
 
 void addRulePopFunctions(
     const Rule& rule,
-    const string name,
+    const string &name,
     vector<PairRuleFunction>& result,
     InputHandler::ResultType res_type) {
     size_t j = 0;
@@ -446,7 +450,7 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
         if(line == "---") break; // threat only the second part of the file
         if(line == "") continue; // skip empty line
         while(line.size() > 0) {
-            for(auto [name, regex] : regexes) {
+            for(const auto &[name, regex] : regexes) {
                 if(regex_search(line, match, regex, regex_constants::match_continuous | regex_constants::match_not_null)) {
                     if(name == ".ignore" || name == ".comment") {
                         line = match.suffix();
@@ -490,15 +494,15 @@ vector<pair<string, Rule>> readRules(ifstream &file, uint32_t& lineNum) {
             }
         }
     }
-    if(brackets.size() != 0)
+    if(!brackets.empty())
         throw InvalidSyntax(lineNum, "Expected ')', '}' or ']'");
-    if(currentRule.size() != 0)
+    if(!currentRule.empty())
         throw InvalidSyntax(lineNum, "Expected ';'");
     return rules;
 }
 void writeRulesPopFunctions(vector<pair<string, Rule>> rules, ofstream &out_cpp, ofstream &out_hpp, InputHandler::ResultType res_type) {
     // Declare rules' pop functions
-    for(auto [rule_name, _] : rules) {
+    for(const auto &[rule_name, _] : rules) {
         switch(res_type){
             case InputHandler::ResultType::ORS :
                 out_hpp << "bool " << POP_FUNCTION_PREFIX << rule_name << "(Token &master);" << endl;
@@ -512,14 +516,14 @@ void writeRulesPopFunctions(vector<pair<string, Rule>> rules, ofstream &out_cpp,
         }
     }
     // Define rules' pop functions
-    for(auto [rule_name, rule_expr] : rules) {
+    for(const auto &[rule_name, rule_expr] : rules) {
         out_cpp << "\n";
         out_cpp << "/***************************************************************************************************/\n";
         out_cpp << "/*                       Functions to pop tokens of type : " << rule_name << (40-rule_name.size())*string(" ") << "*/\n";
         out_cpp << "/***************************************************************************************************/\n" ;
         vector<PairRuleFunction> result;
         addRulePopFunctions(rule_expr, rule_name, result, res_type);
-        for(auto [aux_rule_name, aux_rule_func ] : result) {
+        for(const auto &[aux_rule_name, aux_rule_func ] : result) {
             out_cpp << endl;
             switch(res_type){
                 case InputHandler::ResultType::ORS :
