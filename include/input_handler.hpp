@@ -14,7 +14,7 @@
  *  - create a constexpr ParameterHandler structure just below
  *  - DON'T FORGET TO : add the structure tu the PARAMETER_LIST
  *  - finally define the update_config_function in the .cpp file 
- *      (and don't forget to verify that length of the ArgList is correct  )
+ *      (and don't forget to verify that length of the ArgList is correct (
  */
 namespace InputHandler {
     // These lists contains the arguments recieved for a given parameter
@@ -70,7 +70,7 @@ namespace InputHandler {
     void handleParameters(int argc, char const *argv[], Configuration& cfg);
 
     // ----------------- Default Parameter Handler ----------------- //
-    // Special Handler (doesn't need a structure ): called with what is before the first named parameter
+    // Special Handler (doesn't need a structure): called with what is before the first named parameter
     void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg);
 
     // ------------------------------------------------------------------ //

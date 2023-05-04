@@ -26,7 +26,7 @@ namespace InputHandler {
         return os << ":\n  " << description << std::endl;
     }
 
-    std::ostream& operator<<(std::ostream & os, const ParameterHandler& handler ){
+    std::ostream& operator<<( std::ostream & os, const ParameterHandler& handler){
         return handler.print(os);
     }
 
@@ -34,10 +34,10 @@ namespace InputHandler {
     //------------------------ Parameter getters -----------------------------//
     //------------------------------------------------------------------------//
     const ParameterHandler* getHandlerFromParam(const std::string_view& param, std::string& remaining) {
-        if(param.size() < 2 || param[0] != '-' ){ 
+        if( param.size() < 2 || param[0] != '-'){ 
             remaining = "";
             return nullptr; 
-        } else if(param[1] == '-' ){
+        } else if( param[1] == '-'){
             remaining = "";
             return getHandlerFromLongID(param.substr(2));
         } else {
@@ -101,11 +101,11 @@ namespace InputHandler {
             // it would have been added to the precedent arg_list
             handler_ptr = getHandlerFromParam(argv[i], remaining);
 
-            if(handler_ptr == nullptr )
+            if( handler_ptr == nullptr)
                 throw InputError("Unknown Parameter : " + std::string(argv[i]));
             
             arg_list.clear();
-            if(remaining != "" ){
+            if( remaining != ""){
                 arg_list.emplace_back(remaining);
             }
             i++;
@@ -118,7 +118,7 @@ namespace InputHandler {
         }
     }
 
-    void check_arg_list_size(const ArgList& list, const size_t min_val, const size_t max_val ){
+    void check_arg_list_size(const ArgList& list, const size_t min_val, const size_t max_val){
         if(list.size() > max_val){
             throw InputError("Too many arguments");
         }
@@ -127,7 +127,7 @@ namespace InputHandler {
         }
     }
     // ----------------- Default Parameter Handler ----------------- //
-    // Special Handler (doesn't need a structure ): called with what is before the first named parameter
+    // Special Handler ( doesn't need a structure): called with what is before the first named parameter
     void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
         check_arg_list_size(arg_list, 0, 3);
         if(arg_list.size() == 0) {
@@ -186,7 +186,7 @@ namespace InputHandler {
         if(arg_list.size() == 1){
             std::filesystem::path filepath = arg_list[0];
             if(filepath.has_extension() && filepath.extension() != ".cpp" 
-                && filepath.extension() != ".hpp" && filepath.extension() != ".h" ){
+                && filepath.extension() != ".hpp" && filepath.extension() != ".h"){
                 throw InputError("Invalid file extention for an output file : '" + filepath.extension().string() + "'");
             }
             const std::string header_extension =  (filepath.extension() == "h") ? "h" : "hpp";
@@ -197,7 +197,7 @@ namespace InputHandler {
         } else if(arg_list.size() == 2){
             std::filesystem::path filepath0 = arg_list[0] ; 
             std::filesystem::path filepath1 = arg_list[1] ; 
-            if(filepath0.extension() != ".cpp" && filepath1.extension() != ".cpp"  ){
+            if(filepath0.extension() != ".cpp" && filepath1.extension() != ".cpp" ){
                 throw InputError("Neither of the two output files specified is a .cpp file !");
             }
             if(filepath0.extension() == ".cpp"){
@@ -207,7 +207,7 @@ namespace InputHandler {
                 cfg.output_filepath_cpp = filepath1;
                 cfg.output_filepath_hpp = filepath0;
             }
-            if(cfg.output_filepath_hpp.extension() != ".hpp" && cfg.output_filepath_hpp.extension() != ".h" ){
+            if(cfg.output_filepath_hpp.extension() != ".hpp" && cfg.output_filepath_hpp.extension() != ".h"){
                 throw InputError("Neither of the two output files specified is a .hpp/.h file !");
             }
         }

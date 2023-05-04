@@ -1,4 +1,4 @@
-Token& operator<<(Token& tkn, const Token& new_child ){
+Token& operator<<(Token& tkn, const Token& new_child){
     if(tkn.is_error()){
         return tkn;
     }
@@ -9,7 +9,7 @@ Token& operator<<(Token& tkn, const Token& new_child ){
     tkn.children().push_back(new_child);
     return tkn;
 }
-Token& operator<<(Token& tkn, const vector<Token>& new_children ){
+Token& operator<<(Token& tkn, const vector<Token>& new_children){
     if(tkn.is_error()){
         return tkn;
     }
@@ -59,7 +59,7 @@ Token _pop_value(const string& val, IT& it_cur, const IT it_end) {
         FAILED("value: EOF") 
         return Token("EOF", true);
     }
-    if( it_cur->value() != val) {
+    if(it_cur->value() != val) {
         FAILED("value: " << it_cur->value()) 
         return it_cur -> make_error_copy();
     }
@@ -74,12 +74,12 @@ Token _pop_type(const string& val, IT& it_cur, const IT it_end) {
      * @param master
      * @return bool
      */
-    SEARCH( "type : " << val)
+    SEARCH("type : " << val)
     if(it_cur == it_end){
         FAILED("type: EOF") 
         return Token("EOF", true);
     }
-    if( it_cur->type() != val) {
+    if(it_cur->type() != val) {
         FAILED("type: " << it_cur->type()) 
         return it_cur -> make_error_copy();
     }

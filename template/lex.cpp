@@ -20,8 +20,8 @@ vector<Token> lex(string code) {
             const regex current_regex(lexeme.regex); // Regex for the current lexeme
             smatch match;
             // Try to match current regex at the beginning of the remaining code
-            if( regex_search(code, match, current_regex,
-                regex_constants::match_continuous | regex_constants::match_not_null) ) {
+            if(regex_search(code, match, current_regex,
+                regex_constants::match_continuous | regex_constants::match_not_null)({
 
                 // If the lexeme is not to be ignored
                 if(strcmp(lexeme.name, ".ignore")) {
