@@ -152,7 +152,8 @@ string generateSimpleRulePopFunction(
             result += "    SEARCH(\"" + name + "\")\n"; 
             break;
         case InputHandler::ResultType::ERROR_TOKEN :
-            result += "    SEARCH(\"" + name + "\")\n"; 
+            result += "    SEARCH(\"" + name + "\")\n";
+			break;
         case InputHandler::ResultType::TRY_CATCHS : 
             result += "    const IT it_start = it_cur;\n" ;
             result += "    Token master(\"" + name + "\", \"\", it_start -> line(), it_start -> column()); \n\n";

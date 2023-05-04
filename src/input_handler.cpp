@@ -1,5 +1,6 @@
 #include "error.hpp"
 #include "input_handler.hpp"
+#include "version.hpp"
 
 namespace InputHandler {
 
@@ -172,7 +173,7 @@ namespace InputHandler {
 
     [[ noreturn ]] void version(const ArgList &arg_list, Configuration&) {
         check_arg_list_size(arg_list, 0, 0);
-        std::cout << "version 0.0.1" << std::endl;
+        std::cout << "version" << GGRAM_VERSION << std::endl;
         exit(0);
     }
 
