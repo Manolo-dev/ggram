@@ -1,8 +1,8 @@
 #include "file_handler.hpp"
 
-FileWriter::FileWriter(std::ofstream& file) : file(file) {}
+FileWriter::FileWriter(std::ofstream &file) : file(file) {}
 
-FileWriter& FileWriter::operator<<(std::ostream& (*os)(std::ostream&)) {
+FileWriter &FileWriter::operator<<(std::ostream &(*os)(std::ostream &)) {
 	file << os;
 	return *this;
 }
@@ -18,11 +18,9 @@ void FileHandler::close() {
 	out_hpp.close();
 }
 
-void FileHandler::open(
-	const std::filesystem::path& input_path, 
-	const std::filesystem::path& cpp_out_path, 
-	const std::filesystem::path& hpp_out_path
-) {
+void FileHandler::open(const std::filesystem::path &input_path,
+					   const std::filesystem::path &cpp_out_path,
+					   const std::filesystem::path &hpp_out_path) {
 	if (!open(input_file, input_path)) {
 		throw FileNotFound(input_path.string());
 	}
@@ -34,17 +32,19 @@ void FileHandler::open(
 	}
 }
 
-bool FileHandler::open(std::ifstream& file, const std::filesystem::path& path) const {
+bool FileHandler::open(std::ifstream &file,
+					   const std::filesystem::path &path) const {
 	file.open(path);
 	return file.is_open();
 }
 
-bool FileHandler::open(std::ofstream& file, const std::filesystem::path& path) const {
+bool FileHandler::open(std::ofstream &file,
+					   const std::filesystem::path &path) const {
 	file.open(path);
 	return file.is_open();
 }
 
-std::ofstream& FileHandler::get_file(WriteMode mode) {
+std::ofstream &FileHandler::get_file(WriteMode mode) {
 	switch (mode) {
 		case WriteMode::CPP:
 			return out_cpp;
@@ -64,21 +64,21 @@ FileWriter FileHandler::operator<<(WriteMode mode) {
 	throw std::invalid_argument("Invalid WriteMode");
 }
 
-bool FileHandler::getline(std::string& line) {
+bool FileHandler::getline(std::string &line) {
 	return bool(std::getline(input_file, line));
 }
 
-void FileHandler::copy(const std::string& input_path, WriteMode mode) {
+void FileHandler::copy(const std::string &input_path, WriteMode mode) {
 	std::ifstream input(input_path);
-	std::ofstream& output = get_file(mode);
+	std::ofstream &output = get_file(mode);
 
-    if(input.is_open()) {
-        std::string line;
-        while(std::getline(input, line)) {
-            output << line << std::endl;
-        }
-        output << std::endl;
-    } else {
-        throw FileNotFound(input_path);
-    }
+	if (input.is_open()) {
+		std::string line;
+		while (std::getline(input, line)) {
+			output << line << std::endl;
+		}
+		output << std::endl;
+	} else {
+		throw FileNotFound(input_path);
+	}
 }
