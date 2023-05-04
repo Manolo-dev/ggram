@@ -9,7 +9,7 @@ private:
     const std::string _message;
 public:
     GgramError();
-    virtual ~GgramError() = 0;
+    virtual ~GgramError() = default;
     virtual const char* what() const throw();
 };
 
@@ -19,7 +19,7 @@ private:
     const std::string _message;
 public:
     InvalidFileExtensionError(const std::string&, const std::string &extension);
-    ~InvalidFileExtensionError() throw() override;
+    ~InvalidFileExtensionError() throw() override = default;
     const char* what() const throw() override;
 };
 
@@ -29,7 +29,7 @@ private:
     const std::string _message;
 public:
     explicit FileNotFound(const std::string &filename);
-    ~FileNotFound() throw() override;
+    ~FileNotFound() throw() override = default;
     const char* what() const throw() override;
 };
 
@@ -39,7 +39,7 @@ private:
     const std::string _message;
 public:
     explicit NoFilenameSpecified(const std::string &type_file);
-    ~NoFilenameSpecified() throw() override;
+    ~NoFilenameSpecified() throw() override = default;
     const char* what() const throw() override;
 };
 
@@ -50,7 +50,7 @@ private:
 public:
     RegexError(unsigned int line, const std::string &regex, const std::string &error);
     RegexError(const std::string &line, const std::string &regex, const std::string &error);
-    ~RegexError() throw() override;
+    ~RegexError() throw() override = default;
     const char* what() const throw() override;
 };
 
@@ -61,7 +61,7 @@ private:
 public:
     InvalidSyntax(unsigned int line, const std::string &error);
     InvalidSyntax(const std::string &line, const std::string &error);
-    ~InvalidSyntax() throw() override;
+    ~InvalidSyntax() throw() override = default;
     const char* what() const throw() override;
 };
 
@@ -72,7 +72,7 @@ private:
 public:
     InvalidRule(unsigned int line, const std::string &rule);
     InvalidRule(const std::string &line, const std::string &rule);
-    ~InvalidRule() throw() override;
+    ~InvalidRule() throw() override = default;
     const char* what() const throw() override;
 };
 
@@ -82,7 +82,7 @@ private:
     const std::string _message;
 public:
     explicit InputError(const std::string &message);
-    ~InputError() throw() override;
+    ~InputError() throw() override = default;
     const char* what() const throw() override;
 };
 
@@ -92,6 +92,6 @@ private:
     const std::string _message;
 public:
     explicit BnfError(const std::string &message);
-    ~BnfError() throw() override;
+    ~BnfError() throw() override = default;
     const char* what() const throw() override;
 };

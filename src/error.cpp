@@ -13,8 +13,6 @@ const char* GgramError::what() const throw() {
 InvalidFileExtensionError::InvalidFileExtensionError(const std::string&, const std::string &extension):
     _message("Invalid file extension. Only " + extension + " files are allowed.") {}
 
-InvalidFileExtensionError::~InvalidFileExtensionError() = default;
-
 const char* InvalidFileExtensionError::what() const throw() {
     return _message.c_str();
 }
@@ -24,8 +22,6 @@ const char* InvalidFileExtensionError::what() const throw() {
 FileNotFound::FileNotFound(const std::string &filename):
     _message("File " + filename + " not found.") {}
 
-FileNotFound::~FileNotFound() = default;
-
 const char* FileNotFound::what() const throw() {
     return _message.c_str();
 }
@@ -34,8 +30,6 @@ const char* FileNotFound::what() const throw() {
 
 NoFilenameSpecified::NoFilenameSpecified(const std::string &type_file):
     _message("No " + type_file + " filename specified.") {}
-
-NoFilenameSpecified::~NoFilenameSpecified() = default;
 
 const char* NoFilenameSpecified::what() const throw() {
     return _message.c_str();
@@ -49,8 +43,6 @@ RegexError::RegexError(const std::string &line, const std::string &regex, const 
 RegexError::RegexError(unsigned int line, const std::string &regex, const std::string &error):
     _message("Regex error: " + error + " in line " + std::to_string(line) + " with regex " + regex) {}
 
-RegexError::~RegexError() = default;
-
 const char* RegexError::what() const throw() {
     return _message.c_str();
 }
@@ -62,8 +54,6 @@ InvalidSyntax::InvalidSyntax(const std::string &line, const std::string &error):
 
 InvalidSyntax::InvalidSyntax(unsigned int line, const std::string &error):
     _message("Invalid syntax in line " + std::to_string(line) + " : " + error) {}
-
-InvalidSyntax::~InvalidSyntax() = default;
 
 const char* InvalidSyntax::what() const throw() {
     return _message.c_str();
@@ -77,8 +67,6 @@ InvalidRule::InvalidRule(const std::string &line, const std::string &rule):
 InvalidRule::InvalidRule(unsigned int line, const std::string &rule):
     _message("Invalid rule " + rule + " in line " + std::to_string(line)) {}
 
-InvalidRule::~InvalidRule() = default;
-
 const char* InvalidRule::what() const throw() {
     return _message.c_str();
 }
@@ -88,8 +76,6 @@ const char* InvalidRule::what() const throw() {
 InputError::InputError(const std::string &message):
     _message(message) {}
 
-InputError::~InputError() = default;
-
 const char* InputError::what() const throw() {
     return _message.c_str();
 }
@@ -98,8 +84,6 @@ const char* InputError::what() const throw() {
 
 BnfError::BnfError(const std::string &message):
     _message(message) {}
-
-BnfError::~BnfError() = default;
 
 const char* BnfError::what() const throw() {
     return _message.c_str();
