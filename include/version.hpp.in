@@ -1,0 +1,4 @@
+#pragma once
+#include <string_view>
+
+constexpr const std::string_view GGRAM_VERSION  = "@ggram_VERSION@";
