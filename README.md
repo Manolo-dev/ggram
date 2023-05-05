@@ -1,5 +1,19 @@
 # Ggram
 
+- [Ggram](#ggram)
+	- [What is it ?](#what-is-it-)
+	- [Installation or manual compilation](#installation-or-manual-compilation)
+		- [Compilation](#compilation)
+	- [What is a `.gg` syntax file ?](#what-is-a-gg-syntax-file-)
+	- [Options](#options)
+		- [Basic Usage](#basic-usage)
+		- [Command line options](#command-line-options)
+			- [Restype](#restype)
+	- [Syntax](#syntax)
+		- [Lexer](#lexer)
+		- [Parser](#parser)
+	- [Example](#example)
+
 ## What is it ?
 
 Ggram is a lexer-parser generator. It translates a `.gg` file describing a language syntax using something very close to the [Backus–Naur form (BNF)](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form) into a lexer-parser written in cpp.
@@ -38,25 +52,19 @@ number "[1-9][0-9]*|0"
 ./ggram syntax_file_name.gg -o output_directory_name
 ```
 
-### Help
+### Command line options
 
-```sh
-./ggram -h
-```
+| Option | Description | Possible values |
+| :---: | :---: | :---: |
+| `-f` | Specify the syntax file to use. | A file path |
+| `-o` | Specify the output directory. | A directory path |
+| `-h` / `--help` | Display the help. | |
+| `-v` / `--version` | Display the version name | |
+| `-r` / `--restype` | Controls how the parser works interally | `ORS`, `TRY_CATCH`, `ERROR_TOKEN` |
 
-or
+#### Restype
 
-```sh
-./ggram --full-help
-```
-
-The first show a shorten version of the options descriptions on this page
-
-### Version
-
-```sh
-.\ggram -v
-```
+TODO
 
 ## Syntax
 
