@@ -73,7 +73,7 @@ const ParameterHandler *getHandlerFromAnyID(const std::string_view &id);
  * PARAMETER_LIST */
 /*                    in order to update the default configuration */
 /******************************************************************************************/
-void handleParameters(int argc, char const *argv[], Configuration &cfg);
+void handleParameters(const std::vector<std::string> &args, Configuration &cfg);
 
 // ----------------- Default Parameter Handler ----------------- //
 // Special Handler (doesn't need a structure): called with what is before the

@@ -86,36 +86,37 @@ const ParameterHandler *getHandlerFromAnyID(const std::string_view &id) {
  * PARAMETER_LIST */
 /*                    in order to update the default configuration */
 /******************************************************************************************/
-void handleParameters(int argc, const char *argv[], Configuration &cfg) {
-	if (argc == 1) {
+void handleParameters(const std::vector<std::string> &args,
+					  Configuration &cfg) {
+	if (args.size() == 1) {
 		help({}, cfg);
 	}
-	int i = 1;
+	uint i = 1;
 	// Handles default arguments
-	while (i < argc && argv[i][0] != '-') {
+	while (i < args.size() && args.at(i)[0] != '-') {
 		i++;
 	}
-	ArgList arg_list = {argv + 1, argv + i};
+	ArgList arg_list = {args.begin() + 1, args.begin() + i};
 	defaultParameterHandler(arg_list, cfg);
 
 	// Handles named parameters' arguments
 	const ParameterHandler *handler_ptr = nullptr;
 	std::string remaining;
-	while (i < argc) {
+	while (i < args.size()) {
 		// argv[i] is a parameter name, because if not
 		// it would have been added to the precedent arg_list
-		handler_ptr = getHandlerFromParam(argv[i], remaining);
+		handler_ptr = getHandlerFromParam(args.at(i), remaining);
 
 		if (handler_ptr == nullptr)
-			throw InputError("Unknown Parameter : " + std::string(argv[i]));
+			throw InputError("Unknown Parameter : " + std::string(args.at(i)));
 
 		arg_list.clear();
 		if (remaining != "") {
 			arg_list.emplace_back(remaining);
 		}
 		i++;
-		while (i < argc && argv[i][0] != '-') {
-			arg_list.emplace_back(argv[i]);
+		while (i < args.size() && args.at(i)[0] != '-') {
+			arg_list.emplace_back(args.at(i));
 			i++;
 		}
 

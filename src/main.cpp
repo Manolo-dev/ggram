@@ -35,21 +35,22 @@ enum LexemeName {
 	END
 };
 
-std::array<std::pair<LexemeName, std::regex>, 13> LEX_GGRAM_FILE = {
-	{// iteration on that, that why it isn't map
-	 {LexemeName::IGNORE, std::regex(R"-([ \n\r\s\t]+)-")},
-	 {LexemeName::COMMENT, std::regex(R"-(#.+$)-")},
-	 {LexemeName::RULENAME, std::regex(R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-")},
-	 {LexemeName::ASSIGN, std::regex(R"-(::=)-")},
-	 {LexemeName::OR, std::regex(R"-(\|)-")},
-	 {LexemeName::PARENTH, std::regex(R"-(\()-")},
-	 {LexemeName::ENDPARENTH, std::regex(R"-(\))-")},
-	 {LexemeName::LOOP, std::regex(R"-(\{)-")},
-	 {LexemeName::ENDLOOP, std::regex(R"-(\})-")},
-	 {LexemeName::OPTION, std::regex(R"-(\[)-")},
-	 {LexemeName::ENDOPTION, std::regex(R"-(\])-")},
-	 {LexemeName::STRING, std::regex(R"-(\"([^"]|\\")*\")-")},
-	 {LexemeName::END, std::regex(R"-(;)-")}}};
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+const std::array<std::pair<LexemeName, std::regex>, 13> LEX_GGRAM_FILE =
+	{{// iteration on that, that why it isn't map
+	  {LexemeName::IGNORE, std::regex(R"-([ \n\r\s\t]+)-")},
+	  {LexemeName::COMMENT, std::regex(R"-(#.+$)-")},
+	  {LexemeName::RULENAME, std::regex(R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-")},
+	  {LexemeName::ASSIGN, std::regex(R"-(::=)-")},
+	  {LexemeName::OR, std::regex(R"-(\|)-")},
+	  {LexemeName::PARENTH, std::regex(R"-(\()-")},
+	  {LexemeName::ENDPARENTH, std::regex(R"-(\))-")},
+	  {LexemeName::LOOP, std::regex(R"-(\{)-")},
+	  {LexemeName::ENDLOOP, std::regex(R"-(\})-")},
+	  {LexemeName::OPTION, std::regex(R"-(\[)-")},
+	  {LexemeName::ENDOPTION, std::regex(R"-(\])-")},
+	  {LexemeName::STRING, std::regex(R"-(\"([^"]|\\")*\")-")},
+	  {LexemeName::END, std::regex(R"-(;)-")}}};
 
 std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &v) {
 	os << "[";
@@ -64,7 +65,7 @@ std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &v) {
 	return os;
 }
 
-std::string operator*(const std::string &s, uint32_t n) {
+std::string operator*(const std::string &s, size_t n) {
 	std::stringstream out;
 
 	while (n--)
@@ -341,7 +342,7 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 	return result;
 }
 
-std::vector<std::string> createLexemes(FileHandler &files, uint32_t &lineNum) {
+std::vector<std::string> createLexemes(FileHandler &files, uint &lineNum) {
 	std::vector<std::string> lexeme_names;
 
 	std::vector<std::string> special_lexeme_names;
@@ -478,7 +479,7 @@ void addRulePopFunctions(const Rule &rule, const std::string &name,
 }
 
 std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
-													uint32_t &lineNum) {
+													uint &lineNum) {
 	std::vector<std::pair<std::string, Rule>> rules;
 	std::vector<std::string> allRuleNames;
 	std::string line;
@@ -639,14 +640,15 @@ void writeRulesPopFunctions(
 
 int main(int argc, char const *argv[]) {
 	InputHandler::Configuration cfg;
-	InputHandler::handleParameters(argc, argv, cfg);
+	InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc},
+								   cfg);
 
 	FileHandler files;
 
 	files.open(cfg.input_filename, cfg.output_filepath_cpp,
 			   cfg.output_filepath_hpp);
 
-	uint32_t lineNum = 0;
+	uint lineNum = 0;
 
 	files.copy("template/head.hpp", FileHandler::WriteMode::HPP);
 
