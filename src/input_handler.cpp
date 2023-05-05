@@ -40,13 +40,13 @@ const ParameterHandler *getHandlerFromParam(const std::string_view &param,
 	if (param.size() < 2 || param[0] != '-') {
 		remaining = "";
 		return nullptr;
-	} else if (param[1] == '-') {
+	}
+	if (param[1] == '-') {
 		remaining = "";
 		return getHandlerFromLongID(param.substr(2));
-	} else {
-		remaining = param.substr(2);
-		return getHandlerFromShortID(param[1]);
 	}
+	remaining = param.substr(2);
+	return getHandlerFromShortID(param[1]);
 }
 
 const ParameterHandler *getHandlerFromShortID(const char short_id) {
@@ -107,11 +107,12 @@ void handleParameters(const std::vector<std::string> &args,
 		// it would have been added to the precedent arg_list
 		handler_ptr = getHandlerFromParam(args.at(i), remaining);
 
-		if (handler_ptr == nullptr)
+		if (handler_ptr == nullptr) {
 			throw InputError("Unknown Parameter : " + std::string(args.at(i)));
+		}
 
 		arg_list.clear();
-		if (remaining != "") {
+		if (!remaining.empty()) {
 			arg_list.emplace_back(remaining);
 		}
 		i++;
@@ -138,7 +139,7 @@ void check_arg_list_size(const ArgList &list, const size_t min_val,
 // first named parameter
 void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
 	check_arg_list_size(arg_list, 0, 3);
-	if (arg_list.size() == 0) {
+	if (arg_list.empty()) {
 		return;
 	}
 	inputFile({arg_list[0]}, cfg);
@@ -153,7 +154,8 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
 // -------------- Here come all the parameter handlers -------------- //
 // ------------------------------------------------------------------ //
 
-[[noreturn]] void eddyMalou(const ArgList &arg_list, Configuration &) {
+[[noreturn]] void eddyMalou(const ArgList &arg_list,
+							Configuration & /*unused*/) {
 	check_arg_list_size(arg_list, 0, 0);
 	std::cout
 		<< "On ne peut pas parler de politique administrative scientifique,"
@@ -170,15 +172,16 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
 	exit(0);
 }
 
-[[noreturn]] void help(const ArgList &arg_list, Configuration &) {
+[[noreturn]] void help(const ArgList &arg_list, Configuration & /*unused*/) {
 	check_arg_list_size(arg_list, 0, 1);
 
 	if (arg_list.size() == 1) {
 		const ParameterHandler *param_ptr = getHandlerFromAnyID(arg_list[0]);
-		if (param_ptr == nullptr)
+		if (param_ptr == nullptr) {
 			throw InputError("Unknown Parameter :\"" + arg_list[0] + "\"");
+		}
 		std::cout << *param_ptr;
-	} else if (arg_list.size() == 0) {
+	} else if (arg_list.empty()) {
 		for (const ParameterHandler &param : PARAMETER_LIST) {
 			std::cout << param;
 		}
@@ -186,7 +189,7 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
 	exit(0);
 }
 
-[[noreturn]] void version(const ArgList &arg_list, Configuration &) {
+[[noreturn]] void version(const ArgList &arg_list, Configuration & /*unused*/) {
 	check_arg_list_size(arg_list, 0, 0);
 	std::cout << "version" << GGRAM_VERSION << std::endl;
 	exit(0);

@@ -83,8 +83,8 @@ class FileHandler {
 	void copy(const std::string &input_path, WriteMode mode);
 
   private:
-	bool open(std::ifstream &file, const std::filesystem::path &path) const;
-	bool open(std::ofstream &file, const std::filesystem::path &path) const;
+	static bool open(std::ifstream &file, const std::filesystem::path &path);
+	static bool open(std::ofstream &file, const std::filesystem::path &path);
 
 	/**
 	 * @brief get the file to write to based on the WriteMode

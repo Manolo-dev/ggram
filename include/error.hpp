@@ -20,7 +20,7 @@ class InvalidFileExtensionError : public GgramError {
 	const std::string _message;
 
   public:
-	InvalidFileExtensionError(const std::string &,
+	InvalidFileExtensionError(const std::string & /*unused*/,
 							  const std::string &extension);
 	~InvalidFileExtensionError() throw() override = default;
 	const char *what() const throw() override;

@@ -25,7 +25,7 @@ using ArgList = std::vector<std::string>;
 enum class ResultType { ORS, TRY_CATCHS, ERROR_TOKEN };
 // The configuration, will contain everything we got from the input arguments
 struct Configuration {
-	std::string input_filename = "";
+	std::string input_filename;
 	std::filesystem::path output_filepath_cpp = "parser.cpp";
 	std::filesystem::path output_filepath_hpp = "parser.hpp";
 	ResultType result_type = ResultType::ERROR_TOKEN;
@@ -47,10 +47,12 @@ struct ParameterHandler {
 	char const *description;
 	update_config_function configuration_updater;
 
-	void update_configuration(const ArgList &, Configuration &) const;
-	std::ostream &print(std::ostream &) const;
+	void update_configuration(const ArgList & /*arg_list*/,
+							  Configuration & /*cfg*/) const;
+	std::ostream &print(std::ostream & /*os*/) const;
 };
-std::ostream &operator<<(std::ostream &, const ParameterHandler &);
+std::ostream &operator<<(std::ostream & /*os*/,
+						 const ParameterHandler & /*handler*/);
 
 //----------------------------- Handler getters
 //----------------------------------//
@@ -62,7 +64,7 @@ std::ostream &operator<<(std::ostream &, const ParameterHandler &);
 const ParameterHandler *getHandlerFromParam(const std::string_view &param,
 											std::string &remaining);
 // param is either "-short_id" or "--long_id"
-const ParameterHandler *getHandlerFromShortID(const char short_id);
+const ParameterHandler *getHandlerFromShortID(char short_id);
 const ParameterHandler *getHandlerFromLongID(const std::string_view &long_id);
 const ParameterHandler *getHandlerFromAnyID(const std::string_view &id);
 
@@ -85,7 +87,8 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg);
 // ------------------------------------------------------------------ //
 
 // ------------ Eddy Malou Parameter ------------ //
-[[noreturn]] void eddyMalou(const ArgList &arg_list, Configuration &);
+[[noreturn]] void eddyMalou(const ArgList &arg_list,
+							Configuration & /*unused*/);
 constexpr ParameterHandler eddyMalou_description = {
 	'e', "congolexicomatisation",
 	"Lorsque l'on parle des végétaliens, du végétalisme, "
@@ -98,12 +101,12 @@ constexpr ParameterHandler eddyMalou_description = {
 	&eddyMalou};
 
 // ------------ Help Parameter ------------ //
-[[noreturn]] void help(const ArgList &arg_list, Configuration &);
+[[noreturn]] void help(const ArgList &arg_list, Configuration & /*unused*/);
 constexpr ParameterHandler help_description = {
 	'h', "help", "Show all possible parameters with their description", &help};
 
 // ------------ Version Parameter ------------ //
-[[noreturn]] void version(const ArgList &arg_list, Configuration &);
+[[noreturn]] void version(const ArgList &arg_list, Configuration & /*unused*/);
 constexpr ParameterHandler version_description = {
 	'v', "version", "Show which version of ggram you're using", &version};
 

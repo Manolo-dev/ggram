@@ -32,14 +32,12 @@ void FileHandler::open(const std::filesystem::path &input_path,
 	}
 }
 
-bool FileHandler::open(std::ifstream &file,
-					   const std::filesystem::path &path) const {
+bool FileHandler::open(std::ifstream &file, const std::filesystem::path &path) {
 	file.open(path);
 	return file.is_open();
 }
 
-bool FileHandler::open(std::ofstream &file,
-					   const std::filesystem::path &path) const {
+bool FileHandler::open(std::ofstream &file, const std::filesystem::path &path) {
 	file.open(path);
 	return file.is_open();
 }

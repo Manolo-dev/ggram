@@ -10,7 +10,7 @@ const char *GgramError::what() const throw() {
 // ---------------------- InvalidFileExtensionError ---------------------- //
 
 InvalidFileExtensionError::InvalidFileExtensionError(
-	const std::string &, const std::string &extension)
+	const std::string & /*unused*/, const std::string &extension)
 	: _message("Invalid file extension. Only " + extension +
 			   " files are allowed.") {}
 

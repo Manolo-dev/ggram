@@ -36,21 +36,21 @@ enum LexemeName {
 };
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-const std::array<std::pair<LexemeName, std::regex>, 13> LEX_GGRAM_FILE =
-	{{// iteration on that, that why it isn't map
-	  {LexemeName::IGNORE, std::regex(R"-([ \n\r\s\t]+)-")},
-	  {LexemeName::COMMENT, std::regex(R"-(#.+$)-")},
-	  {LexemeName::RULENAME, std::regex(R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-")},
-	  {LexemeName::ASSIGN, std::regex(R"-(::=)-")},
-	  {LexemeName::OR, std::regex(R"-(\|)-")},
-	  {LexemeName::PARENTH, std::regex(R"-(\()-")},
-	  {LexemeName::ENDPARENTH, std::regex(R"-(\))-")},
-	  {LexemeName::LOOP, std::regex(R"-(\{)-")},
-	  {LexemeName::ENDLOOP, std::regex(R"-(\})-")},
-	  {LexemeName::OPTION, std::regex(R"-(\[)-")},
-	  {LexemeName::ENDOPTION, std::regex(R"-(\])-")},
-	  {LexemeName::STRING, std::regex(R"-(\"([^"]|\\")*\")-")},
-	  {LexemeName::END, std::regex(R"-(;)-")}}};
+const std::array<std::pair<LexemeName, std::regex>, 13> LEX_GGRAM_FILE = {
+	{// iteration on that, that why it isn't map
+	 {LexemeName::IGNORE, std::regex(R"-([ \n\r\s\t]+)-")},
+	 {LexemeName::COMMENT, std::regex(R"-(#.+$)-")},
+	 {LexemeName::RULENAME, std::regex(R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-")},
+	 {LexemeName::ASSIGN, std::regex(R"-(::=)-")},
+	 {LexemeName::OR, std::regex(R"-(\|)-")},
+	 {LexemeName::PARENTH, std::regex(R"-(\()-")},
+	 {LexemeName::ENDPARENTH, std::regex(R"-(\))-")},
+	 {LexemeName::LOOP, std::regex(R"-(\{)-")},
+	 {LexemeName::ENDLOOP, std::regex(R"-(\})-")},
+	 {LexemeName::OPTION, std::regex(R"-(\[)-")},
+	 {LexemeName::ENDOPTION, std::regex(R"-(\])-")},
+	 {LexemeName::STRING, std::regex(R"-(\"([^"]|\\")*\")-")},
+	 {LexemeName::END, std::regex(R"-(;)-")}}};
 
 std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &v) {
 	os << "[";
@@ -68,8 +68,9 @@ std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &v) {
 std::string operator*(const std::string &s, size_t n) {
 	std::stringstream out;
 
-	while (n--)
+	while ((n--) != 0U) {
 		out << s;
+	}
 	return out.str();
 }
 
@@ -102,20 +103,25 @@ get_inside_brackets(const std::vector<std::string> &tree, size_t &i,
 
 	while (level > 0) {
 		i++;
-		if (i >= tree.size())
+		if (i >= tree.size()) {
 			throw InvalidSyntax(i, "Missing closing bracket");
-		if (tree[i] == open_bracket)
+		}
+		if (tree[i] == open_bracket) {
 			level++;
-		if (tree[i] == closed_bracket)
+		}
+		if (tree[i] == closed_bracket) {
 			level--;
-		if (level != 0)
+		}
+		if (level != 0) {
 			inside_brackets.push_back(tree[i]);
+		}
 	}
 	return inside_brackets;
 }
 
 combinations generateCombinations(const std::vector<std::string> &tree) {
-	combinations result, branch;
+	combinations result;
+	combinations branch;
 	branch.emplace_back();
 
 	for (size_t i = 0; i < tree.size(); i++) {
@@ -206,7 +212,8 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 		}
 
 		for (size_t i = 0; i < x.size(); i++) {
-			std::string prefix, suffix;
+			std::string prefix;
+			std::string suffix;
 			/*
 			{truc} -> pop_while(truc, current) OU pop_while(truc,
 			it_cur, it_end) <truc> -> pop_truc(createNext(current))
@@ -217,8 +224,9 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 
 			switch (x[i][0]) {
 				case '{':
-					if (x[i].back() != '}')
+					if (x[i].back() != '}') {
 						throw InvalidSyntax("none", "Missing '}'");
+					}
 					prefix = "_pop_while(" + POP_FUNCTION_PREFIX;
 					switch (res_type) {
 						case InputHandler::ResultType::ORS:
@@ -236,8 +244,9 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 					break;
 
 				case '<':
-					if (x[i].back() != '>')
+					if (x[i].back() != '>') {
 						throw InvalidSyntax("none", "Missing '>'");
+					}
 					prefix = POP_FUNCTION_PREFIX;
 					switch (res_type) {
 						case InputHandler::ResultType::ORS:
@@ -256,8 +265,9 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 					break;
 
 				case '"':
-					if (x[i].back() != '"' || x[i].size() < 2)
+					if (x[i].back() != '"' || x[i].size() < 2) {
 						throw InvalidSyntax("none", "Missing '\"'");
+					}
 					prefix = "_pop_value(\"";
 					switch (res_type) {
 						case InputHandler::ResultType::ORS:
@@ -356,12 +366,15 @@ std::vector<std::string> createLexemes(FileHandler &files, uint &lineNum) {
 	while (files.getline(line)) {
 		lineNum++;
 
-		if (line == "")
+		if (line.empty()) {
 			continue; // skip empty line
-		if (line[0] == '#')
+		}
+		if (line[0] == '#') {
 			continue; // ingnore comment
-		if (line == "---")
+		}
+		if (line == "---") {
 			break; // threat only the first part of the file
+		}
 
 		if (std::regex_search(line, match, lexeme_infos_regex)) {
 			std::string lexeme_name = match.str(1);
@@ -489,13 +502,16 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 
 	while (files.getline(line)) {
 		lineNum++;
-		if (line[0] == '#')
+		if (line[0] == '#') {
 			continue; // ingnore comment
-		if (line == "---")
+		}
+		if (line == "---") {
 			break; // threat only the second part of the file
-		if (line == "")
+		}
+		if (line.empty()) {
 			continue; // skip empty line
-		while (line.size() > 0) {
+		}
+		while (!line.empty()) {
 			for (auto [name, regex] : LEX_GGRAM_FILE) {
 				if (std::regex_search(
 						line, match, regex,
@@ -505,12 +521,14 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 						name == LexemeName::COMMENT) {
 						line = match.suffix();
 					} else if (name == LexemeName::END) {
-						if (currentRule.size() < 2)
+						if (currentRule.size() < 2) {
 							throw InvalidSyntax(lineNum, "Expected rule "
 														 "name");
-						if (!brackets.empty())
+						}
+						if (!brackets.empty()) {
 							throw InvalidSyntax(lineNum, "Expected ')', '}' "
 														 "or ']'");
+						}
 						rules.emplace_back(
 							currentRule[0].substr(1, currentRule[0].size() - 2),
 							Rule(currentRule.begin() + 2, currentRule.end()));
@@ -518,20 +536,23 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 						line = match.suffix();
 						currentRule.clear();
 					} else {
-						if (currentRule.size() == 0 &&
-							name != LexemeName::RULENAME)
+						if (currentRule.empty() &&
+							name != LexemeName::RULENAME) {
 							throw InvalidSyntax(lineNum, "Expected rule "
 														 "name");
+						}
 						if (currentRule.size() == 1 &&
-							name != LexemeName::ASSIGN)
+							name != LexemeName::ASSIGN) {
 							throw InvalidSyntax(lineNum, "Expected '::='");
-						if (currentRule.size() == 0 &&
+						}
+						if (currentRule.empty() &&
 							find(allRuleNames.begin(), allRuleNames.end(),
-								 match.str(0)) != allRuleNames.end())
+								 match.str(0)) != allRuleNames.end()) {
 							throw InvalidSyntax(lineNum, "Rule '" +
 															 match.str(0) +
 															 "' already "
 															 "defined");
+						}
 						if (name == LexemeName::PARENTH ||
 							name == LexemeName::LOOP ||
 							name == LexemeName::OPTION) {
@@ -540,28 +561,32 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 								   name == LexemeName::ENDLOOP ||
 								   name == LexemeName::ENDOPTION) {
 							if (name == LexemeName::ENDPARENTH &&
-								brackets.top() != LexemeName::PARENTH)
+								brackets.top() != LexemeName::PARENTH) {
 								throw InvalidSyntax(lineNum, "Unexpected"
 															 " '" +
 																 match.str(0) +
 																 "'");
-							if (brackets.empty())
+							}
+							if (brackets.empty()) {
 								throw InvalidSyntax(lineNum, "Unexpected"
 															 " '" +
 																 match.str(0) +
 																 "'");
+							}
 							if (name == LexemeName::ENDLOOP &&
-								brackets.top() != LexemeName::LOOP)
+								brackets.top() != LexemeName::LOOP) {
 								throw InvalidSyntax(lineNum, "Unexpected"
 															 " '" +
 																 match.str(0) +
 																 "'");
+							}
 							if (name == LexemeName::ENDOPTION &&
-								brackets.top() != LexemeName::OPTION)
+								brackets.top() != LexemeName::OPTION) {
 								throw InvalidSyntax(lineNum, "Unexpected"
 															 " '" +
 																 match.str(0) +
 																 "'");
+							}
 							brackets.pop();
 						}
 
@@ -572,8 +597,9 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 			}
 		}
 	}
-	if (currentRule.empty())
+	if (currentRule.empty()) {
 		throw InvalidSyntax(lineNum, "Expected ';'");
+	}
 	return rules;
 }
 void writeRulesPopFunctions(
