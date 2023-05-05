@@ -129,17 +129,17 @@ combinations generateCombinations(const std::vector<std::string> &tree) {
 			// Keep what's inside the brackets
 			const std::string open_bracket = tree[i];
 			const std::string closed_bracket = tree[i] == "(" ? ")" : "]";
-			std::vector<std::string> inside_brackets =
+			std::vector<std::string> const inside_brackets =
 				get_inside_brackets(tree, i, open_bracket, closed_bracket);
 
 			// Possible combinations inside the brackets
-			combinations sub_combinations =
+			combinations const sub_combinations =
 				generateCombinations(inside_brackets);
 
 			// Add these combinations to the previous results
 			combinations combined_result;
-			for (std::vector<std::string> &previous_result : branch) {
-				for (std::vector<std::string> &sub_combination :
+			for (std::vector<std::string> const &previous_result : branch) {
+				for (std::vector<std::string> const &sub_combination :
 					 sub_combinations) {
 					// prefix each inside brackets
 					// combination with what was before
@@ -194,7 +194,8 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 			throw std::invalid_argument("Not yet implemented here !");
 	}
 
-	for (std::vector<std::string> &x : generateCombinations(rule)) {
+	for (std::vector<std::string> &rule_combination :
+		 generateCombinations(rule)) {
 		switch (res_type) {
 			case InputHandler::ResultType::ORS:
 				result += "    current.clear();\n";
@@ -211,7 +212,7 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 				throw std::invalid_argument("Not yet implemented here !");
 		}
 
-		for (size_t i = 0; i < x.size(); i++) {
+		for (size_t i = 0; i < rule_combination.size(); i++) {
 			std::string prefix;
 			std::string suffix;
 			/*
@@ -222,9 +223,9 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 			it_end) otherwise : INVALID_SYNTAX
 			*/
 
-			switch (x[i][0]) {
+			switch (rule_combination[i][0]) {
 				case '{':
-					if (x[i].back() != '}') {
+					if (rule_combination[i].back() != '}') {
 						throw InvalidSyntax("none", "Missing '}'");
 					}
 					prefix = "_pop_while(" + POP_FUNCTION_PREFIX;
@@ -244,7 +245,7 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 					break;
 
 				case '<':
-					if (x[i].back() != '>') {
+					if (rule_combination[i].back() != '>') {
 						throw InvalidSyntax("none", "Missing '>'");
 					}
 					prefix = POP_FUNCTION_PREFIX;
@@ -265,7 +266,8 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 					break;
 
 				case '"':
-					if (x[i].back() != '"' || x[i].size() < 2) {
+					if (rule_combination[i].back() != '"' ||
+						rule_combination[i].size() < 2) {
 						throw InvalidSyntax("none", "Missing '\"'");
 					}
 					prefix = "_pop_value(\"";
@@ -289,9 +291,12 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 				default:
 					throw InvalidSyntax("none", "Invalid syntax");
 			}
-			result += prefix + x[i].substr(1, x[i].size() - 2) + suffix;
+			result +=
+				prefix +
+				rule_combination[i].substr(1, rule_combination[i].size() - 2) +
+				suffix;
 
-			if (i >= x.size() - 1) {
+			if (i >= rule_combination.size() - 1) {
 				continue;
 			}
 
@@ -473,14 +478,14 @@ void writeLexemesPopFunctions(const std::vector<std::string> &token_types,
 void addRulePopFunctions(const Rule &rule, const std::string &name,
 						 std::vector<PairRuleFunction> &result,
 						 InputHandler::ResultType res_type) {
-	size_t j = 0;
+	size_t rule_id = 0;
 	std::vector<std::string> newRule;
 	for (size_t i = 0; i < rule.size(); i++) {
 		if (rule[i] == "{") {
-			std::vector<std::string> loopRule =
+			std::vector<std::string> const loopRule =
 				get_inside_brackets(rule, i, "{", "}");
-			const std::string aux_name = std::to_string(j) + "_" + name;
-			j++;
+			const std::string aux_name = std::to_string(rule_id) + "_" + name;
+			rule_id++;
 			addRulePopFunctions(loopRule, aux_name, result, res_type);
 			newRule.push_back("{" + aux_name + "}");
 		} else {
@@ -502,17 +507,14 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 
 	while (files.getline(line)) {
 		lineNum++;
-		if (line[0] == '#') {
-			continue; // ingnore comment
+		if (line[0] == '#' || line.empty()) {
+			continue; // ingnore comment and empty lines
 		}
 		if (line == "---") {
 			break; // threat only the second part of the file
 		}
-		if (line.empty()) {
-			continue; // skip empty line
-		}
 		while (!line.empty()) {
-			for (auto [name, regex] : LEX_GGRAM_FILE) {
+			for (const auto &[name, regex] : LEX_GGRAM_FILE) {
 				if (std::regex_search(
 						line, match, regex,
 						std::regex_constants::match_continuous |
@@ -681,7 +683,7 @@ int main(int argc, char const *argv[]) {
 	files << FileHandler::WriteMode::CPP << "#include "
 		  << cfg.output_filepath_hpp.filename() << std::endl;
 
-	std::vector<std::string> lexeme_names = createLexemes(files, lineNum);
+	std::vector<std::string> const lexeme_names = createLexemes(files, lineNum);
 
 	files.copy("template/token.cpp", FileHandler::WriteMode::CPP);
 	files.copy("template/lex.cpp", FileHandler::WriteMode::CPP);
@@ -705,7 +707,8 @@ int main(int argc, char const *argv[]) {
 
 	writeLexemesPopFunctions(lexeme_names, files, cfg.result_type);
 
-	std::vector<std::pair<std::string, Rule>> rules = readRules(files, lineNum);
+	std::vector<std::pair<std::string, Rule>> const rules =
+		readRules(files, lineNum);
 	// for(auto [rule_name, _] : rules) {
 	//     cout << rule_name << std::endl;
 	//     cout << _ << std::endl;

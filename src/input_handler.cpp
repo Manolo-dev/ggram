@@ -216,8 +216,8 @@ void outputFile(const ArgList &arg_list, Configuration &cfg) {
 		cfg.output_filepath_cpp = filepath.replace_extension("cpp");
 
 	} else if (arg_list.size() == 2) {
-		std::filesystem::path filepath0 = arg_list[0];
-		std::filesystem::path filepath1 = arg_list[1];
+		std::filesystem::path const filepath0 = arg_list[0];
+		std::filesystem::path const filepath1 = arg_list[1];
 		if (filepath0.extension() != ".cpp" &&
 			filepath1.extension() != ".cpp") {
 			throw InputError("Neither of the two output files "

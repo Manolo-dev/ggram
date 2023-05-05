@@ -33,7 +33,7 @@ struct Configuration {
 
 // update_config_function is intended to update the configuration
 // given the arguments of the parameter she has responsability over
-typedef void (*update_config_function)(const ArgList &, Configuration &);
+using update_config_function = void (*)(const ArgList &, Configuration &);
 
 /**
  * ParameterHandler takes responsability over a parameter namely -short_id and

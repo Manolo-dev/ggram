@@ -11,7 +11,7 @@ class GgramError : public std::runtime_error {
   public:
 	GgramError();
 	~GgramError() override = default;
-	const char *what() const throw() override;
+	[[nodiscard]] const char *what() const noexcept override;
 };
 
 // ---------------------- InvalidFileExtensionError ---------------------- //
@@ -22,8 +22,8 @@ class InvalidFileExtensionError : public GgramError {
   public:
 	InvalidFileExtensionError(const std::string & /*unused*/,
 							  const std::string &extension);
-	~InvalidFileExtensionError() throw() override = default;
-	const char *what() const throw() override;
+	~InvalidFileExtensionError() noexcept override = default;
+	[[nodiscard]] const char *what() const noexcept override;
 };
 
 // ---------------------------- FileNotFound ----------------------------- //
@@ -33,8 +33,8 @@ class FileNotFound : public GgramError {
 
   public:
 	explicit FileNotFound(const std::string &filename);
-	~FileNotFound() throw() override = default;
-	const char *what() const throw() override;
+	~FileNotFound() noexcept override = default;
+	[[nodiscard]] const char *what() const noexcept override;
 };
 
 // ------------------------- NoFilenameSpecified ------------------------- //
@@ -44,8 +44,8 @@ class NoFilenameSpecified : public GgramError {
 
   public:
 	explicit NoFilenameSpecified(const std::string &type_file);
-	~NoFilenameSpecified() throw() override = default;
-	const char *what() const throw() override;
+	~NoFilenameSpecified() noexcept override = default;
+	[[nodiscard]] const char *what() const noexcept override;
 };
 
 // ----------------------------- RegexError ------------------------------ //
@@ -58,8 +58,8 @@ class RegexError : public GgramError {
 			   const std::string &error);
 	RegexError(const std::string &line, const std::string &regex,
 			   const std::string &error);
-	~RegexError() throw() override = default;
-	const char *what() const throw() override;
+	~RegexError() noexcept override = default;
+	[[nodiscard]] const char *what() const noexcept override;
 };
 
 // ---------------------------- InvalidSyntax ---------------------------- //
@@ -70,8 +70,8 @@ class InvalidSyntax : public GgramError {
   public:
 	InvalidSyntax(unsigned int line, const std::string &error);
 	InvalidSyntax(const std::string &line, const std::string &error);
-	~InvalidSyntax() throw() override = default;
-	const char *what() const throw() override;
+	~InvalidSyntax() noexcept override = default;
+	[[nodiscard]] const char *what() const noexcept override;
 };
 
 // ----------------------------- InvalidRule ----------------------------- //
@@ -82,8 +82,8 @@ class InvalidRule : public GgramError {
   public:
 	InvalidRule(unsigned int line, const std::string &rule);
 	InvalidRule(const std::string &line, const std::string &rule);
-	~InvalidRule() throw() override = default;
-	const char *what() const throw() override;
+	~InvalidRule() noexcept override = default;
+	[[nodiscard]] const char *what() const noexcept override;
 };
 
 // ----------------------------- InputError ------------------------------ //
@@ -93,8 +93,8 @@ class InputError : public GgramError {
 
   public:
 	explicit InputError(const std::string &message);
-	~InputError() throw() override = default;
-	const char *what() const throw() override;
+	~InputError() noexcept override = default;
+	[[nodiscard]] const char *what() const noexcept override;
 };
 
 // ------------------------------ BnfError ------------------------------- //
@@ -104,6 +104,6 @@ class BnfError : public GgramError {
 
   public:
 	explicit BnfError(const std::string &message);
-	~BnfError() throw() override = default;
-	const char *what() const throw() override;
+	~BnfError() noexcept override = default;
+	[[nodiscard]] const char *what() const noexcept override;
 };
