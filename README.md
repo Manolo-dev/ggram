@@ -11,7 +11,8 @@ Ggram is a lexer-parser generator. It translates a `.gg` file describing a langu
 Download the source code [here](https://github.com/Manolo-dev/ggram).
 
 Then, in the source directory, run :
-```
+
+```sh
 make
 ```
 
@@ -19,7 +20,8 @@ make
 
 As said earlier, a `.gg` file describes a language syntax (so that ggram can generate a lexer-parser out of it).
 We'll look at a syntax example for simple calculations :
-```
+
+```ggram
 number "[1-9][0-9]*|0"
 
 ---
@@ -31,27 +33,28 @@ number "[1-9][0-9]*|0"
 
 ### Basic Usage
 
-```
+```sh
 ./ggram -f syntax_file_name.gg -o output_directory_name
 ./ggram syntax_file_name.gg -o output_directory_name
 ```
 
 ### Help
 
-```
+```sh
 ./ggram -h
 ```
+
 or
-```
+
+```sh
 ./ggram --full-help
 ```
 
 The first show a shorten version of the options descriptions on this page
 
-
 ### Version
 
-```
+```sh
 .\ggram -v
 ```
 
@@ -59,7 +62,7 @@ The first show a shorten version of the options descriptions on this page
 
 ### Lexer
 
-```
+```sh
 terminal "regexp_expression"
 ```
 
@@ -69,7 +72,7 @@ The lexer return a vector of Token. A Token is an object containing the terminal
 
 ### Parser
 
-```
+```ggram
 <rule_name> ::= <rule> ;
 ```
 
@@ -83,7 +86,7 @@ The parser return a tree of Token (yes, the Token object contains a vector of To
 
 For simple arithmetic expressions :
 
-```
+```ggram
 int "[1-9][0-9]*|0"
 float "[1-9][0-9]*.[0-9]*|[0-9]*.[0-9]*"
 operator "[+-*/]"
