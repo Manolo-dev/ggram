@@ -507,7 +507,7 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 						if (currentRule.size() < 2)
 							throw InvalidSyntax(lineNum, "Expected rule "
 														 "name");
-						if (brackets.size() != 0)
+						if (!brackets.empty())
 							throw InvalidSyntax(lineNum, "Expected ')', '}' "
 														 "or ']'");
 						rules.emplace_back(
