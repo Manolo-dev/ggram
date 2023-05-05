@@ -30,8 +30,8 @@ if(CLANG_TIDY_EXE)
 	set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
 	add_custom_target(
 		tidy
-		COMMAND ${CLANG_TIDY_EXE} --config-file=${CMAKE_CURRENT_LIST_DIR}/.clang-tidy --use-color --fix -p=${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp ${CMAKE_CURRENT_LIST_DIR}/include/*.hpp
-		WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+		COMMAND ${CLANG_TIDY_EXE} "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp" --fix -p "${PROJECT_BINARY_DIR}"
+		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 	)
 else()
 	message(STATUS "clang-tidy not found.")

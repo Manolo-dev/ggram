@@ -41,3 +41,5 @@ parser.cpp
 *.exe
 *.out
 *.app
+
+checks.json

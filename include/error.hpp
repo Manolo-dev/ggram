@@ -10,8 +10,8 @@ class GgramError : public std::runtime_error {
 
   public:
 	GgramError();
-	virtual ~GgramError() = default;
-	virtual const char *what() const throw();
+	~GgramError() override = default;
+	const char *what() const throw() override;
 };
 
 // ---------------------- InvalidFileExtensionError ---------------------- //

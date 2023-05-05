@@ -162,7 +162,7 @@ combinations generateCombinations(const std::vector<std::string> &tree) {
 static const std::string POP_FUNCTION_PREFIX = "pop_";
 
 std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
-										  const std::string name,
+										  const std::string &name,
 										  InputHandler::ResultType res_type) {
 	std::string result;
 	switch (res_type) {

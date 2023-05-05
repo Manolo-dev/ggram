@@ -99,7 +99,7 @@ void handleParameters(int argc, const char *argv[], Configuration &cfg) {
 	defaultParameterHandler(arg_list, cfg);
 
 	// Handles named parameters' arguments
-	const ParameterHandler *handler_ptr;
+	const ParameterHandler *handler_ptr = nullptr;
 	std::string remaining;
 	while (i < argc) {
 		// argv[i] is a parameter name, because if not
