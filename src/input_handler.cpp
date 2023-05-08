@@ -191,7 +191,7 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
 
 [[noreturn]] void version(const ArgList &arg_list, Configuration & /*unused*/) {
 	check_arg_list_size(arg_list, 0, 0);
-	std::cout << "version" << GGRAM_VERSION << std::endl;
+	std::cout << "version " << GGRAM_VERSION << std::endl;
 	exit(0);
 }
 

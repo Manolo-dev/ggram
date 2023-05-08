@@ -50,7 +50,9 @@ const std::array<std::pair<LexemeName, std::regex>, 13> LEX_GGRAM_FILE = {
 	 {LexemeName::OPTION, std::regex(R"-(\[)-")},
 	 {LexemeName::ENDOPTION, std::regex(R"-(\])-")},
 	 {LexemeName::STRING, std::regex(R"-(\"([^"]|\\")*\")-")},
-	 {LexemeName::END, std::regex(R"-(;)-")}}};
+	 {LexemeName::END, std::regex(R"-(;)-")}
+	}
+};
 
 std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &v) {
 	os << "[";
@@ -415,7 +417,7 @@ std::vector<std::string> createLexemes(FileHandler &files, uint &lineNum) {
 		}
 	}
 
-	files << FileHandler::WriteMode::CPP << std::endl
+	files << FileHandler::WriteMode::HPP << std::endl
 		  << "constexpr Lexeme LEXEME_LIST["
 		  << lexeme_names.size() + special_lexeme_names.size() << "] = {"
 		  << std::endl;
@@ -511,7 +513,7 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 			continue; // ingnore comment and empty lines
 		}
 		if (line == "---") {
-			break; // threat only the second part of the file
+			break; // treat only the second part of the file
 		}
 		while (!line.empty()) {
 			for (const auto &[name, regex] : LEX_GGRAM_FILE) {
@@ -599,9 +601,6 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
 			}
 		}
 	}
-	if (currentRule.empty()) {
-		throw InvalidSyntax(lineNum, "Expected ';'");
-	}
 	return rules;
 }
 void writeRulesPopFunctions(
@@ -667,14 +666,31 @@ void writeRulesPopFunctions(
 }
 
 int main(int argc, char const *argv[]) {
+
+	// Step 1: set up the configuration
+
 	InputHandler::Configuration cfg;
 	InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc},
 								   cfg);
-
 	FileHandler files;
-
 	files.open(cfg.input_filename, cfg.output_filepath_cpp,
 			   cfg.output_filepath_hpp);
+
+
+	// Step 2: Compute the module part
+	//   syntax still to decide, but kiss
+
+	// Step 3: Compute the lexer part
+	//    
+	//    return a list of couples (name, regex)
+	//  Lex the 
+
+	// Step 4: Compute the parser part
+	// 
+
+	// Step 5: Generate the code
+	//
+
 
 	uint lineNum = 0;
 
