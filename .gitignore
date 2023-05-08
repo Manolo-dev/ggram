@@ -6,8 +6,8 @@ test/*
 .vscode
 idea/*
 build/*
-output.cpp
 parser.cpp
+parser.hpp
 
 # Prerequisites
 *.d
@@ -43,3 +43,12 @@ parser.cpp
 *.app
 
 checks.json
+
+#CMake
+/CMakeFiles
+CMakeCache.txt
+compile_commands.json
+cmake_install.cmake
+
+#auto generated version file
+version.hpp
