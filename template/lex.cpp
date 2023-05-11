@@ -12,28 +12,29 @@ std::vector<Token> lex(std::string code) {
     int line = 0;
 
     // Try to split the code in lexeme by removing the first one each time
-    while(code.size() > 0) {
+    while (code.size() > 0) {
         // Try to match every lexeme with the beginning of the remaining code
         // If no lexeme match, we raise an error
         bool found = false;
-        for(const Lexeme &lexeme : LEXEME_LIST) {
+        for (const Lexeme &lexeme : LEXEME_LIST) {
             const std::regex current_regex(lexeme.regex); // Regex for the current lexeme
             std::smatch match;
             // Try to match current regex at the beginning of the remaining code
-            if(regex_search(code, match, current_regex,
-                regex_constants::match_continuous | regex_constants::match_not_null)) {
+            if (regex_search(code, match, current_regex,
+                             std::regex_constants::match_continuous |
+                                 std::regex_constants::match_not_null)) {
 
                 // If the lexeme is not to be ignored
-                if(strcmp(lexeme.name, ".ignore")) {
+                if (strcmp(lexeme.name, ".ignore")) {
                     tokens.emplace_back(lexeme.name, match.str(), line, column);
                 }
 
                 // Update line and column
-                for(const char& c : match.str()){
-                    if(c == '\r' || c == '\n'){
+                for (const char &c : match.str()) {
+                    if (c == '\r' || c == '\n') {
                         line++;
                         column = 0;
-                    } else{
+                    } else {
                         column++;
                     }
                 }
@@ -43,8 +44,8 @@ std::vector<Token> lex(std::string code) {
                 break;
             }
         }
-        if(!found) {
-            throw runtime_error("No matching pattern :\n" + code) ;
+        if (!found) {
+            throw std::runtime_error("No matching pattern :\n" + code);
         }
     }
 

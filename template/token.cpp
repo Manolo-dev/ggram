@@ -97,9 +97,9 @@ const std::vector<Token> &Token::children() const {
  * @brief Print the Token tree
  * @param os
  * @param depth
- * @return ostream&
+ * @return std::ostream&
  */
-ostream &Token::print(ostream &os, int depth) const {
+std::ostream &Token::print(std::ostream &os, int depth) const {
     for (int i = 0; i != depth; ++i) {
         os << "  ";
     }
@@ -114,14 +114,14 @@ ostream &Token::print(ostream &os, int depth) const {
         os << "\e[4m"                                         // 4 = underline
            << this->_type << "\e[0m(\e[1;32m"                 // 1 = bold, 32 = green
            << this->_line << ":" << this->_column << "\e[0m)" // 0 = reset
-           << endl;
+           << std::endl;
     else
         os << "\e[4m"                         // 4 = underline
            << this->_type << "\e[0m(\e[1;32m" // 1 = bold, 32 = green
            << this->_line << ":" << this->_column
            << "\e[0m \e[1;33m"  // 0 = reset, 1 = bold, 33 = yellow
            << value << "\e[0m)" // 0 = reset
-           << endl;
+           << std::endl;
 
     for (long unsigned int i = 0; i != this->_children.size(); ++i) {
         this->_children[i].print(os, depth + 1);
@@ -133,9 +133,9 @@ ostream &Token::print(ostream &os, int depth) const {
  * @brief Print the Token tree
  * @param os
  * @param tree
- * @return ostream&
+ * @return std::ostream&
  */
-ostream &operator<<(ostream &os, const Token &tree) {
+std::ostream &operator<<(std::ostream &os, const Token &tree) {
     return tree.print(os);
 }
 
@@ -143,9 +143,9 @@ ostream &operator<<(ostream &os, const Token &tree) {
  * @brief Print a std::vector
  * @param os
  * @param v
- * @return ostream&
+ * @return std::ostream&
  */
-template<typename T> ostream &operator<<(ostream &os, const std::vector<T> &v) {
+template<typename T> std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {
     for (const T &e : v) {
         os << e;
     }
