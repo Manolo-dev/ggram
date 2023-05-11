@@ -24,27 +24,13 @@ target_include_directories(ggram
 )
 configure_file("${CMAKE_CURRENT_LIST_DIR}/include/version.hpp.in" version.hpp)
 
-# precompiled header
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
-	target_precompile_headers(
-		ggram PRIVATE
-		<stdexcept>
-		<string>
-		<fstream>
-		<filesystem>
-		<array>
-		<vector>
-		<iostream>
-	)
-endif()
-
 # clang-tidy support
 find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
 if(CLANG_TIDY_EXE)
 	set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
 	add_custom_target(
 		tidy
-		COMMAND ${CLANG_TIDY_EXE} "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp" --fix -p "${PROJECT_BINARY_DIR}"
+		COMMAND ${CLANG_TIDY_EXE} "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp" --fix -p "${PROJECT_BINARY_DIR}" -fix-errors
 		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 	)
 else()
