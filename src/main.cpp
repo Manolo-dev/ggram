@@ -3,6 +3,7 @@
 #include <iostream>
 #include <regex>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "error.hpp"
@@ -14,6 +15,7 @@
 
 using combinations = std::vector<std::vector<std::string>>;
 using Rule = std::vector<std::string>;
+static constexpr std::string_view POP_FUNCTION_PREFIX = "pop_";
 
 struct PairRuleFunction {
     PairRuleFunction(const std::string &name, const std::string &functionName)
@@ -131,8 +133,6 @@ combinations generateCombinations(const std::vector<std::string> &tree) {
     return result;
 }
 
-static const std::string POP_FUNCTION_PREFIX = "pop_";
-
 std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
                                           const std::string &name,
                                           InputHandler::ResultType res_type) {
@@ -192,7 +192,8 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
                     if (rule_combination[i].back() != '}') {
                         throw InvalidSyntax("none", "Missing '}'");
                     }
-                    prefix = "_pop_while(" + POP_FUNCTION_PREFIX;
+                    prefix = "_pop_while(";
+					prefix += POP_FUNCTION_PREFIX;
                     switch (res_type) {
                         case InputHandler::ResultType::ORS:
                             suffix = ", current)";
