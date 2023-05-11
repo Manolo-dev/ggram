@@ -13,12 +13,13 @@ using combinations = std::vector<std::vector<std::string>>;
 using Rule = std::vector<std::string>;
 
 struct PairRuleFunction {
-    PairRuleFunction(const std::string &n, const std::string &f) : name(n), function(f) {}
+    PairRuleFunction(const std::string &name, const std::string &functionName)
+        : name(name), function(functionName) {}
     std::string name;
     std::string function;
 };
 
-enum LexemeName {
+enum class LexemeName {
     IGNORE,
     COMMENT,
     RULENAME,
@@ -51,12 +52,14 @@ const std::array<std::pair<LexemeName, std::regex>, 13> LEX_GGRAM_FILE = {
      {LexemeName::STRING, std::regex(R"-(\"([^"]|\\")*\")-")},
      {LexemeName::END, std::regex(R"-(;)-")}}};
 
-std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &v) {
+const std::regex LEXME_INFOS_REGEX(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
+
+std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &vector) {
     os << "[";
 
-    for (size_t i = 0; i < v.size(); i++) {
-        os << v[i];
-        if (i != v.size() - 1) {
+    for (size_t i = 0; i < vector.size(); i++) {
+        os << vector[i];
+        if (i != vector.size() - 1) {
             os << ", ";
         }
     }
@@ -64,17 +67,17 @@ std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &v) {
     return os;
 }
 
-std::string operator*(const std::string &s, size_t n) {
+std::string operator*(const std::string &base_string, size_t n) {
     std::stringstream out;
 
     while ((n--) != 0U) {
-        out << s;
+        out << base_string;
     }
     return out.str();
 }
 
-std::string operator*(size_t n, const std::string &s) {
-    return s * n;
+std::string operator*(size_t n, const std::string &base_string) {
+    return base_string * n;
 }
 
 template<typename T> void extend(std::vector<T> &dest, const std::vector<T> &src) {
@@ -354,9 +357,6 @@ std::vector<std::string> createLexemes(FileHandler &files, uint &lineNum) {
     std::string line;
     std::smatch match;
 
-    // match with : lexeme_name "lexme_regex"
-    const std::regex lexeme_infos_regex(R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-");
-
     while (files.getline(line)) {
         lineNum++;
 
@@ -370,7 +370,7 @@ std::vector<std::string> createLexemes(FileHandler &files, uint &lineNum) {
             break; // threat only the first part of the file
         }
 
-        if (std::regex_search(line, match, lexeme_infos_regex)) {
+        if (std::regex_search(line, match, LEXME_INFOS_REGEX)) {
             std::string lexeme_name = match.str(1);
             const std::string lexme_regex = match.str(2);
 
@@ -438,7 +438,7 @@ void writeLexemesPopFunctions(const std::vector<std::string> &token_types, FileH
                 break;
             case InputHandler::ResultType::TRY_CATCHS:
             case InputHandler::ResultType::ERROR_TOKEN:
-                // //Writes : Token pop_token(IT& it_cur, const
+                // Writes : Token pop_token(IT& it_cur, const
                 // IT it_end) { return pop_type("token", it_cur,
                 // it_end); }
                 files << FileHandler::WriteMode::CPP << "Token pop_" << token_name
@@ -568,7 +568,7 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, uint &li
 void writeRulesPopFunctions(const std::vector<std::pair<std::string, Rule>> &rules,
                             FileHandler &files, InputHandler::ResultType res_type) {
     // Declare rules' pop functions
-    for (auto [rule_name, _] : rules) {
+    for (const auto &[rule_name, _] : rules) {
         switch (res_type) {
             case InputHandler::ResultType::ORS:
                 files << FileHandler::WriteMode::HPP << "bool " << POP_FUNCTION_PREFIX << rule_name
@@ -624,19 +624,16 @@ void writeRulesPopFunctions(const std::vector<std::pair<std::string, Rule>> &rul
 int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
     InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg);
-
     FileHandler files;
-
     files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);
-
-    uint lineNum = 0;
 
     files.copy("template/head.hpp", FileHandler::WriteMode::HPP);
 
     files << FileHandler::WriteMode::CPP << "#include " << cfg.output_filepath_hpp.filename()
           << std::endl;
 
-    std::vector<std::string> const lexeme_names = createLexemes(files, lineNum);
+    uint lineNum = 0;
+    const std::vector<std::string> lexeme_names = createLexemes(files, lineNum);
 
     files.copy("template/token.cpp", FileHandler::WriteMode::CPP);
     files.copy("template/lex.cpp", FileHandler::WriteMode::CPP);
@@ -657,7 +654,7 @@ int main(int argc, char const *argv[]) {
 
     writeLexemesPopFunctions(lexeme_names, files, cfg.result_type);
 
-    std::vector<std::pair<std::string, Rule>> const rules = readRules(files, lineNum);
+    const std::vector<std::pair<std::string, Rule>> rules = readRules(files, lineNum);
     // for(auto [rule_name, _] : rules) {
     //     cout << rule_name << std::endl;
     //     cout << _ << std::endl;
