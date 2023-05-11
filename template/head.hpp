@@ -12,42 +12,38 @@
 #include <regex>
 #include <cstring>
 
-using namespace std;
-
-
-
+/**
+ * @brief Token class
+ * @details This class is used to store the tokens of the lexer and the tree of the parser
+ */
 class Token {
-    /**
-     * @brief Token class
-     * @details This class is used to store the tokens of the lexer and the tree of the parser
-     */
 public:
-    Token(string type = "", string value = "", int line = 0, int column = 0, bool error = false);
-    Token(string type, bool error);
+    Token(std::string type = "", std::string value = "", int line = 0, int column = 0, bool error = false);
+    Token(std::string type, bool error);
     void push(Token tree);
-    void push(vector<Token>& trees);
-    string type() const;
-    string value() const;
+    void push(std::vector<Token>& trees);
+    std::string type() const;
+    std::string value() const;
     int line() const;
     int column() const;
     bool is_error() const;
     void clear();
     void make_error();
     Token make_error_copy();
-    vector<Token>& children();
-    const vector<Token>& children() const;
-    ostream& print(ostream& os, int depth = 0) const ;
-    friend ostream& operator<<(ostream& os, const Token& tree);
+    std::vector<Token>& children();
+    const std::vector<Token>& children() const;
+    ostream& print(std::ostream& os, int depth = 0) const ;
+    friend std::ostream& operator<<(std::ostream& os, const Token& tree);
 private:
-    string _type; // Type of the token
-    string _value; // Value of the token
+    std::string _type; // Type of the token
+    std::string _value; // Value of the token
     int _line; // Line of the token
     int _column; // Column of the token
-    vector<Token> _children; // Children of the token
+    std::vector<Token> _children; // Children of the token
     bool _is_error;
 };
 
-vector<Token> lex(string code);
+std::vector<Token> lex(std::string code);
 
 struct Lexeme {
     /**
@@ -58,9 +54,9 @@ struct Lexeme {
     const std::regex &regex;
 };
 
-typedef vector<Token>::iterator IT;
+using IT = std::vector<Token>::iterator;
 
-class syntax_error : runtime_error{
+class syntax_error : std::runtime_error{
 public:
     syntax_error(const Token& err_tok): runtime_error("syntax_error"), error_token(err_tok){}
     syntax_error(const IT start_token) : syntax_error(*start_token){}
@@ -71,15 +67,15 @@ private:
     const Token& error_token;
 };
 
-Token parse(vector<Token>& v);
-Token parse(const string& code);
+Token parse(std::vector<Token>& v);
+Token parse(const std::string& code);
 
 // #define DEBUG_MODE  // Décommenter pour voir l'arbre de recherche
 
 #ifdef DEBUG_MODE
     unsigned int indent_lvl = 0;
-    string indentation(){
-        string res = "";
+    std::string indentation(){
+        std::string res = "";
         for (int i = 0; i < indent_lvl && i < 20; ++i) {
             res += "   ";
         }

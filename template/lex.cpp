@@ -1,13 +1,13 @@
 
 
-vector<Token> lex(string code) {
+std::vector<Token> lex(std::string code) {
     /**
      * @brief Lex the code
      * @param code
-     * @return vector<Token>
+     * @return std::vector<Token>
      */
 
-    vector<Token> tokens{}; // Vector of tokens
+    std::vector<Token> tokens{}; // Vector of tokens
     int column = 0;
     int line = 0;
 
@@ -17,11 +17,11 @@ vector<Token> lex(string code) {
         // If no lexeme match, we raise an error
         bool found = false;
         for(const Lexeme &lexeme : LEXEME_LIST) {
-            const regex current_regex(lexeme.regex); // Regex for the current lexeme
-            smatch match;
+            const std::regex current_regex(lexeme.regex); // Regex for the current lexeme
+            std::smatch match;
             // Try to match current regex at the beginning of the remaining code
             if(regex_search(code, match, current_regex,
-                regex_constants::match_continuous | regex_constants::match_not_null)({
+                regex_constants::match_continuous | regex_constants::match_not_null)) {
 
                 // If the lexeme is not to be ignored
                 if(strcmp(lexeme.name, ".ignore")) {
