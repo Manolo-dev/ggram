@@ -148,7 +148,7 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
             break;
         case InputHandler::ResultType::ERROR_TOKEN:
             result += "    SEARCH(\"" + name + "\")\n";
-            break;
+			// the folowing must be added after that so it's normal if there is no break
         case InputHandler::ResultType::TRY_CATCHS:
             result += "    const IT it_start = it_cur;\n";
             result += "    Token master(\"" + name +
@@ -436,7 +436,6 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, uint &li
     std::vector<std::pair<std::string, Rule>> rules;
     std::vector<std::string> allRuleNames;
     std::string line;
-    std::smatch match;
     Rule currentRule;
     std::stack<LexemeName> brackets;
 
