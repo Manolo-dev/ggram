@@ -25,10 +25,10 @@ using ArgList = std::vector<std::string>;
 enum class ResultType { ORS, TRY_CATCHS, ERROR_TOKEN };
 // The configuration, will contain everything we got from the input arguments
 struct Configuration {
-	std::string input_filename;
-	std::filesystem::path output_filepath_cpp = "parser.cpp";
-	std::filesystem::path output_filepath_hpp = "parser.hpp";
-	ResultType result_type = ResultType::ERROR_TOKEN;
+    std::string input_filename;
+    std::filesystem::path output_filepath_cpp = "parser.cpp";
+    std::filesystem::path output_filepath_hpp = "parser.hpp";
+    ResultType result_type = ResultType::ERROR_TOKEN;
 };
 
 // update_config_function is intended to update the configuration
@@ -42,17 +42,15 @@ using update_config_function = void (*)(const ArgList &, Configuration &);
  * displayed with the --help for example
  */
 struct ParameterHandler {
-	char const short_id;
-	char const *long_id;
-	char const *description;
-	update_config_function configuration_updater;
+    char const short_id;
+    char const *long_id;
+    char const *description;
+    update_config_function configuration_updater;
 
-	void update_configuration(const ArgList & /*arg_list*/,
-							  Configuration & /*cfg*/) const;
-	std::ostream &print(std::ostream & /*os*/) const;
+    void update_configuration(const ArgList & /*arg_list*/, Configuration & /*cfg*/) const;
+    std::ostream &print(std::ostream & /*os*/) const;
 };
-std::ostream &operator<<(std::ostream & /*os*/,
-						 const ParameterHandler & /*handler*/);
+std::ostream &operator<<(std::ostream & /*os*/, const ParameterHandler & /*handler*/);
 
 //----------------------------- Handler getters
 //----------------------------------//
@@ -61,8 +59,7 @@ std::ostream &operator<<(std::ostream & /*os*/,
  * parameter corresponding to the given id, if it finds it, it returns the
  * parameter handler otherwise it returns a nullptr
  */
-const ParameterHandler *getHandlerFromParam(const std::string_view &param,
-											std::string &remaining);
+const ParameterHandler *getHandlerFromParam(const std::string_view &param, std::string &remaining);
 // param is either "-short_id" or "--long_id"
 const ParameterHandler *getHandlerFromShortID(char short_id);
 const ParameterHandler *getHandlerFromLongID(const std::string_view &long_id);
@@ -87,52 +84,48 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg);
 // ------------------------------------------------------------------ //
 
 // ------------ Eddy Malou Parameter ------------ //
-[[noreturn]] void eddyMalou(const ArgList &arg_list,
-							Configuration & /*unused*/);
+[[noreturn]] void eddyMalou(const ArgList &arg_list, Configuration & /*unused*/);
 constexpr ParameterHandler eddyMalou_description = {
-	'e', "congolexicomatisation",
-	"Lorsque l'on parle des végétaliens, du végétalisme, "
-	"le savoir purement technique paraît soutenir l'estime du savoir provenant "
-	"d'une dynamique syncronique, "
-	"je vous en prie. Une semaine passée sans parler du peuple c’est errer "
-	"sans abri, "
-	"autrement dit la compétence autour de l'ergonométrie se résume à "
-	"gérer le panafricanisme comparé(e)(s) la rénaque, c’est clair.",
-	&eddyMalou};
+    'e', "congolexicomatisation",
+    "Lorsque l'on parle des végétaliens, du végétalisme, "
+    "le savoir purement technique paraît soutenir l'estime du savoir provenant "
+    "d'une dynamique syncronique, "
+    "je vous en prie. Une semaine passée sans parler du peuple c’est errer "
+    "sans abri, "
+    "autrement dit la compétence autour de l'ergonométrie se résume à "
+    "gérer le panafricanisme comparé(e)(s) la rénaque, c’est clair.",
+    &eddyMalou};
 
 // ------------ Help Parameter ------------ //
 [[noreturn]] void help(const ArgList &arg_list, Configuration & /*unused*/);
 constexpr ParameterHandler help_description = {
-	'h', "help", "Show all possible parameters with their description", &help};
+    'h', "help", "Show all possible parameters with their description", &help};
 
 // ------------ Version Parameter ------------ //
 [[noreturn]] void version(const ArgList &arg_list, Configuration & /*unused*/);
 constexpr ParameterHandler version_description = {
-	'v', "version", "Show which version of ggram you're using", &version};
+    'v', "version", "Show which version of ggram you're using", &version};
 
 // ------------ Input Parameter ------------ //
 void inputFile(const ArgList &arg_list, Configuration &cfg);
 constexpr ParameterHandler inputFile_description = {
-	'f', nullptr, "takes the input .gg file, to be treated", &inputFile};
+    'f', nullptr, "takes the input .gg file, to be treated", &inputFile};
 
 // ------------ Output Parameter ------------ //
 void outputFile(const ArgList &arg_list, Configuration &cfg);
 constexpr ParameterHandler outputFile_description = {
-	'o', nullptr,
-	"takes the output .cpp file, for the result (default : parser.cpp)",
-	&outputFile};
+    'o', nullptr, "takes the output .cpp file, for the result (default : parser.cpp)", &outputFile};
 
 // ------------ Result Type Parameter ------------ //
 void resultParserType(const ArgList &arg_list, Configuration &cfg);
 constexpr ParameterHandler resultParserType_description = {
-	'r', "restype",
-	"Control the type of code you want for the parser.\n"
-	"    Values : ORS / or, TRY_CATCHS / tc, ERROR_TOKEN / etk (default)",
-	&resultParserType};
+    'r', "restype",
+    "Control the type of code you want for the parser.\n"
+    "    Values : ORS / or, TRY_CATCHS / tc, ERROR_TOKEN / etk (default)",
+    &resultParserType};
 
 // This is the list of all parameter handlers that will be tested on the input
 constexpr std::array<ParameterHandler, 6> PARAMETER_LIST = {
-	eddyMalou_description,	help_description,
-	version_description,	inputFile_description,
-	outputFile_description, resultParserType_description};
+    eddyMalou_description, help_description,       version_description,
+    inputFile_description, outputFile_description, resultParserType_description};
 } // namespace InputHandler
