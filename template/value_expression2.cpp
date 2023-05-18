@@ -35,7 +35,7 @@ std::vector<Token> _pop_while(const popfunction pop, IT& it_cur, const IT it_end
 Token& _pop_value(const std::string& val, IT& it_cur, const IT it_end) {
     SEARCH("value :" << val)
     if(it_cur == it_end || it_cur->value() != val) {
-        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value())(
+        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value()))
         throw syntax_error(it_cur);
     }
     FOUND("value")
@@ -51,7 +51,7 @@ Token& _pop_value(const std::string& val, IT& it_cur, const IT it_end) {
 Token& _pop_type(const std::string& val, IT& it_cur, const IT it_end) {
     SEARCH("type : " << val)
     if(it_cur == it_end || it_cur->type() != val) {
-        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type())(
+        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type()))
         throw syntax_error(it_cur);
     }
     FOUND("type")

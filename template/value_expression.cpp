@@ -44,10 +44,10 @@ bool _pop_while(popfunction pop, std::vector<Token> &master) {
  * @param master
  * @return bool
  */
-bool _pop_value(const string& val, Token &master) {
+bool _pop_value(const std::string& val, Token &master) {
     SEARCH("value :" << val)
     if(it_cur == it_end || it_cur->value() != val) {
-        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value())(
+        FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value()))
         it_err = it_cur;
         return true;
     }
@@ -63,10 +63,10 @@ bool _pop_value(const string& val, Token &master) {
  * @param master
  * @return bool
  */
-bool _pop_type(const string& val, Token &master) {
+bool _pop_type(const std::string& val, Token &master) {
     SEARCH("type : " << val)
     if(it_cur == it_end || it_cur->type() != val) {
-        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type())(
+        FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type()))
         it_err = it_cur;
         return true;
     }
@@ -81,10 +81,10 @@ Token parse(std::vector<Token>& tokens){
     it_end = tokens.end();
     Token tree;
     if(pop_program(tree)){
-        throw std::syntax_error(it_err);
+        throw syntax_error(it_err);
     }
     if(it_cur != it_end){
-        throw std::syntax_error(it_cur);
+        throw syntax_error(it_cur);
     }
     return tree;
 }

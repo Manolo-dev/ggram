@@ -12,11 +12,11 @@
 #include <string>
 #include <vector>
 
-/**
- * @brief Token class
- * @details This class is used to store the tokens of the lexer and the tree of the parser
- */
-class Token {
+    /**
+     * @brief Token class
+     * @details This class is used to store the tokens of the lexer and the tree of the parser
+     */
+    class Token {
   public:
     Token(std::string type = "", std::string value = "", int line = 0, int column = 0,
           bool error = false);
