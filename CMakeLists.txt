@@ -30,7 +30,7 @@ if(CLANG_TIDY_EXE)
 	set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
 	add_custom_target(
 		tidy
-		COMMAND ${CLANG_TIDY_EXE} "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp" --fix -p "${PROJECT_BINARY_DIR}"
+		COMMAND ${CLANG_TIDY_EXE} "${PROJECT_SOURCE_DIR}/src/*.cpp" --fix -p "${PROJECT_SOURCE_DIR}" -fix-errors
 		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 	)
 else()
@@ -42,8 +42,8 @@ find_program(CLANG_FORMAT_EXE NAMES "clang-format")
 if(CLANG_FORMAT_EXE)
 	add_custom_target(
 		format
-		COMMAND ${CLANG_FORMAT_EXE} -i -style=file ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp ${CMAKE_CURRENT_LIST_DIR}/include/*.hpp
-		WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+		COMMAND ${CLANG_FORMAT_EXE} -i -style=file ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/include/*.hpp
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	)
 else()
 	message(STATUS "clang-format not found.")
