@@ -27,7 +27,7 @@ std::vector<Token> _pop_while(const popfunction pop, IT& it_cur, const IT it_end
 }
 
 /**
- * @brief Check if the current token has the right value
+ * @brief Check ifthe current token has the right value
  * @param val
  * @param master
  * @return bool
@@ -43,7 +43,7 @@ Token& _pop_value(const std::string& val, IT& it_cur, const IT it_end) {
 }
 
 /**
- * @brief Check if the current token has the right type
+ * @brief Check ifthe current token has the right type
  * @param val
  * @param master
  * @return bool

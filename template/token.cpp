@@ -34,7 +34,7 @@ Token Token::make_error_copy() {
  * @param tree
  */
 void Token::push(Token tree) {
-    if (this->_children.size() == 0) {
+    if(this->_children.size() == 0) {
         this->_line = tree.line();
         this->_column = tree.column();
     }
@@ -46,7 +46,7 @@ void Token::push(Token tree) {
  * @param trees
  */
 void Token::push(std::vector<Token> &trees) {
-    for (long unsigned int i = 0; i != trees.size(); ++i) {
+    for(long unsigned int i = 0; i != trees.size(); ++i) {
         this->push(trees[i]);
     }
 }
@@ -100,17 +100,17 @@ const std::vector<Token> &Token::children() const {
  * @return std::ostream&
  */
 std::ostream &Token::print(std::ostream &os, int depth) const {
-    for (int i = 0; i != depth; ++i) {
+    for(int i = 0; i != depth; ++i) {
         os << "  ";
     }
     std::string value = this->_value;
     size_t pos = 0;
-    while ((pos = value.find("\n", pos)) != std::string::npos ||
+    while((pos = value.find("\n", pos)) != std::string::npos ||
            (pos = value.find("\r", pos)) != std::string::npos) {
         value.replace(pos, 1, "↵");
         pos += 1;
     } // Replace newlines values with ↵
-    if (this->_value == "")
+    if(this->_value == "")
         os << "\e[4m"                                         // 4 = underline
            << this->_type << "\e[0m(\e[1;32m"                 // 1 = bold, 32 = green
            << this->_line << ":" << this->_column << "\e[0m)" // 0 = reset
@@ -123,7 +123,7 @@ std::ostream &Token::print(std::ostream &os, int depth) const {
            << value << "\e[0m)" // 0 = reset
            << std::endl;
 
-    for (long unsigned int i = 0; i != this->_children.size(); ++i) {
+    for(long unsigned int i = 0; i != this->_children.size(); ++i) {
         this->_children[i].print(os, depth + 1);
     } // Print children
     return os;
@@ -146,7 +146,7 @@ std::ostream &operator<<(std::ostream &os, const Token &tree) {
  * @return std::ostream&
  */
 template<typename T> std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {
-    for (const T &e : v) {
+    for(const T &e : v) {
         os << e;
     }
     return os;

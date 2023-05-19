@@ -79,7 +79,7 @@ Token parse(const std::string &code);
 unsigned int indent_lvl = 0;
 std::string indentation() {
     std::string res = "";
-    for (int i = 0; i < indent_lvl && i < 20; ++i) {
+    for(int i = 0; i < indent_lvl && i < 20; ++i) {
         res += "   ";
     }
     return res;
