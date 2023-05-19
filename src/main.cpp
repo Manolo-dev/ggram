@@ -321,19 +321,19 @@ std::vector<std::string> createLexemes(FileHandler &files) {
         }
     }
 
-    files << FileHandler::WriteMode::CPP << std::endl
+    files << FileHandler::WriteMode::HPP << std::endl
           << "constexpr Lexeme LEXEME_LIST[" << lexeme_names.size() + special_lexeme_names.size()
           << "] = {" << std::endl;
 
     for (const std::string &lexeme_name : lexeme_names) {
-        files << FileHandler::WriteMode::CPP
+        files << FileHandler::WriteMode::HPP
               << "    {\"" + lexeme_name + "\", " + lexeme_name + "_}," << std::endl;
     }
     for (const std::string &lexeme_name : special_lexeme_names) {
-        files << FileHandler::WriteMode::CPP
+        files << FileHandler::WriteMode::HPP
               << "    {\"" + lexeme_name + "\", _" + &(lexeme_name[1]) + "_}," << std::endl;
     }
-    files << FileHandler::WriteMode::CPP << "};" << std::endl << std::endl;
+    files << FileHandler::WriteMode::HPP << "};" << std::endl << std::endl;
 
     if (line != "---") {
         throw InvalidSyntax(files.getCurrentLineNumber(), "Expected '---'");
@@ -546,15 +546,13 @@ void writeRulesPopFunctions(const std::vector<std::pair<std::string, Rule>> &rul
     }
 }
 
-std::vector<std::string> initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files) {
+void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files) {
     files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);
 
     files.copy("template/head.hpp", FileHandler::WriteMode::HPP);
 
     files << FileHandler::WriteMode::CPP << "#include " << cfg.output_filepath_hpp.filename()
           << std::endl;
-
-    const std::vector<std::string> lexeme_names = createLexemes(files);
 
     files.copy("template/token.cpp", FileHandler::WriteMode::CPP);
     files.copy("template/lex.cpp", FileHandler::WriteMode::CPP);
@@ -572,14 +570,14 @@ std::vector<std::string> initOutputFiles(const InputHandler::Configuration &cfg,
         default:
             throw std::invalid_argument("Not yet implemented here !");
     }
-    return lexeme_names;
 }
 
 int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
     InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg);
     FileHandler files;
-    auto lexeme_names = initOutputFiles(cfg, files);
+    initOutputFiles(cfg, files);
+    const std::vector<std::string> lexeme_names = createLexemes(files);
     writeLexemesPopFunctions(lexeme_names, files, cfg.result_type);
 
     const std::vector<std::pair<std::string, Rule>> rules = readRules(files);
