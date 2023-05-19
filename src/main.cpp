@@ -96,21 +96,21 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 
     result += "    const IT it_start = it_cur;\n";
     result +=
-        "    master = Token(\"" + name + "\", \"\", it_start -> line(), it_start -> column()); \n";
+        "    master = Token(\"" + name + "\", \"\", it_start->line(), it_start->column()); \n";
     result += "    std::vector<Token> current;\n";
     result += "    SEARCH(\"" + name + "\")\n";
 
+    std::string prefix;
+    std::string suffix;
     for (std::vector<std::string> &rule_combination : generateCombinations(rule)) {
         result += "    current.clear();\n";
         result += "    if(";
 
         for (size_t i = 0; i < rule_combination.size(); i++) {
-            std::string prefix;
-            std::string suffix;
             /*
-            {truc} -> pop_while(truc, current) OU pop_while(truc,
-            it_cur, it_end) <truc> -> pop_truc(createNext(current))
-            OU pop_truc(it_cur, it_end) "truc" -> pop_value("truc",
+            {truc}->pop_while(truc, current) OU pop_while(truc,
+            it_cur, it_end) <truc>->pop_truc(createNext(current))
+            OU pop_truc(it_cur, it_end) "truc"->pop_value("truc",
             createNext(current)) OU pop_value("truc", it_cur,
             it_end) otherwise : INVALID_SYNTAX
             */

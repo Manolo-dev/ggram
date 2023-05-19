@@ -33,6 +33,7 @@ constexpr MatchResult ignoreMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto commentPattern = ctll::fixed_string{R"-(#.+$)-"};
 constexpr MatchResult commentMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<commentPattern>(str); match) {
@@ -40,6 +41,7 @@ constexpr MatchResult commentMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto ruleNamePattern = ctll::fixed_string{R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-"};
 constexpr MatchResult ruleNameMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<ruleNamePattern>(str); match) {
@@ -47,6 +49,7 @@ constexpr MatchResult ruleNameMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto assignPattern = ctll::fixed_string{R"-(::=)-"};
 constexpr MatchResult assignMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<assignPattern>(str); match) {
@@ -54,6 +57,7 @@ constexpr MatchResult assignMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto orPattern = ctll::fixed_string{R"-(\|)-"};
 constexpr MatchResult orMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<orPattern>(str); match) {
@@ -61,6 +65,7 @@ constexpr MatchResult orMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto parenthPattern = ctll::fixed_string{R"-(\()-"};
 constexpr MatchResult parenthMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<parenthPattern>(str); match) {
@@ -68,6 +73,7 @@ constexpr MatchResult parenthMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto endParenthPattern = ctll::fixed_string{R"-(\))-"};
 constexpr MatchResult endParenthMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<endParenthPattern>(str); match) {
@@ -75,6 +81,7 @@ constexpr MatchResult endParenthMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto loopPattern = ctll::fixed_string{R"-(\{)-"};
 constexpr MatchResult loopMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<loopPattern>(str); match) {
@@ -82,6 +89,7 @@ constexpr MatchResult loopMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto endLoopPattern = ctll::fixed_string{R"-(\})-"};
 constexpr MatchResult endLoopMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<endLoopPattern>(str); match) {
@@ -89,6 +97,7 @@ constexpr MatchResult endLoopMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto optionPattern = ctll::fixed_string{R"-(\[)-"};
 constexpr MatchResult optionMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<optionPattern>(str); match) {
@@ -96,6 +105,7 @@ constexpr MatchResult optionMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto endOptionPattern = ctll::fixed_string{R"-(\])-"};
 constexpr MatchResult endOptionMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<endOptionPattern>(str); match) {
@@ -103,6 +113,7 @@ constexpr MatchResult endOptionMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto stringPattern = ctll::fixed_string{R"-(\"([^"]|\\")*\")-"};
 constexpr MatchResult stringMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<stringPattern>(str); match) {
@@ -110,6 +121,7 @@ constexpr MatchResult stringMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
 static constexpr auto endPattern = ctll::fixed_string{R"-(;)-"};
 constexpr MatchResult endMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<endPattern>(str); match) {
