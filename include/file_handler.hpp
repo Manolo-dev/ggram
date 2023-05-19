@@ -51,6 +51,12 @@ class FileHandler {
      */
     void close();
 
+	/**
+	 * @brief reset the input file to the beginning
+	 * 
+	 */
+	void reset();
+
     /**
      * @brief Opens all files
      *
@@ -75,10 +81,20 @@ class FileHandler {
      * @brief Reads a line from the input file, it acts like std::getline
      *
      * @param line the line to read into
-     * @return true ifa line was read
-     * @return false ifthe end of the file was reached
+     * @return true if a line was read
+     * @return false if the end of the file was reached
      */
     bool getline(std::string &line);
+
+	/**
+	 * @brief Reads a line from the input file at a specific line number
+	 * 
+	 * @param line the line to read into
+	 * @param line_number the line number to read
+	 * @return true if a line was read
+	 * @return false if the end of the file was reached before the specified line number
+	 */
+	bool getline(std::string &line, unsigned long line_number);
 
     unsigned long getCurrentLineNumber() const;
 
