@@ -314,7 +314,10 @@ void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files)
 
 int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
-    InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg);
+    if (!InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg)) {
+		return 1;
+	}
+	
     FileHandler files;
     initOutputFiles(cfg, files);
     const auto lexeme_names = createLexemes(files);

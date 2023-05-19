@@ -71,7 +71,7 @@ const ParameterHandler *getHandlerFromAnyID(const std::string_view &id);
  * PARAMETER_LIST */
 /*                    in order to update the default configuration */
 /******************************************************************************************/
-void handleParameters(const std::vector<std::string> &args, Configuration &cfg);
+bool handleParameters(const std::vector<std::string> &args, Configuration &cfg) noexcept;
 
 // ----------------- Default Parameter Handler ----------------- //
 // Special Handler (doesn't need a structure): called with what is before the

@@ -83,7 +83,7 @@ const ParameterHandler *getHandlerFromAnyID(const std::string_view &id) {
  * PARAMETER_LIST */
 /*                    in order to update the default configuration */
 /******************************************************************************************/
-void handleParameters(const std::vector<std::string> &args, Configuration &cfg) {
+bool handleParameters(const std::vector<std::string> &args, Configuration &cfg) noexcept {
     if (args.size() == 1) {
         help({}, cfg);
     }
@@ -104,7 +104,9 @@ void handleParameters(const std::vector<std::string> &args, Configuration &cfg) 
         handler_ptr = getHandlerFromParam(args.at(i), remaining);
 
         if (handler_ptr == nullptr) {
-            throw ArgumentError("Unknown Parameter : " + std::string(args.at(i)));
+            std::cerr << "Unknown Parameter : " + std::string(args.at(i)) << std::endl;
+            help({}, cfg);
+            return false;
         }
 
         arg_list.clear();
@@ -116,9 +118,14 @@ void handleParameters(const std::vector<std::string> &args, Configuration &cfg) 
             arg_list.emplace_back(args.at(i));
             i++;
         }
-
-        handler_ptr->update_configuration(arg_list, cfg);
+		try {
+        	handler_ptr->update_configuration(arg_list, cfg);
+		} catch (const ArgumentError &e) {
+			std::cerr << e.what() << std::endl;
+			return false;
+		}
     }
+	return true;
 }
 
 void check_arg_list_size(const ArgList &list, const size_t min_val, const size_t max_val) {
@@ -175,10 +182,12 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
         }
         std::cout << *param_ptr;
     } else if (arg_list.empty()) {
+        std::cout << "Usage: ggram input_file [options]" << std::endl;
         for (const ParameterHandler &param : PARAMETER_LIST) {
             std::cout << param;
         }
     }
+	std::cout << std::endl;
     exit(0);
 }
 
