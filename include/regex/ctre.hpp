@@ -3,11 +3,11 @@
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
-    TERMS AND CONDITIONS FORUSE, REPRODUCTION, AND DISTRIBUTION
+    TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
     1. Definitions.
 
-      "License" shall mean the terms and conditions foruse, reproduction,
+      "License" shall mean the terms and conditions for use, reproduction,
       and distribution as defined by Sections 1 through 9 of this document.
 
       "Licensor" shall mean the copyright owner or entity authorized by
@@ -15,7 +15,7 @@
 
       "Legal Entity" shall mean the union of the acting entity and all
       other entities that control, are controlled by, or are under common
-      control with that entity. Forthe purposes of this definition,
+      control with that entity. For the purposes of this definition,
       "control" means (i) the power, direct or indirect, to cause the
       direction or management of such entity, whether by contract or
       otherwise, or (ii) ownership of fifty percent (50%) or more of the
@@ -24,7 +24,7 @@
       "You" (or "Your") shall mean an individual or Legal Entity
       exercising permissions granted by this License.
 
-      "Source" form shall mean the preferred form formaking modifications,
+      "Source" form shall mean the preferred form for making modifications,
       including but not limited to software source code, documentation
       source, and configuration files.
 
@@ -39,9 +39,9 @@
       (an example is provided in the Appendix below).
 
       "Derivative Works" shall mean any work, whether in Source or Object
-      form, that is based on (or derived from) the Work and forwhich the
+      form, that is based on (or derived from) the Work and for which the
       editorial revisions, annotations, elaborations, or other modifications
-      represent, as a whole, an original work of authorship. Forthe purposes
+      represent, as a whole, an original work of authorship. For the purposes
       of this License, Derivative Works shall not include works that remain
       separable from, or merely link (or bind by name) to the interfaces of,
       the Work and Derivative Works thereof.
@@ -49,14 +49,14 @@
       "Contribution" shall mean any work of authorship, including
       the original version of the Work and any modifications or additions
       to that Work or Derivative Works thereof, that is intentionally
-      submitted to Licensor forinclusion in the Work by the copyright owner
+      submitted to Licensor for inclusion in the Work by the copyright owner
       or by an individual or Legal Entity authorized to submit on behalf of
-      the copyright owner. Forthe purposes of this definition, "submitted"
+      the copyright owner. For the purposes of this definition, "submitted"
       means any form of electronic, verbal, or written communication sent
       to the Licensor or its representatives, including but not limited to
       communication on electronic mailing lists, source code control systems,
       and issue tracking systems that are managed by, or on behalf of, the
-      Licensor forthe purpose of discussing and improving the Work, but
+      Licensor for the purpose of discussing and improving the Work, but
       excluding communication that is conspicuously marked or otherwise
       designated in writing by the copyright owner as "Not a Contribution."
 
@@ -79,12 +79,12 @@
       where such license applies only to those patent claims licensable
       by such Contributor that are necessarily infringed by their
       Contribution(s) alone or by combination of their Contribution(s)
-      with the Work to which such Contribution(s) was submitted. IfYou
+      with the Work to which such Contribution(s) was submitted. If You
       institute patent litigation against any entity (including a
       cross-claim or counterclaim in a lawsuit) alleging that the Work
       or a Contribution incorporated within the Work constitutes direct
       or contributory patent infringement, then any patent licenses
-      granted to You under this License forthat Work shall terminate
+      granted to You under this License for that Work shall terminate
       as of the date such litigation is filed.
 
     4. Redistribution. You may reproduce and distribute copies of the
@@ -104,17 +104,17 @@
           excluding those notices that do not pertain to any part of
           the Derivative Works; and
 
-      (d) Ifthe Work includes a "NOTICE" text file as part of its
+      (d) If the Work includes a "NOTICE" text file as part of its
           distribution, then any Derivative Works that You distribute must
           include a readable copy of the attribution notices contained
           within such NOTICE file, excluding those notices that do not
           pertain to any part of the Derivative Works, in at least one
           of the following places: within a NOTICE text file distributed
           as part of the Derivative Works; within the Source form or
-          documentation, ifprovided along with the Derivative Works; or,
-          within a display generated by the Derivative Works, ifand
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
           wherever such third-party notices normally appear. The contents
-          of the NOTICE file are forinformational purposes only and
+          of the NOTICE file are for informational purposes only and
           do not modify the License. You may add Your own attribution
           notices within Derivative Works that You distribute, alongside
           or as an addendum to the NOTICE text from the Work, provided
@@ -123,13 +123,13 @@
 
       You may add Your own copyright statement to Your modifications and
       may provide additional or different license terms and conditions
-      foruse, reproduction, or distribution of Your modifications, or
-      forany such Derivative Works as a whole, provided Your use,
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
       reproduction, and distribution of the Work otherwise complies with
       the conditions stated in this License.
 
     5. Submission of Contributions. Unless You explicitly state otherwise,
-      any Contribution intentionally submitted forinclusion in the Work
+      any Contribution intentionally submitted for inclusion in the Work
       by You to the Licensor shall be under the terms and conditions of
       this License, without any additional terms or conditions.
       Notwithstanding the above, nothing herein shall supersede or modify
@@ -138,7 +138,7 @@
 
     6. Trademarks. This License does not grant permission to use the trade
       names, trademarks, service marks, or product names of the Licensor,
-      except as required forreasonable and customary use in describing the
+      except as required for reasonable and customary use in describing the
       origin of the Work and reproducing the content of the NOTICE file.
 
     7. Disclaimer of Warranty. Unless required by applicable law or
@@ -146,8 +146,8 @@
       Contributor provides its Contributions) on an "AS IS" BASIS,
       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
       implied, including, without limitation, any warranties or conditions
-      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FORA
-      PARTICULAR PURPOSE. You are solely responsible fordetermining the
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
       appropriateness of using or redistributing the Work and assume any
       risks associated with Your exercise of permissions under this License.
 
@@ -155,22 +155,22 @@
       whether in tort (including negligence), contract, or otherwise,
       unless required by applicable law (such as deliberate and grossly
       negligent acts) or agreed to in writing, shall any Contributor be
-      liable to You fordamages, including any direct, indirect, special,
+      liable to You for damages, including any direct, indirect, special,
       incidental, or consequential damages of any character arising as a
       result of this License or out of the use or inability to use the
-      Work (including but not limited to damages forloss of goodwill,
+      Work (including but not limited to damages for loss of goodwill,
       work stoppage, computer failure or malfunction, or any and all
-      other commercial damages or losses), even ifsuch Contributor
+      other commercial damages or losses), even if such Contributor
       has been advised of the possibility of such damages.
 
-    9. Accepting Warranty or Additional Liability. Whileredistributing
+    9. Accepting Warranty or Additional Liability. While redistributing
       the Work or Derivative Works thereof, You may choose to offer,
       and charge a fee for, acceptance of support, warranty, indemnity,
       or other liability obligations and/or rights consistent with this
       License. However, in accepting such obligations, You may act only
       on Your own behalf and on Your sole responsibility, not on behalf
-      of any other Contributor, and only ifYou agree to indemnify,
-      defend, and hold each Contributor harmless forany liability
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
       incurred by, or claims asserted against, such Contributor by reason
       of your accepting any such warranty or additional liability.
 
@@ -182,9 +182,9 @@
       boilerplate notice, with the fields enclosed by brackets "[]"
       replaced with your own identifying information. (Don't include
       the brackets!)  The text should be enclosed in the appropriate
-      comment syntax forthe file format. We also recommend that a
+      comment syntax for the file format. We also recommend that a
       file or class name and description of purpose be included on the
-      same "printed page" as the copyright notice foreasier
+      same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
     Copyright [yyyy] [name of copyright owner]
@@ -198,7 +198,7 @@
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License forthe specific language governing permissions and
+    See the License for the specific language governing permissions and
     limitations under the License.
 
 
@@ -209,8 +209,8 @@ of this Software are embedded into an Object form of such source code, you
 may redistribute such embedded portions in such Object form without complying
 with the conditions of Sections 4(a), 4(b) and 4(d) of the License.
 
-In addition, ifyou combine or link compiled forms of this Software with
-software that is licensed under the GPLv2 ("Combined Software") and ifa
+In addition, if you combine or link compiled forms of this Software with
+software that is licensed under the GPLv2 ("Combined Software") and if a
 court of competent jurisdiction determines that the patent provision (Section
 3), the indemnity provision (Section 9) or other Section of the License
 conflicts with the conditions of the GPLv2, you may retroactively and
@@ -273,7 +273,7 @@ template <size_t N> struct fixed_string {
     size_t real_size{0};
     bool correct_flag{true};
     template <typename T> constexpr fixed_string(const T (&input)[N+1]) noexcept {
-        ifconstexpr (std::is_same_v<T, char>) {
+        if constexpr (std::is_same_v<T, char>) {
             #ifdef CTRE_STRING_IS_UTF8
                 size_t out{0};
                 for(size_t i{0}; i < N; ++i) {
@@ -311,8 +311,8 @@ template <size_t N> struct fixed_string {
                     real_size++;
                 }
             #endif
-        #if__cpp_char8_t
-        } else ifconstexpr (std::is_same_v<T, char8_t>) {
+        #if __cpp_char8_t
+        } else if constexpr (std::is_same_v<T, char8_t>) {
             size_t out{0};
             for(size_t i{0}; i < N; ++i) {
                 if((i == (N-1)) && (input[i] == 0)) break;
@@ -343,7 +343,7 @@ template <size_t N> struct fixed_string {
                 }
             }
         #endif
-        } else ifconstexpr (std::is_same_v<T, char16_t>) {
+        } else if constexpr (std::is_same_v<T, char16_t>) {
             size_t out{0};
             for(size_t i{0}; i < N; ++i) {
                 length_value_t info = length_and_value_of_utf16_code_point(input[i]);
@@ -362,7 +362,7 @@ template <size_t N> struct fixed_string {
                 }
             }
             real_size = out;
-        } else ifconstexpr (std::is_same_v<T, wchar_t> || std::is_same_v<T, char32_t>) {
+        } else if constexpr (std::is_same_v<T, wchar_t> || std::is_same_v<T, char32_t>) {
             for(size_t i{0}; i < N; ++i) {
                 content[i] = static_cast<char32_t>(input[i]);
                 if((i == (N-1)) && (input[i] == 0)) break;
@@ -451,26 +451,26 @@ template <size_t N> fixed_string(fixed_string<N>) -> fixed_string<N>;
 
 #include <type_traits>
 
-#ifdefined __cpp_nontype_template_parameter_class
+#if defined __cpp_nontype_template_parameter_class
     #define CTLL_CNTTP_COMPILER_CHECK 1
 #elif defined __cpp_nontype_template_args
 // compiler which defines correctly feature test macro (not you clang)
-    #if__cpp_nontype_template_args >= 201911L
+    #if __cpp_nontype_template_args >= 201911L
         #define CTLL_CNTTP_COMPILER_CHECK 1
     #elif __cpp_nontype_template_args >= 201411L
 // appleclang 13+
-      #ifdefined __apple_build_version__
-        #ifdefined __clang_major__ && __clang_major__ >= 13
+      #if defined __apple_build_version__
+        #if defined __clang_major__ && __clang_major__ >= 13
 // but only in c++20 and more
-          #if__cplusplus > 201703L
+          #if __cplusplus > 201703L
               #define CTLL_CNTTP_COMPILER_CHECK 1
           #endif
         #endif
       #else 
 // clang 12+
-        #ifdefined __clang_major__ && __clang_major__ >= 12
+        #if defined __clang_major__ && __clang_major__ >= 12
 // but only in c++20 and more
-          #if__cplusplus > 201703L
+          #if __cplusplus > 201703L
               #define CTLL_CNTTP_COMPILER_CHECK 1
           #endif
         #endif
@@ -518,7 +518,7 @@ using empty_list = list<>;
 template <typename... Ts> constexpr auto size(list<Ts...>) noexcept { return sizeof...(Ts); }
 
     
-// check ifthe list is empty
+// check if the list is empty
 template <typename... Ts> constexpr bool empty(list<Ts...>) noexcept { return false; }
 constexpr bool empty(empty_list) { return true; }
 
@@ -575,7 +575,7 @@ template <typename T, typename... Ts> constexpr bool exists_in(T, list<Ts...>) n
 }
 
 template <typename T, typename... Ts> constexpr auto add_item(T item, list<Ts...> l) noexcept {
-    ifconstexpr (exists_in(item, l)) {
+    if constexpr (exists_in(item, l)) {
         return l;
     } else {
         return list<Ts..., T>{};
@@ -602,7 +602,7 @@ template <auto v> struct term {
 };
 
 // epsilon = nothing on input tape
-// also used as an command forparsing means "do nothing"
+// also used as an command for parsing means "do nothing"
 struct epsilon {
     static constexpr auto value = '-';
 };
@@ -613,7 +613,7 @@ struct empty_stack_symbol {};
 // push<T...> is alias to list<T...>
 template <typename... Ts> using push = list<Ts...>;
 
-// accept/reject type forcontrolling output of LL1 machine
+// accept/reject type for controlling output of LL1 machine
 struct accept { constexpr explicit operator bool() noexcept { return true; } };
 struct reject { constexpr explicit operator bool() noexcept { return false; } };
 
@@ -627,7 +627,7 @@ struct pop_input {
     struct pop_input_tag { };
 };
 
-// additional overloads fortype list
+// additional overloads for type list
 template <typename... Ts> constexpr auto push_front(pop_input, list<Ts...>) -> list<Ts...> { return {}; }
 
 template <typename... Ts> constexpr auto push_front(epsilon, list<Ts...>) -> list<Ts...> { return {}; }
@@ -638,7 +638,7 @@ template <typename T, typename... As> constexpr auto pop_front_and_push_front(T 
     return push_front(item, pop_front(l));
 }
 
-// SPECIAL matching types fornicer grammars
+// SPECIAL matching types for nicer grammars
 
 // match any term
 struct anything {
@@ -680,7 +680,7 @@ template <auto... Def> struct neg_set {
     #endif
 };
 
-// AUGMENTED grammar which completes user-defined grammar forall other cases
+// AUGMENTED grammar which completes user-defined grammar for all other cases
 template <typename Grammar> struct augment_grammar: public Grammar {
     // start nonterminal is defined in parent type
     using typename Grammar::_start; 
@@ -691,7 +691,7 @@ template <typename Grammar> struct augment_grammar: public Grammar {
     // term on stack and on input means pop_input;
     template <auto A> static constexpr auto rule(term<A>, term<A>) -> ctll::pop_input;
     
-    // ifthe type on stack (range, set, neg_set, anything) is constructible from the terminal => pop_input
+    // if the type on stack (range, set, neg_set, anything) is constructible from the terminal => pop_input
     template <typename Expected, auto V> static constexpr auto rule(Expected, term<V>) -> std::enable_if_t<std::is_constructible_v<Expected, term<V>>, ctll::pop_input>;
     
     // empty stack and empty input means we are accepting 
@@ -752,14 +752,14 @@ struct placeholder { };
 
 template <size_t> using index_placeholder = placeholder;
 
-#ifCTLL_CNTTP_COMPILER_CHECK
+#if CTLL_CNTTP_COMPILER_CHECK
 template <typename Grammar, ctll::fixed_string input, typename ActionSelector = empty_actions, bool IgnoreUnknownActions = false> struct parser { // in c++20
 #else
 template <typename Grammar, const auto & input, typename ActionSelector = empty_actions, bool IgnoreUnknownActions = false> struct parser {
 #endif
     
     #ifdef __GNUC__ // workaround to GCC bug
-        #ifCTLL_CNTTP_COMPILER_CHECK
+        #if CTLL_CNTTP_COMPILER_CHECK
         static constexpr auto _input = input;  // c++20 mode
         #else
         static constexpr auto & _input = input; // c++17 mode
@@ -780,7 +780,7 @@ template <typename Grammar, const auto & input, typename ActionSelector = empty_
         }
         
         #ifdef __GNUC__ // workaround to GCC bug
-            #ifCTLL_CNTTP_COMPILER_CHECK
+            #if CTLL_CNTTP_COMPILER_CHECK
             static constexpr auto _input = input;  // c++20 mode
             #else
             static constexpr auto & _input = input; // c++17 mode
@@ -793,37 +793,37 @@ template <typename Grammar, const auto & input, typename ActionSelector = empty_
         static constexpr size_t position = Pos;
     
         constexpr auto operator+(placeholder) const noexcept {
-            ifconstexpr (Decision == decision::undecided) {
-                // parse forcurrent char (RPos) with previous stack and subject :)
+            if constexpr (Decision == decision::undecided) {
+                // parse for current char (RPos) with previous stack and subject :)
                 return parser<Grammar, _input, ActionSelector, IgnoreUnknownActions>::template decide<Pos, Stack, Subject>({}, {});
             } else {
-                // ifthere is decision already => just push it to the end of fold expression
+                // if there is decision already => just push it to the end of fold expression
                 return *this;
             }
         }
     };
     
     template <size_t Pos> static constexpr auto get_current_term() noexcept {
-        ifconstexpr (Pos < input.size()) {
+        if constexpr (Pos < input.size()) {
             constexpr auto value = input[Pos];
-            ifconstexpr (value <= static_cast<decltype(value)>((std::numeric_limits<char>::max)())) {
+            if constexpr (value <= static_cast<decltype(value)>((std::numeric_limits<char>::max)())) {
                 return term<static_cast<char>(value)>{};
             } else {
                 return term<value>{};
             }
             
         } else {
-            // return epsilon ifwe are past the input
+            // return epsilon if we are past the input
             return epsilon{};
         }
     }
     template <size_t Pos> static constexpr auto get_previous_term() noexcept {
-        ifconstexpr (Pos == 0) {
-            // there is no previous character on input ifwe are on start
+        if constexpr (Pos == 0) {
+            // there is no previous character on input if we are on start
             return epsilon{};
-        } else ifconstexpr ((Pos-1) < input.size()) {
+        } else if constexpr ((Pos-1) < input.size()) {
             constexpr auto value = input[Pos-1];
-            ifconstexpr (value <= static_cast<decltype(value)>((std::numeric_limits<char>::max)())) {
+            if constexpr (value <= static_cast<decltype(value)>((std::numeric_limits<char>::max)())) {
                 return term<static_cast<char>(value)>{};
             } else {
                 return term<value>{};
@@ -832,46 +832,46 @@ template <typename Grammar, const auto & input, typename ActionSelector = empty_
             return epsilon{};
         }
     }
-    // ifrule is accept => return true and subject
+    // if rule is accept => return true and subject
     template <size_t Pos, typename Terminal, typename Stack, typename Subject> 
     static constexpr auto move(ctll::accept, Terminal, Stack, Subject) noexcept {
         return typename parser<Grammar, _input, ActionSelector, IgnoreUnknownActions>::template results<Pos, Stack, Subject, decision::accept>();
     }
-    // ifrule is reject => return false and subject
+    // if rule is reject => return false and subject
     template <size_t Pos, typename Terminal, typename Stack, typename Subject>
     static constexpr auto move(ctll::reject, Terminal, Stack, Subject) noexcept {
         return typename parser<Grammar, _input, ActionSelector, IgnoreUnknownActions>::template results<Pos, Stack, Subject, decision::reject>();
     }
-    // ifrule is pop_input => move to next character
+    // if rule is pop_input => move to next character
     template <size_t Pos, typename Terminal, typename Stack, typename Subject>
     static constexpr auto move(ctll::pop_input, Terminal, Stack, Subject) noexcept {
         return typename parser<Grammar, _input, ActionSelector, IgnoreUnknownActions>::template results<Pos+1, Stack, Subject, decision::undecided>();
     }
-    // ifrule is string => push it to the front of stack
+    // if rule is string => push it to the front of stack
     template <size_t Pos, typename... Content, typename Terminal, typename Stack, typename Subject>
     static constexpr auto move(push<Content...> string, Terminal, Stack stack, Subject subject) noexcept {
         return decide<Pos>(push_front(string, stack), subject);
     }
-    // ifrule is epsilon (empty string) => continue
+    // if rule is epsilon (empty string) => continue
     template <size_t Pos, typename Terminal, typename Stack, typename Subject>
     static constexpr auto move(epsilon, Terminal, Stack stack, Subject subject) noexcept {
         return decide<Pos>(stack, subject);
     }
-    // ifrule is string with current character at the beginning (term<V>) => move to next character 
+    // if rule is string with current character at the beginning (term<V>) => move to next character 
     // and push string without the character (quick LL(1))
     template <size_t Pos, auto V, typename... Content, typename Stack, typename Subject>
     static constexpr auto move(push<term<V>, Content...>, term<V>, Stack stack, Subject) noexcept {
         constexpr auto local_input = input;
         return typename parser<Grammar, local_input, ActionSelector, IgnoreUnknownActions>::template results<Pos+1, decltype(push_front(list<Content...>(), stack)), Subject, decision::undecided>();
     }
-    // ifrule is string with any character at the beginning (compatible with current term<T>) => move to next character 
+    // if rule is string with any character at the beginning (compatible with current term<T>) => move to next character 
     // and push string without the character (quick LL(1))
     template <size_t Pos, auto V, typename... Content, auto T, typename Stack, typename Subject>
     static constexpr auto move(push<anything, Content...>, term<T>, Stack stack, Subject) noexcept {
         constexpr auto local_input = input;
         return typename parser<Grammar, local_input, ActionSelector, IgnoreUnknownActions>::template results<Pos+1, decltype(push_front(list<Content...>(), stack)), Subject, decision::undecided>();
     }
-    // decide ifwe need to take action or move
+    // decide if we need to take action or move
     template <size_t Pos, typename Stack, typename Subject> static constexpr auto decide(Stack previous_stack, Subject previous_subject) noexcept {
         // each call means we pop something from stack
         auto top_symbol = decltype(ctll::front(previous_stack, empty_stack_symbol()))();
@@ -879,17 +879,17 @@ template <typename Grammar, const auto & input, typename ActionSelector = empty_
         [[maybe_unused]] auto stack = decltype(ctll::pop_front(previous_stack))();
         
         // in case top_symbol is action type (apply it on previous subject and get new one)
-        ifconstexpr (std::is_base_of_v<ctll::action, decltype(top_symbol)>) {
+        if constexpr (std::is_base_of_v<ctll::action, decltype(top_symbol)>) {
             auto subject = Actions::apply(top_symbol, get_previous_term<Pos>(), previous_subject);
             
             // in case that semantic action is error => reject input
-            ifconstexpr (std::is_same_v<ctll::reject, decltype(subject)>) {
+            if constexpr (std::is_same_v<ctll::reject, decltype(subject)>) {
                 return typename parser<Grammar, _input, ActionSelector, IgnoreUnknownActions>::template results<Pos, Stack, Subject, decision::reject>();
             } else {
                 return decide<Pos>(stack, subject);
             }
         } else {
-            // all other cases are ordinary forLL(1) parser
+            // all other cases are ordinary for LL(1) parser
             auto current_term = get_current_term<Pos>();
             auto rule = decltype(grammar::rule(top_symbol,current_term))();
             return move<Pos>(rule, current_term, stack, previous_subject);
@@ -898,7 +898,7 @@ template <typename Grammar, const auto & input, typename ActionSelector = empty_
     
     // trampolines with folded expression
     template <typename Subject, size_t... Pos> static constexpr auto trampoline_decide(Subject, std::index_sequence<Pos...>) noexcept {
-        // parse everything forfirst char and than fornext and next ...
+        // parse everything for first char and than for next and next ...
         // Pos+1 is needed as we want to finish calculation with epsilons on stack
         auto v = (decide<0, typename grammar::start_stack, Subject>({}, {}) + ... + index_placeholder<Pos+1>());
         return v;
@@ -1386,14 +1386,14 @@ struct pcre {
 
 #define CTRE_CNTTP_COMPILER_CHECK CTLL_CNTTP_COMPILER_CHECK
 
-#if__GNUC__ > 9
-#if__has_cpp_attribute(likely)
+#if __GNUC__ > 9
+#if __has_cpp_attribute(likely)
 #define CTRE_LIKELY [[likely]]
 #else
 #define CTRE_LIKELY
 #endif
 
-#if__has_cpp_attribute(unlikely)
+#if __has_cpp_attribute(unlikely)
 #define CTRE_UNLIKELY [[unlikely]]
 #else
 #define CTRE_UNLIKELY
@@ -1405,7 +1405,7 @@ struct pcre {
 
 #ifdef _MSC_VER
 #define CTRE_FORCE_INLINE __forceinline
-#if_MSC_VER >= 1930
+#if _MSC_VER >= 1930
 #define CTRE_FLATTEN [[msvc::flatten]]
 #else
 #define CTRE_FLATTEN
@@ -1518,7 +1518,7 @@ constexpr CTRE_FORCE_INLINE bool is_case_insensitive(flags f) {
 
 namespace ctre {
     
-// sfinae check fortypes here
+// sfinae check for types here
 
 template <typename T> class MatchesCharacter {
     template <typename Y, typename CharT> static auto test(CharT c) -> decltype(Y::match_char(c, std::declval<const flags &>()), std::true_type());
@@ -1541,7 +1541,7 @@ template <typename T> constexpr CTRE_FORCE_INLINE bool is_ascii_alpha_uppercase(
 
 template <auto V> struct character {
     template <typename CharT> CTRE_FORCE_INLINE static constexpr bool match_char(CharT value, const flags & f) noexcept {
-        ifconstexpr (is_ascii_alpha(V)) {
+        if constexpr (is_ascii_alpha(V)) {
             if(is_case_insensitive(f)) {
                 if(value == (V ^ static_cast<decltype(V)>(0x20))) {
                     return true;//
@@ -1574,13 +1574,13 @@ template <typename... Content> struct negate {
 
 template <auto A, auto B> struct char_range {
     template <typename CharT> CTRE_FORCE_INLINE static constexpr bool match_char(CharT value, const flags & f) noexcept {
-        ifconstexpr (is_ascii_alpha_lowercase(A) && is_ascii_alpha_lowercase(B)) {
+        if constexpr (is_ascii_alpha_lowercase(A) && is_ascii_alpha_lowercase(B)) {
             if(is_case_insensitive(f)) {
                 if(value >= (A ^ static_cast<decltype(A)>(0x20)) && value <= (B ^ static_cast<decltype(B)>(0x20))) {
                     return true;//
                 }
             }    
-        } else ifconstexpr (is_ascii_alpha_uppercase(A) && is_ascii_alpha_uppercase(B)) {
+        } else if constexpr (is_ascii_alpha_uppercase(A) && is_ascii_alpha_uppercase(B)) {
             if(is_case_insensitive(f)) {
                 if(value >= (A ^ static_cast<decltype(A)>(0x20)) && value <= (B ^ static_cast<decltype(B)>(0x20))) {
                     return true;//
@@ -1649,7 +1649,7 @@ using ascii_chars = char_range<'\x00','\x7F'>;
 
 namespace ctre {
     
-// special helpers formatching
+// special helpers for matching
 struct accept { };
 struct reject { };
 struct start_mark { };
@@ -1723,7 +1723,7 @@ template <typename> struct mode_switch { };
 #ifndef CTRE__ATOMS_UNICODE__HPP
 #define CTRE__ATOMS_UNICODE__HPP
 
-// master branch is not including unicode db (fornow)
+// master branch is not including unicode db (for now)
 #ifndef H_COR3NTIN_UNICODE_SYNOPSYS
 #define H_COR3NTIN_UNICODE_SYNOPSYS
 
@@ -1834,7 +1834,7 @@ template <size_t Sz> constexpr std::string_view get_string_view(const char (& ar
     return std::string_view(arr, Sz);
 }
 
-// basic support forbinary and type-value properties
+// basic support for binary and type-value properties
 
 template <typename T, T Type> struct binary_property;
 template <typename T, T Type, auto Value> struct property;
@@ -1925,7 +1925,7 @@ template <> struct property_type_builder<property_type::script> {
     template <auto... Value> static constexpr auto get() {
         constexpr char value[sizeof...(Value)]{static_cast<char>(Value)...};
         constexpr auto sc = uni::detail::script_from_string(get_string_view(value));
-        ifconstexpr (uni::detail::is_unknown(sc)) {
+        if constexpr (uni::detail::is_unknown(sc)) {
             return ctll::reject{};
         } else {
             return make_binary_property<sc>();
@@ -1937,7 +1937,7 @@ template <> struct property_type_builder<property_type::script_extension> {
     template <auto... Value> static constexpr auto get() {
         constexpr char value[sizeof...(Value)]{static_cast<char>(Value)...};
         constexpr auto sc = uni::detail::script_from_string(get_string_view(value));
-        ifconstexpr (uni::detail::is_unknown(sc)) {
+        if constexpr (uni::detail::is_unknown(sc)) {
             return ctll::reject{};
         } else {
             return make_property<property_type::script_extension, sc>();
@@ -1949,7 +1949,7 @@ template <> struct property_type_builder<property_type::age> {
     template <auto... Value> static constexpr auto get() {
         constexpr char value[sizeof...(Value)]{static_cast<char>(Value)...};
         constexpr auto age = uni::detail::age_from_string(get_string_view(value));
-        ifconstexpr (uni::detail::is_unassigned(age)) {
+        if constexpr (uni::detail::is_unassigned(age)) {
             return ctll::reject{};
         } else {
             return make_binary_property<age>();
@@ -1961,7 +1961,7 @@ template <> struct property_type_builder<property_type::block> {
     template <auto... Value> static constexpr auto get() {
         constexpr char value[sizeof...(Value)]{static_cast<char>(Value)...};
         constexpr auto block = uni::detail::block_from_string(get_string_view(value));
-        ifconstexpr (uni::detail::is_unknown(block)) {
+        if constexpr (uni::detail::is_unknown(block)) {
             return ctll::reject{};
         } else {
             return make_binary_property<block>();
@@ -2177,8 +2177,8 @@ template <auto... Str, auto V, typename... Ts, size_t Counter> static constexpr 
 
 // with just a number
 template <auto V, size_t Id, typename... Ts, size_t Counter> static constexpr auto apply(pcre::make_back_reference, ctll::term<V>, pcre_context<ctll::list<number<Id>, Ts...>, pcre_parameters<Counter>>) {
-    // ifwe are looking outside of existing list of Ids ... reject input during parsing
-    ifconstexpr (Counter < Id) {
+    // if we are looking outside of existing list of Ids ... reject input during parsing
+    if constexpr (Counter < Id) {
         return ctll::reject{};
     } else {
         return pcre_context{ctll::push_front(back_reference<Id>(), ctll::list<Ts...>()), pcre_parameters<Counter>()};
@@ -2187,8 +2187,8 @@ template <auto V, size_t Id, typename... Ts, size_t Counter> static constexpr au
 
 // relative backreference
 template <auto V, size_t Id, typename... Ts, size_t Counter> static constexpr auto apply(pcre::make_relative_back_reference, ctll::term<V>, [[maybe_unused]] pcre_context<ctll::list<number<Id>, Ts...>, pcre_parameters<Counter>>) {    
-    // ifwe are looking outside of existing list of Ids ... reject input during parsing
-    ifconstexpr (Counter < Id) {
+    // if we are looking outside of existing list of Ids ... reject input during parsing
+    if constexpr (Counter < Id) {
         return ctll::reject{};
     } else {
         constexpr size_t absolute_id = (Counter + 1) - Id;
@@ -2368,12 +2368,12 @@ template <size_t MinA, size_t MaxA, size_t MinB, size_t MaxB, typename... Conten
     [[maybe_unused]] constexpr bool second_is_nonempty = (MinB > 0);
     [[maybe_unused]] constexpr bool second_can_be_empty = (MinB == 0);
 
-    ifconstexpr (first_is_unbounded && second_is_nonempty) {
+    if constexpr (first_is_unbounded && second_is_nonempty) {
         // will always reject, but I keep the content, so I have some amount of captures
         return sequence<reject, Content...>();
-    } else ifconstexpr (first_is_unbounded) {
+    } else if constexpr (first_is_unbounded) {
         return possessive_repeat<MinA, MaxA, Content...>();
-    } else ifconstexpr (second_can_be_empty) {
+    } else if constexpr (second_can_be_empty) {
         return possessive_repeat<MinA, combine_max_repeat_length(MaxA, MaxB), Content...>();
     } else {
         return possessive_repeat<MaxA + MinB, combine_max_repeat_length(MaxA, MaxB), Content...>();
@@ -2428,9 +2428,9 @@ template <auto V, typename... Ts, typename Parameters> static constexpr auto app
 // hexdec character support (push value)
 template <auto V, size_t N, typename... Ts, typename Parameters> static constexpr auto apply(pcre::push_hexdec, ctll::term<V>, pcre_context<ctll::list<number<N>, Ts...>, Parameters> subject) {
     constexpr auto previous = N << 4ull;    
-    ifconstexpr (V >= 'a' && V <= 'f') {
+    if constexpr (V >= 'a' && V <= 'f') {
         return pcre_context{ctll::push_front(number<(previous + (V - 'a' + 10))>(), ctll::list<Ts...>()), subject.parameters};
-    } else ifconstexpr (V >= 'A' && V <= 'F') {
+    } else if constexpr (V >= 'A' && V <= 'F') {
         return pcre_context{ctll::push_front(number<(previous + (V - 'A' + 10))>(), ctll::list<Ts...>()), subject.parameters};
     } else {
         return pcre_context{ctll::push_front(number<(previous + (V - '0'))>(), ctll::list<Ts...>()), subject.parameters};
@@ -2439,7 +2439,7 @@ template <auto V, size_t N, typename... Ts, typename Parameters> static constexp
 // hexdec character support (convert to character)
 template <auto V, size_t N, typename... Ts, typename Parameters> static constexpr auto apply(pcre::finish_hexdec, ctll::term<V>, pcre_context<ctll::list<number<N>, Ts...>, Parameters> subject) {
     constexpr size_t max_char = (std::numeric_limits<char>::max)();
-    ifconstexpr (N <= max_char) {
+    if constexpr (N <= max_char) {
         return pcre_context{ctll::push_front(character<char{N}>(), ctll::list<Ts...>()), subject.parameters};
     } else {
         return pcre_context{ctll::push_front(character<char32_t{N}>(), ctll::list<Ts...>()), subject.parameters};
@@ -2582,12 +2582,12 @@ template <auto V, typename... Ts, typename Parameters> static constexpr auto app
 #ifndef CTRE__ACTIONS__OPTIONS__HPP
 #define CTRE__ACTIONS__OPTIONS__HPP
 
-// empty option foralternate
+// empty option for alternate
 template <auto V, typename... Ts, typename Parameters> static constexpr auto apply(pcre::push_empty, ctll::term<V>, pcre_context<ctll::list<Ts...>, Parameters> subject) {
     return pcre_context{ctll::push_front(empty(), subject.stack), subject.parameters};
 }
 
-// empty option forempty regex
+// empty option for empty regex
 template <typename Parameters> static constexpr auto apply(pcre::push_empty, ctll::epsilon, pcre_context<ctll::list<>, Parameters> subject) {
     return pcre_context{ctll::push_front(empty(), subject.stack), subject.parameters};
 }
@@ -2625,7 +2625,7 @@ template <auto V, typename... Subject, typename... Ts, typename Parameters> stat
     return pcre_context{ctll::push_front(lazy_optional<Subject...>(), ctll::list<Ts...>()), subject.parameters};
 }
 
-// ifyou already got a lazy optional, make_lazy is no-op
+// if you already got a lazy optional, make_lazy is no-op
 template <auto V, typename... Subject, typename... Ts, typename Parameters> static constexpr auto apply(pcre::make_lazy, ctll::term<V>, pcre_context<ctll::list<lazy_optional<Subject...>, Ts...>, Parameters> subject) {
     return pcre_context{ctll::push_front(lazy_optional<Subject...>(), ctll::list<Ts...>()), subject.parameters};
 }
@@ -2659,7 +2659,7 @@ template <auto V, auto... Name, typename... Ts, typename Parameters> static cons
     constexpr char name[sizeof...(Name)]{static_cast<char>(Name)...};
     constexpr auto p = uni::detail::binary_prop_from_string(get_string_view(name));
 
-    ifconstexpr (uni::detail::is_unknown(p)) {
+    if constexpr (uni::detail::is_unknown(p)) {
         return ctll::reject{};
     } else {
         return pcre_context{ctll::push_front(make_binary_property<p>(), ctll::list<Ts...>()), subject.parameters};
@@ -2671,7 +2671,7 @@ template <auto V, auto... Value, auto... Name, typename... Ts, typename Paramete
     //return ctll::reject{};
     constexpr auto prop = property_builder<Name...>::template get<Value...>();
 
-    ifconstexpr (std::is_same_v<decltype(prop), ctll::reject>) {
+    if constexpr (std::is_same_v<decltype(prop), ctll::reject>) {
         return ctll::reject{};
     } else {
         return pcre_context{ctll::push_front(prop, ctll::list<Ts...>()), subject.parameters};
@@ -2684,7 +2684,7 @@ template <auto V, auto... Name, typename... Ts, typename Parameters> static cons
     constexpr char name[sizeof...(Name)]{static_cast<char>(Name)...};
     constexpr auto p = uni::detail::binary_prop_from_string(get_string_view(name));
 
-    ifconstexpr (uni::detail::is_unknown(p)) {
+    if constexpr (uni::detail::is_unknown(p)) {
         return ctll::reject{};
     } else {
         return pcre_context{ctll::push_front(negate<make_binary_property<p>>(), ctll::list<Ts...>()), subject.parameters};
@@ -2696,7 +2696,7 @@ template <auto V, auto... Value, auto... Name, typename... Ts, typename Paramete
     //return ctll::reject{};
     constexpr auto prop = property_builder<Name...>::template get<Value...>();
 
-    ifconstexpr (std::is_same_v<decltype(prop), ctll::reject>) {
+    if constexpr (std::is_same_v<decltype(prop), ctll::reject>) {
         return ctll::reject{};
     } else {
         return pcre_context{ctll::push_front(negate<decltype(prop)>(), ctll::list<Ts...>()), subject.parameters};
@@ -2831,7 +2831,7 @@ template <auto V, auto A, auto... Bs, typename... Sq, typename... Ts, typename P
 #define CTRE__ACTIONS__SET__HPP
 
 // UTILITY
-// add into set ifnot exists
+// add into set if not exists
 template <template <typename...> typename SetType, typename T, typename... As, bool Exists = (std::is_same_v<T, As> || ... || false)> static constexpr auto push_back_into_set(T, SetType<As...>) -> ctll::conditional<Exists, SetType<As...>, SetType<As...,T>> { return {}; }
 
 //template <template <typename...> typename SetType, typename A, typename BHead, typename... Bs> struct set_merge_helper {
@@ -2839,7 +2839,7 @@ template <template <typename...> typename SetType, typename T, typename... As, b
 //    using type = ctll::conditional<(sizeof...(Bs) > 0), set_merge_helper<SetType, step, Bs...>, step>;
 //};
 //
-//// add set into set ifnot exists
+//// add set into set if not exists
 //template <template <typename...> typename SetType, typename... As, typename... Bs> static constexpr auto push_back_into_set(SetType<As...>, SetType<Bs...>) -> typename set_merge_helper<SetType, SetType<As...>, Bs...>::type { return pcre_context{{};), subject.parameters}}
 //
 //template <template <typename...> typename SetType, typename... As> static constexpr auto push_back_into_set(SetType<As...>, SetType<>) -> SetType<As...> { return pcre_context{{};), subject.parameters}}
@@ -2959,61 +2959,61 @@ constexpr bool starts_with_anchor(const flags & f, ctll::list<assert_line_begin,
 
 template <typename CharLike, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<boundary<CharLike>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Content...>{});
 }
 
 template <typename... Options, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<select<Options...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return (starts_with_anchor(f, ctll::list<Options, Content...>{}) && ... && true);
 }
 
 template <typename... Optional, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<optional<Optional...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Optional..., Content...>{}) && starts_with_anchor(f, ctll::list<Content...>{});
 }
 
 template <typename... Optional, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<lazy_optional<Optional...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Optional..., Content...>{}) && starts_with_anchor(f, ctll::list<Content...>{});
 }
 
 template <typename... Seq, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<sequence<Seq...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Seq..., Content...>{});
 }
 
 template <size_t A, size_t B, typename... Seq, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<repeat<A, B, Seq...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Seq..., Content...>{});
 }
 
 template <size_t A, size_t B, typename... Seq, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<lazy_repeat<A, B, Seq...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Seq..., Content...>{});
 }
 
 template <size_t A, size_t B, typename... Seq, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<possessive_repeat<A, B, Seq...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Seq..., Content...>{});
 }
 
 template <size_t Index, typename... Seq, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<capture<Index, Seq...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Seq..., Content...>{});
 }
 
 template <size_t Index, typename... Seq, typename... Content> 
 constexpr bool starts_with_anchor(const flags & f, ctll::list<capture_with_name<Index, Seq...>, Content...>) noexcept {
-    // check ifall options starts with anchor or ifthey are empty, there is an anchor behind them
+    // check if all options starts with anchor or if they are empty, there is an anchor behind them
     return starts_with_anchor(f, ctll::list<Seq..., Content...>{});
 }
 
@@ -3027,12 +3027,12 @@ constexpr bool starts_with_anchor(const flags & f, ctll::list<capture_with_name<
 #ifndef CTRE__UTF8__HPP
 #define CTRE__UTF8__HPP
 
-#if__cpp_char8_t >= 201811
+#if __cpp_char8_t >= 201811
 
 #include <string_view>
 #include <iterator>
 
-#if__cpp_lib_char8_t >= 201811L
+#if __cpp_lib_char8_t >= 201811L
 #define CTRE_ENABLE_UTF8_RANGE
 #endif
 
@@ -3103,7 +3103,7 @@ struct utf8_iterator {
     constexpr utf8_iterator & operator++() noexcept {
         // the contant is mapping from first 5 bits of first code unit to length of UTF8 code point -1
         // xxxxx -> yy (5 bits to 2 bits)
-        // 5 bits are 32 combination, and foreach I need 2 bits, hence 64 bit constant
+        // 5 bits are 32 combination, and for each I need 2 bits, hence 64 bit constant
         // (*ptr >> 2) & 0b111110 look at the left 5 bits ignoring the least significant
         // & 0b11u  selects only needed two bits
         // +1  because each iteration is at least one code unit forward
@@ -3174,7 +3174,7 @@ struct utf8_iterator {
             return mojibake;
         }
 
-        // ifpart of the utf-8 sequence is past the end
+        // if part of the utf-8 sequence is past the end
         if(((ptr + length) >= end)) CTRE_UNLIKELY {
             return mojibake;
         }
@@ -3243,7 +3243,7 @@ struct utf8_range {
 #include <string>
 #include <iterator>
 #include <iosfwd>
-#if__has_include(<charconv>)
+#if __has_include(<charconv>)
 #include <charconv>
 #endif
 
@@ -3307,8 +3307,8 @@ template <size_t Id, typename Name = void> struct captured_content {
         template <typename It = Iterator> constexpr CTRE_FORCE_INLINE const auto * data_unsafe() const noexcept {
             static_assert(!is_reverse_iterator<It>, "Iterator in your capture must not be reverse!");
             
-            #if__cpp_char8_t >= 201811
-            ifconstexpr (std::is_same_v<Iterator, utf8_iterator>) {
+            #if __cpp_char8_t >= 201811
+            if constexpr (std::is_same_v<Iterator, utf8_iterator>) {
                 return _begin.ptr;
             } else {
                 return &*_begin;
@@ -3331,8 +3331,8 @@ template <size_t Id, typename Name = void> struct captured_content {
         }
         
         constexpr CTRE_FORCE_INLINE size_t unit_size() const noexcept {
-            #if__cpp_char8_t >= 201811
-            ifconstexpr (std::is_same_v<Iterator, utf8_iterator>) {
+            #if __cpp_char8_t >= 201811
+            if constexpr (std::is_same_v<Iterator, utf8_iterator>) {
                 return static_cast<size_t>(std::distance(_begin.ptr, _end.ptr));
             } else {
                 return static_cast<size_t>(std::distance(begin(), end()));
@@ -3342,7 +3342,7 @@ template <size_t Id, typename Name = void> struct captured_content {
             #endif
         }
         
-#if__has_include(<charconv>)
+#if __has_include(<charconv>)
         template <typename R = int> constexpr CTRE_FORCE_INLINE auto to_number(int base = 10) const noexcept -> R {
             R result{0};
             const auto view = to_view();
@@ -3363,8 +3363,8 @@ template <size_t Id, typename Name = void> struct captured_content {
         }
         
         constexpr CTRE_FORCE_INLINE std::basic_string<char_type> to_string() const noexcept {
-            #if__cpp_char8_t >= 201811
-            ifconstexpr (std::is_same_v<Iterator, utf8_iterator>) {
+            #if __cpp_char8_t >= 201811
+            if constexpr (std::is_same_v<Iterator, utf8_iterator>) {
                 return std::basic_string<char_type>(data_unsafe(), static_cast<size_t>(unit_size()));
             } else {
                 return std::basic_string<char_type>(begin(), end());
@@ -3422,28 +3422,28 @@ template <typename Head, typename... Tail> struct captures<Head, Tail...>: captu
     Head head{};
     constexpr CTRE_FORCE_INLINE captures() noexcept { }
     template <size_t id> CTRE_FORCE_INLINE static constexpr bool exists() noexcept {
-        ifconstexpr (id == Head::get_id()) {
+        if constexpr (id == Head::get_id()) {
             return true;
         } else {
             return captures<Tail...>::template exists<id>();
         }
     }
     template <typename Name> CTRE_FORCE_INLINE static constexpr bool exists() noexcept {
-        ifconstexpr (std::is_same_v<Name, typename Head::name>) {
+        if constexpr (std::is_same_v<Name, typename Head::name>) {
             return true;
         } else {
             return captures<Tail...>::template exists<Name>();
         }
     }
-#ifCTRE_CNTTP_COMPILER_CHECK
+#if CTRE_CNTTP_COMPILER_CHECK
     template <ctll::fixed_string Name> CTRE_FORCE_INLINE static constexpr bool exists() noexcept {
 #else
     template <const auto & Name> CTRE_FORCE_INLINE static constexpr bool exists() noexcept {
 #endif
-        ifconstexpr (std::is_same_v<typename Head::name, void>) {
+        if constexpr (std::is_same_v<typename Head::name, void>) {
             return captures<Tail...>::template exists<Name>();
         } else {
-            ifconstexpr (Head::name::name.is_same_as(Name)) {
+            if constexpr (Head::name::name.is_same_as(Name)) {
                 return true;
             } else {
                 return captures<Tail...>::template exists<Name>();
@@ -3451,42 +3451,42 @@ template <typename Head, typename... Tail> struct captures<Head, Tail...>: captu
         }
     }
     template <size_t id> CTRE_FORCE_INLINE constexpr auto & select() noexcept {
-        ifconstexpr (id == Head::get_id()) {
+        if constexpr (id == Head::get_id()) {
             return head;
         } else {
             return captures<Tail...>::template select<id>();
         }
     }
     template <typename Name> CTRE_FORCE_INLINE constexpr auto & select() noexcept {
-        ifconstexpr (std::is_same_v<Name, typename Head::name>) {
+        if constexpr (std::is_same_v<Name, typename Head::name>) {
             return head;
         } else {
             return captures<Tail...>::template select<Name>();
         }
     }
     template <size_t id> CTRE_FORCE_INLINE constexpr auto & select() const noexcept {
-        ifconstexpr (id == Head::get_id()) {
+        if constexpr (id == Head::get_id()) {
             return head;
         } else {
             return captures<Tail...>::template select<id>();
         }
     }
     template <typename Name> CTRE_FORCE_INLINE constexpr auto & select() const noexcept {
-        ifconstexpr (std::is_same_v<Name, typename Head::name>) {
+        if constexpr (std::is_same_v<Name, typename Head::name>) {
             return head;
         } else {
             return captures<Tail...>::template select<Name>();
         }
     }
-#ifCTRE_CNTTP_COMPILER_CHECK
+#if CTRE_CNTTP_COMPILER_CHECK
     template <ctll::fixed_string Name> CTRE_FORCE_INLINE constexpr auto & select() const noexcept {
 #else
     template <const auto & Name> CTRE_FORCE_INLINE constexpr auto & select() const noexcept {
 #endif
-        ifconstexpr (std::is_same_v<typename Head::name, void>) {
+        if constexpr (std::is_same_v<typename Head::name, void>) {
             return captures<Tail...>::template select<Name>();
         } else {
-            ifconstexpr (Head::name::name.is_same_as(Name)) {
+            if constexpr (Head::name::name.is_same_as(Name)) {
                 return head;
             } else {
                 return captures<Tail...>::template select<Name>();
@@ -3503,7 +3503,7 @@ template <> struct captures<> {
     template <typename> CTRE_FORCE_INLINE static constexpr bool exists() noexcept {
         return false;
     }
-#ifCTRE_CNTTP_COMPILER_CHECK
+#if CTRE_CNTTP_COMPILER_CHECK
     template <ctll::fixed_string> CTRE_FORCE_INLINE static constexpr bool exists() noexcept {
 #else
     template <const auto &> CTRE_FORCE_INLINE static constexpr bool exists() noexcept {
@@ -3516,7 +3516,7 @@ template <> struct captures<> {
     template <typename> CTRE_FORCE_INLINE constexpr auto & select() const noexcept {
         return capture_not_exists;
     }
-#ifCTRE_CNTTP_COMPILER_CHECK
+#if CTRE_CNTTP_COMPILER_CHECK
     template <ctll::fixed_string> CTRE_FORCE_INLINE constexpr auto & select() const noexcept {
 #else
     template <const auto &> CTRE_FORCE_INLINE constexpr auto & select() const noexcept {
@@ -3533,7 +3533,7 @@ public:
     constexpr CTRE_FORCE_INLINE regex_results() noexcept { }
     constexpr CTRE_FORCE_INLINE regex_results(not_matched_tag_t) noexcept { }
     
-    // special constructor fordeducting
+    // special constructor for deducting
     constexpr CTRE_FORCE_INLINE regex_results(Iterator, ctll::list<Captures...>) noexcept { }
     
     template <size_t Id, typename = std::enable_if_t<decltype(_captures)::template exists<Id>()>> CTRE_FORCE_INLINE constexpr auto get() const noexcept {
@@ -3542,7 +3542,7 @@ public:
     template <typename Name, typename = std::enable_if_t<decltype(_captures)::template exists<Name>()>> CTRE_FORCE_INLINE constexpr auto get() const noexcept {
         return _captures.template select<Name>();
     }
-#ifCTRE_CNTTP_COMPILER_CHECK
+#if CTRE_CNTTP_COMPILER_CHECK
     template <ctll::fixed_string Name, typename = std::enable_if_t<decltype(_captures)::template exists<Name>()>> CTRE_FORCE_INLINE constexpr auto get() const noexcept {
 #else
     template <const auto & Name, typename = std::enable_if_t<decltype(_captures)::template exists<Name>()>> CTRE_FORCE_INLINE constexpr auto get() const noexcept {
@@ -3572,7 +3572,7 @@ public:
         return to_string();
     }
     
-#if__has_include(<charconv>)
+#if __has_include(<charconv>)
     template <typename R = int> constexpr CTRE_FORCE_INLINE auto to_number(int base = 10) const noexcept -> R {
         return _captures.template select<0>().template to_number<R>(base);
     }
@@ -3654,7 +3654,7 @@ template <typename ResultIterator, typename Pattern> using return_type = decltyp
 
 }
 
-// support forstructured bindings
+// support for structured bindings
 
 #ifndef __EDG__
 #ifdef __clang__
@@ -4328,7 +4328,7 @@ template <typename... A, typename... B> constexpr bool collides(ctll::list<A...>
 namespace ctre {
 
 template <size_t Limit> constexpr CTRE_FORCE_INLINE bool less_than_or_infinite([[maybe_unused]] size_t i) noexcept {
-    ifconstexpr (Limit == 0) {
+    if constexpr (Limit == 0) {
         // infinite
         return true;
     } else {
@@ -4337,7 +4337,7 @@ template <size_t Limit> constexpr CTRE_FORCE_INLINE bool less_than_or_infinite([
 }
 
 template <size_t Limit> constexpr CTRE_FORCE_INLINE bool less_than([[maybe_unused]] size_t i) noexcept {
-    ifconstexpr (Limit == 0) {
+    if constexpr (Limit == 0) {
         // infinite
         return false;
     } else {
@@ -4348,19 +4348,19 @@ template <size_t Limit> constexpr CTRE_FORCE_INLINE bool less_than([[maybe_unuse
 constexpr bool is_bidirectional(const std::bidirectional_iterator_tag &) { return true; }
 constexpr bool is_bidirectional(...) { return false; }
 
-// sink formaking the errors shorter
+// sink for making the errors shorter
 template <typename R, typename BeginIterator, typename Iterator, typename EndIterator> 
 constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator, Iterator, const EndIterator, flags, R, ...) noexcept {
     return not_matched;
 }
 
-// ifwe found "accept" object on stack => ACCEPT
+// if we found "accept" object on stack => ACCEPT
 template <typename R, typename BeginIterator, typename Iterator, typename EndIterator> 
 constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator, Iterator, const EndIterator, flags, R captures, ctll::list<accept>) noexcept {
     return captures.matched();
 }
 
-// ifwe found "reject" object on stack => REJECT
+// if we found "reject" object on stack => REJECT
 template <typename R, typename... Rest, typename BeginIterator, typename Iterator, typename EndIterator> 
 constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator, Iterator, const EndIterator, flags, R, ctll::list<reject, Rest...>) noexcept {
     return not_matched;
@@ -4403,7 +4403,7 @@ constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator begin, Iterator curre
     if(current == last) return not_matched;
     
     if(multiline_mode(f)) {
-        // TODO add support fordifferent line ending and unicode (in a future unicode mode)
+        // TODO add support for different line ending and unicode (in a future unicode mode)
         if(*current == '\n') return not_matched;
     }
     return evaluate(begin, ++current, last, consumed_something(f), captures, ctll::list<Tail...>());
@@ -4442,7 +4442,7 @@ constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator, Iterator, const EndI
 // matching sequence in patterns
 template <typename R, typename BeginIterator, typename Iterator, typename EndIterator, typename HeadContent, typename... TailContent, typename... Tail> 
 constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator begin, Iterator current, const EndIterator last, const flags & f, R captures, ctll::list<sequence<HeadContent, TailContent...>, Tail...>) noexcept {
-    ifconstexpr (sizeof...(TailContent) > 0) {
+    if constexpr (sizeof...(TailContent) > 0) {
         return evaluate(begin, current, last, f, captures, ctll::list<HeadContent, sequence<TailContent...>, Tail...>());
     } else {
         return evaluate(begin, current, last, f, captures, ctll::list<HeadContent, Tail...>());
@@ -4580,7 +4580,7 @@ constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator begin, Iterator curre
 template <typename R, typename BeginIterator, typename Iterator, typename EndIterator, size_t A, size_t B, typename... Content, typename... Tail> 
 constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator begin, Iterator current, const EndIterator last, [[maybe_unused]] const flags & f, R captures, ctll::list<lazy_repeat<A,B,Content...>, Tail...>) noexcept {
 
-    ifconstexpr (B != 0 && A > B) {
+    if constexpr (B != 0 && A > B) {
         return not_matched;
     } else {
         const Iterator backup_current = current;
@@ -4628,7 +4628,7 @@ constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator begin, Iterator curre
 template <typename R, typename BeginIterator, typename Iterator, typename EndIterator, size_t A, size_t B, typename... Content, typename... Tail> 
 constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator begin, Iterator current, const EndIterator last, [[maybe_unused]] const flags & f, R captures, ctll::list<possessive_repeat<A,B,Content...>, Tail...>) noexcept {
 
-    ifconstexpr ((B != 0) && (A > B)) {
+    if constexpr ((B != 0) && (A > B)) {
         return not_matched;
     } else {
         const auto backup_current = current;
@@ -4664,7 +4664,7 @@ constexpr inline R evaluate_recursive(size_t i, const BeginIterator begin, Itera
         
         if(auto inner_result = evaluate(begin, current, last, not_empty_match(f), captures, ctll::list<Content..., end_cycle_mark>())) {
             // TODO MSVC issue:
-            // ifI uncomment this return it will not fail in constexpr (but the matching result will not be correct)
+            // if I uncomment this return it will not fail in constexpr (but the matching result will not be correct)
             //  return inner_result
             // I tried to add all constructors to R but without any success
             auto tmp_current = current;
@@ -4692,12 +4692,12 @@ constexpr inline R evaluate_recursive(size_t i, const BeginIterator begin, Itera
 template <typename R, typename BeginIterator, typename Iterator, typename EndIterator, size_t A, size_t B, typename... Content, typename... Tail> 
 constexpr CTRE_FORCE_INLINE R evaluate(const BeginIterator begin, Iterator current, const EndIterator last, [[maybe_unused]] const flags & f, R captures, [[maybe_unused]] ctll::list<repeat<A,B,Content...>, Tail...> stack) {
 
-    ifconstexpr ((B != 0) && (A > B)) {
+    if constexpr ((B != 0) && (A > B)) {
         return not_matched;
     }
 
 #ifndef CTRE_DISABLE_GREEDY_OPT
-    else ifconstexpr (!collides(calculate_first(Content{}...), calculate_first(Tail{}...))) {
+    else if constexpr (!collides(calculate_first(Content{}...), calculate_first(Tail{}...))) {
         return evaluate(begin, current, last, f, captures, ctll::list<possessive_repeat<A,B,Content...>, Tail...>());
     }
 #endif
@@ -5193,7 +5193,7 @@ template <typename... Ts> constexpr bool is_range<multi_subject_range<Ts...>> = 
 
 }
 
-#ifdefined __cpp_lib_ranges && __cpp_lib_ranges >= 201911
+#if defined __cpp_lib_ranges && __cpp_lib_ranges >= 201911
 namespace std::ranges {
 
     template <typename... Ts> inline constexpr bool enable_borrowed_range<::ctre::regex_range<Ts...>> = true;
@@ -5292,7 +5292,7 @@ struct search_method {
         auto out = evaluate(orig_begin, it, end, Modifier{}, return_type<result_iterator, RE>{}, ctll::list<start_mark, RE, end_mark, accept>());
         
         // ALERT: ugly hack
-        // propagate end even ifit didn't match (this is needed forsplit function)
+        // propagate end even if it didn't match (this is needed for split function)
         if(!out) out.set_end_mark(it);
         return out;
     }
@@ -5403,12 +5403,12 @@ template <typename RE, typename Method, typename Modifier> struct regular_expres
     template <typename... Args> CTRE_FORCE_INLINE constexpr auto operator()(Args && ... args) const noexcept {
         return exec(std::forward<Args>(args)...);
     }
-    // api forpattern matching
+    // api for pattern matching
     template <typename... Args> CTRE_FORCE_INLINE constexpr auto try_extract(Args && ... args) const noexcept {
         return exec(std::forward<Args>(args)...);
     }
     
-    // forcompatibility with _ctre literal
+    // for compatibility with _ctre literal
     template <typename... Args> static constexpr CTRE_FORCE_INLINE auto match(Args && ... args) noexcept {
         return regular_expression<RE, match_method, singleline>::exec(std::forward<Args>(args)...);
     }
@@ -5454,7 +5454,7 @@ template <typename RE, typename Method, typename Modifier> struct regular_expres
     }
 };
 
-// range style API support fortokenize/range/split operations
+// range style API support for tokenize/range/split operations
 template <typename Range, typename RE, typename Modifier> constexpr auto operator|(Range && range, regular_expression<RE, range_method, Modifier> re) noexcept {
     return re.exec(std::forward<Range>(range));
 }
@@ -5482,7 +5482,7 @@ template <> struct problem_at_position<~static_cast<size_t>(0)> {
     }
 };
 
-#ifCTRE_CNTTP_COMPILER_CHECK
+#if CTRE_CNTTP_COMPILER_CHECK
 #define CTRE_REGEX_INPUT_TYPE ctll::fixed_string
 #define CTRE_REGEX_TEMPLATE_COPY_TYPE auto
 #else
@@ -5548,7 +5548,7 @@ namespace ctre {
 // in C++17 (clang & gcc with gnu extension) we need translate character pack into ctll::fixed_string
 // in C++20 we have `class nontype template parameters`
 
-#if!CTRE_CNTTP_COMPILER_CHECK
+#if !CTRE_CNTTP_COMPILER_CHECK
 template <typename CharT, CharT... input> static inline constexpr auto _fixed_string_reference = ctll::fixed_string< sizeof...(input)>({input...});
 #endif    
 
@@ -5564,7 +5564,7 @@ namespace literals {
   
 #ifdef _MSC_VER
 #ifdef _MSVC_LANG
-#if_MSVC_LANG >= 202002L
+#if _MSVC_LANG >= 202002L
 #define CTRE_ENABLE_LITERALS
 #endif
 #else
@@ -5575,10 +5575,10 @@ namespace literals {
 #ifdef __INTEL_COMPILER
 // not enable literals
 #elif defined __GNUC__
-#if__GNUC__ < 9
+#if __GNUC__ < 9
 #define CTRE_ENABLE_LITERALS
 #elif __GNUC__ >= 10
-#if!CTRE_CNTTP_COMPILER_CHECK 
+#if !CTRE_CNTTP_COMPILER_CHECK 
 // newer versions of GCC will give error when trying to use GNU extension
 #else
 #define CTRE_ENABLE_LITERALS
@@ -5591,16 +5591,16 @@ namespace literals {
 // add this when we will have concepts
 // requires ctll::parser<ctre::pcre, _fixed_string_reference<CharT, charpack...>, ctre::pcre_actions>::template correct_with<pcre_context<>>
 
-#if!CTRE_CNTTP_COMPILER_CHECK
+#if !CTRE_CNTTP_COMPILER_CHECK
 template <typename CharT, CharT... charpack> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE auto operator""_ctre() noexcept {
     constexpr auto & _input = _fixed_string_reference<CharT, charpack...>;
 #else
 template <ctll::fixed_string input> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE auto operator""_ctre() noexcept {
-    constexpr auto _input = input; // workaround forGCC 9 bug 88092
+    constexpr auto _input = input; // workaround for GCC 9 bug 88092
 #endif
     using tmp = typename ctll::parser<ctre::pcre, _input, ctre::pcre_actions>::template output<pcre_context<>>;
     static_assert(tmp(), "Regular Expression contains syntax error.");
-    ifconstexpr (tmp()) {
+    if constexpr (tmp()) {
         using re = decltype(front(typename tmp::output_type::stack_type()));
         return ctre::regular_expression(re());
     } else {
@@ -5609,7 +5609,7 @@ template <ctll::fixed_string input> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE aut
 }
 
 // this will need to be fixed with C++20
-#if!CTRE_CNTTP_COMPILER_CHECK
+#if !CTRE_CNTTP_COMPILER_CHECK
 template <typename CharT, CharT... charpack> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE auto operator""_ctre_id() noexcept {
     return id<charpack...>();
 }
@@ -5623,34 +5623,34 @@ namespace test_literals {
     
 #ifdef CTRE_ENABLE_LITERALS
 
-#if!CTRE_CNTTP_COMPILER_CHECK
+#if !CTRE_CNTTP_COMPILER_CHECK
 template <typename CharT, CharT... charpack> CTRE_FLATTEN constexpr inline auto operator""_ctre_test() noexcept {
     constexpr auto & _input = _fixed_string_reference<CharT, charpack...>;
 #else
 template <ctll::fixed_string input> CTRE_FLATTEN constexpr inline auto operator""_ctre_test() noexcept {
-    constexpr auto _input = input; // workaround forGCC 9 bug 88092
+    constexpr auto _input = input; // workaround for GCC 9 bug 88092
 #endif
     return ctll::parser<ctre::pcre, _input>::template correct_with<>;
 }
 
-#if!CTRE_CNTTP_COMPILER_CHECK
+#if !CTRE_CNTTP_COMPILER_CHECK
 template <typename CharT, CharT... charpack> CTRE_FLATTEN constexpr inline auto operator""_ctre_gen() noexcept {
     constexpr auto & _input = _fixed_string_reference<CharT, charpack...>;
 #else
 template <ctll::fixed_string input> CTRE_FLATTEN constexpr inline auto operator""_ctre_gen() noexcept {
-    constexpr auto _input = input; // workaround forGCC 9 bug 88092
+    constexpr auto _input = input; // workaround for GCC 9 bug 88092
 #endif
     using tmp = typename ctll::parser<ctre::pcre, _input, ctre::pcre_actions>::template output<pcre_context<>>;
     static_assert(tmp(), "Regular Expression contains syntax error.");
     return typename tmp::output_type::stack_type();
 }
 
-#if!CTRE_CNTTP_COMPILER_CHECK
+#if !CTRE_CNTTP_COMPILER_CHECK
 template <typename CharT, CharT... charpack> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE auto operator""_ctre_syntax() noexcept {
     constexpr auto & _input = _fixed_string_reference<CharT, charpack...>;
 #else
 template <ctll::fixed_string input> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE auto operator""_ctre_syntax() noexcept {
-    constexpr auto _input = input; // workaround forGCC 9 bug 88092
+    constexpr auto _input = input; // workaround for GCC 9 bug 88092
 #endif
     return ctll::parser<ctre::pcre, _input, ctre::pcre_actions>::template correct_with<pcre_context<>>;
 }
@@ -5674,7 +5674,7 @@ template <ctll::fixed_string input> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE aut
 
 namespace ctre {
 
-#if!CTRE_CNTTP_COMPILER_CHECK
+#if !CTRE_CNTTP_COMPILER_CHECK
 // avoiding CTAD limitation in C++17
 template <typename CharT, size_t N> class pattern: public ctll::fixed_string<N> {
     using parent = ctll::fixed_string<N>;
@@ -5684,7 +5684,7 @@ public:
 
 template <typename CharT, size_t N> pattern(const CharT (&)[N]) -> pattern<CharT, N>;
 
-// forbetter examples
+// for better examples
 template <typename CharT, size_t N> class fixed_string: public ctll::fixed_string<N> {
     using parent = ctll::fixed_string<N>;
 public:
@@ -5694,9 +5694,9 @@ public:
 template <typename CharT, size_t N> fixed_string(const CharT (&)[N]) -> fixed_string<CharT, N>;
 #endif
 
-#ifCTRE_CNTTP_COMPILER_CHECK
+#if CTRE_CNTTP_COMPILER_CHECK
 template <ctll::fixed_string input, typename Modifier = void> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE auto re() noexcept {
-constexpr auto _input = input; // workaround forGCC 9 bug 88092
+constexpr auto _input = input; // workaround for GCC 9 bug 88092
 #else
 template <auto & input, typename Modifier = void> CTRE_FLATTEN constexpr CTRE_FORCE_INLINE auto re() noexcept {    
 constexpr auto & _input = input; 
