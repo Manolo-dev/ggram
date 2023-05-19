@@ -7,8 +7,9 @@
 
 std::ostream &operator<<(std::ostream &os, std::vector<std::string> const &vector);
 /**
- * @brief Implements the * operator between string and int. It behave like in python i.e "a" * 5 == "aaaaa"
- * 
+ * @brief Implements the * operator between string and int. It behave like in python i.e "a" * 5 ==
+ * "aaaaa"
+ *
  * @param base_string the string to duplicate
  * @param n the number of duplications to perform
  * @return std::string the duplicated string
@@ -18,7 +19,7 @@ std::string operator*(size_t n, const std::string &base_string);
 
 /**
  * @brief Concatenate two vector toguether
- * 
+ *
  * @tparam T Types of the two vectors
  * @param dest the destination vector
  * @param src the vector to concatenate at the end of the dest vector
@@ -30,7 +31,7 @@ template<typename T> void extend(std::vector<T> &dest, const std::vector<T> &src
 
 /**
  * @brief Push an element to each element of a given vector
- * 
+ *
  * @tparam T the type of the elements
  * @param list the list of vector to push
  * @param new_elem the element to push into each vector

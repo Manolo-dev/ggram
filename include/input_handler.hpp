@@ -1,5 +1,6 @@
 #pragma once
 
+#include "error/argument_error.hpp"
 #include <array>
 #include <filesystem>
 #include <iostream>
@@ -116,6 +117,6 @@ constexpr ParameterHandler outputFile_description = {
 
 // This is the list of all parameter handlers that will be tested on the input
 constexpr std::array<ParameterHandler, 6> PARAMETER_LIST = {
-    eddyMalou_description, help_description,       version_description,
-    inputFile_description, outputFile_description};
+    eddyMalou_description, help_description, version_description, inputFile_description,
+    outputFile_description};
 } // namespace InputHandler

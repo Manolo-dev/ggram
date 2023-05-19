@@ -41,7 +41,7 @@ find_program(CLANG_FORMAT_EXE NAMES "clang-format")
 if(CLANG_FORMAT_EXE)
 	add_custom_target(
 		format
-		COMMAND ${CLANG_FORMAT_EXE} -i -style=file ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/*/*.hpp
+		COMMAND ${CLANG_FORMAT_EXE} -i -style=file ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*/*.cpp ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/*/*.hpp
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	)
 else()

@@ -1,4 +1,6 @@
-#include "error.hpp"
+#pragma once
+
+#include "error/file_errors.hpp"
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -37,11 +39,11 @@ class FileHandler {
 
     FileHandler();
     FileHandler(const FileHandler &) = delete;
-	FileHandler(const FileHandler &&) noexcept = delete;
-	FileHandler &operator=(const FileHandler &) = delete;
-	FileHandler &operator=(const FileHandler &&) noexcept = delete;
-	
-	~FileHandler();
+    FileHandler(const FileHandler &&) noexcept = delete;
+    FileHandler &operator=(const FileHandler &) = delete;
+    FileHandler &operator=(const FileHandler &&) noexcept = delete;
+
+    ~FileHandler();
 
     /**
      * @brief Closes all files
@@ -78,7 +80,7 @@ class FileHandler {
      */
     bool getline(std::string &line);
 
-	unsigned long getCurrentLineNumber() const;
+    unsigned long getCurrentLineNumber() const;
 
     /**
      * @brief copy the content of a file to the output file
