@@ -280,15 +280,13 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
     return result;
 }
 
-std::vector<std::string> createLexemes(FileHandler &files, uint &lineNum) {
+std::vector<std::string> createLexemes(FileHandler &files) {
     std::vector<std::string> lexeme_names;
 
     std::vector<std::string> special_lexeme_names;
     std::string line;
 
     while (files.getline(line)) {
-        lineNum++;
-
         if (line.empty()) {
             continue; // skip empty line
         }
@@ -319,7 +317,7 @@ std::vector<std::string> createLexemes(FileHandler &files, uint &lineNum) {
                   << "const std::regex " + lexeme_name + "_ = std::regex(\"" + lexme_regex + "\");"
                   << std::endl;
         } else {
-            throw InvalidSyntax(lineNum, "Invalid lexeme declaration");
+            throw InvalidSyntax(files.getCurrentLineNumber(), "Invalid lexeme declaration");
         }
     }
 
@@ -338,7 +336,7 @@ std::vector<std::string> createLexemes(FileHandler &files, uint &lineNum) {
     files << FileHandler::WriteMode::CPP << "};" << std::endl << std::endl;
 
     if (line != "---") {
-        throw InvalidSyntax(lineNum, "Expected '---'");
+        throw InvalidSyntax(files.getCurrentLineNumber(), "Expected '---'");
     }
 
     return lexeme_names;
@@ -392,7 +390,7 @@ void addRulePopFunctions(const Rule &rule, const std::string &name,
     result.emplace_back(name, generateSimpleRulePopFunction(newRule, name, res_type));
 }
 
-std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, uint &line_num) {
+std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files) {
     std::vector<std::pair<std::string, Rule>> rules;
     std::vector<std::string> allRuleNames;
     std::string line;
@@ -400,12 +398,11 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, uint &li
     std::stack<LexemeName> brackets;
 
     while (files.getline(line)) {
-        line_num++;
         if (line[0] == '#' || line.empty()) {
             continue;
         }
         if (line == "---") {
-            throw InvalidSyntax(line_num, "Unexpected '---'");
+            throw InvalidSyntax(files.getCurrentLineNumber(), "Unexpected '---'");
         }
         std::string_view line_view = line;
         bool match_found = false;
@@ -423,11 +420,11 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, uint &li
                     line_view = line_view.substr(match.second);
                 } else if (name == LexemeName::END) {
                     if (currentRule.size() < 2) {
-                        throw InvalidSyntax(line_num, "Expected rule "
+                        throw InvalidSyntax(files.getCurrentLineNumber(), "Expected rule "
                                                       "name");
                     }
                     if (!brackets.empty()) {
-                        throw InvalidSyntax(line_num, "Expected ')', '}' "
+                        throw InvalidSyntax(files.getCurrentLineNumber(), "Expected ')', '}' "
                                                       "or ']'");
                     }
                     rules.emplace_back(currentRule[0].substr(1, currentRule[0].size() - 2),
@@ -438,15 +435,15 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, uint &li
                 } else {
                     const std::string &match_str = std::string(match.first);
                     if (currentRule.empty() && name != LexemeName::RULENAME) {
-                        throw InvalidSyntax(line_num, "Expected rule "
+                        throw InvalidSyntax(files.getCurrentLineNumber(), "Expected rule "
                                                       "name");
                     }
                     if (currentRule.size() == 1 && name != LexemeName::ASSIGN) {
-                        throw InvalidSyntax(line_num, "Expected '::='");
+                        throw InvalidSyntax(files.getCurrentLineNumber(), "Expected '::='");
                     }
                     if (currentRule.empty() && find(allRuleNames.begin(), allRuleNames.end(),
                                                     match_str) != allRuleNames.end()) {
-                        throw InvalidSyntax(line_num, "Rule '" + match_str +
+                        throw InvalidSyntax(files.getCurrentLineNumber(), "Rule '" + match_str +
                                                           "' already "
                                                           "defined");
                     }
@@ -457,22 +454,22 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, uint &li
                                name == LexemeName::ENDOPTION) {
                         if (name == LexemeName::ENDPARENTH &&
                             brackets.top() != LexemeName::PARENTH) {
-                            throw InvalidSyntax(line_num, "Unexpected"
+                            throw InvalidSyntax(files.getCurrentLineNumber(), "Unexpected"
                                                           " '" +
                                                               match_str + "'");
                         }
                         if (brackets.empty()) {
-                            throw InvalidSyntax(line_num, "Unexpected"
+                            throw InvalidSyntax(files.getCurrentLineNumber(), "Unexpected"
                                                           " '" +
                                                               match_str + "'");
                         }
                         if (name == LexemeName::ENDLOOP && brackets.top() != LexemeName::LOOP) {
-                            throw InvalidSyntax(line_num, "Unexpected"
+                            throw InvalidSyntax(files.getCurrentLineNumber(), "Unexpected"
                                                           " '" +
                                                               match_str + "'");
                         }
                         if (name == LexemeName::ENDOPTION && brackets.top() != LexemeName::OPTION) {
-                            throw InvalidSyntax(line_num, "Unexpected"
+                            throw InvalidSyntax(files.getCurrentLineNumber(), "Unexpected"
                                                           " '" +
                                                               match_str + "'");
                         }
@@ -484,12 +481,12 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, uint &li
                 }
             }
             if (!match_found) {
-                throw InvalidSyntax(line_num, "Unexpected token");
+                throw InvalidSyntax(files.getCurrentLineNumber(), "Unexpected token");
             }
         }
     }
     if (!currentRule.empty()) {
-        throw InvalidSyntax(line_num, "Expected ';'");
+        throw InvalidSyntax(files.getCurrentLineNumber(), "Expected ';'");
     }
     return rules;
 }
@@ -549,10 +546,7 @@ void writeRulesPopFunctions(const std::vector<std::pair<std::string, Rule>> &rul
     }
 }
 
-int main(int argc, char const *argv[]) {
-    InputHandler::Configuration cfg;
-    InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg);
-    FileHandler files;
+std::vector<std::string> initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files) {
     files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);
 
     files.copy("template/head.hpp", FileHandler::WriteMode::HPP);
@@ -560,8 +554,7 @@ int main(int argc, char const *argv[]) {
     files << FileHandler::WriteMode::CPP << "#include " << cfg.output_filepath_hpp.filename()
           << std::endl;
 
-    uint lineNum = 0;
-    const std::vector<std::string> lexeme_names = createLexemes(files, lineNum);
+    const std::vector<std::string> lexeme_names = createLexemes(files);
 
     files.copy("template/token.cpp", FileHandler::WriteMode::CPP);
     files.copy("template/lex.cpp", FileHandler::WriteMode::CPP);
@@ -579,10 +572,17 @@ int main(int argc, char const *argv[]) {
         default:
             throw std::invalid_argument("Not yet implemented here !");
     }
+    return lexeme_names;
+}
 
+int main(int argc, char const *argv[]) {
+    InputHandler::Configuration cfg;
+    InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg);
+    FileHandler files;
+    auto lexeme_names = initOutputFiles(cfg, files);
     writeLexemesPopFunctions(lexeme_names, files, cfg.result_type);
 
-    const std::vector<std::pair<std::string, Rule>> rules = readRules(files, lineNum);
+    const std::vector<std::pair<std::string, Rule>> rules = readRules(files);
 #ifdef DEBUG_RULES
     for (auto [rule_name, _] : rules) {
         cout << rule_name << std::endl;

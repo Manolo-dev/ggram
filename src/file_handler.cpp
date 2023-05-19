@@ -8,6 +8,7 @@ FileWriter &FileWriter::operator<<(std::ostream &(*os)(std::ostream &)) {
 }
 
 FileHandler::FileHandler() = default;
+
 FileHandler::~FileHandler() {
     close();
 }
@@ -63,7 +64,12 @@ FileWriter FileHandler::operator<<(WriteMode mode) {
 }
 
 bool FileHandler::getline(std::string &line) {
+	line_number++;
     return bool(std::getline(input_file, line));
+}
+
+unsigned long FileHandler::getCurrentLineNumber() const {
+	return line_number;
 }
 
 void FileHandler::copy(const std::string &input_path, WriteMode mode) {

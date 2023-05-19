@@ -36,7 +36,13 @@ class FileHandler {
     enum class WriteMode { CPP, HPP };
 
     FileHandler();
-    ~FileHandler();
+    FileHandler(const FileHandler &) = delete;
+	FileHandler(const FileHandler &&) noexcept = delete;
+	FileHandler &operator=(const FileHandler &) = delete;
+	FileHandler &operator=(const FileHandler &&) noexcept = delete;
+	
+	~FileHandler();
+
     /**
      * @brief Closes all files
      *
@@ -72,6 +78,8 @@ class FileHandler {
      */
     bool getline(std::string &line);
 
+	unsigned long getCurrentLineNumber() const;
+
     /**
      * @brief copy the content of a file to the output file
      *
@@ -97,4 +105,6 @@ class FileHandler {
     std::ifstream input_file;
     std::ofstream out_cpp;
     std::ofstream out_hpp;
+
+    unsigned long line_number = 0;
 };
