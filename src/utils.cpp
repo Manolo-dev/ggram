@@ -25,14 +25,3 @@ std::string operator*(const std::string &base_string, size_t n) {
 std::string operator*(size_t n, const std::string &base_string) {
     return base_string * n;
 }
-
-template<typename T> void extend(std::vector<T> &dest, const std::vector<T> &src) {
-    dest.reserve(dest.size() + src.size());
-    dest.insert(dest.end(), src.begin(), src.end());
-}
-
-template<typename T> void pushToEachElement(std::vector<std::vector<T>> &list, const T &new_elem) {
-    for (auto &elem : list) {
-        elem.push_back(new_elem);
-    }
-}
