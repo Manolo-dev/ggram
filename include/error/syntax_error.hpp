@@ -1,8 +1,8 @@
 #pragma once
 
-#include <iostream>
 #include "error/ggram_error.hpp"
 #include "file_handler.hpp"
+#include <iostream>
 
 enum class ErrorType { InvalidRule, BnfError, RegexError, SyntaxError };
 
@@ -29,7 +29,7 @@ class SyntaxError : public GgramError {
      */
     void print(FileHandler &handler) const;
 
-	constexpr static const char *error_type_to_string(ErrorType type);
+    constexpr static const char *error_type_to_string(ErrorType type);
 
   private:
     unsigned long _line;

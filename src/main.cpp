@@ -23,26 +23,26 @@ void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files)
 int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
     if (!InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg)) {
-		return 1;
-	}
-	
+        return 1;
+    }
+
     FileHandler files;
     initOutputFiles(cfg, files);
-	try {
-		const auto lexeme_names = createLexemes(files);
-		writeLexemesPopFunctions(lexeme_names, files);
-		const std::vector<std::pair<std::string, Rule>> rules = readRules(files);
-	#ifdef DEBUG_RULES
-		for (auto [rule_name, _] : rules) {
-			cout << rule_name << std::endl;
-			cout << _ << std::endl;
-		}
-	#endif
-		writeRulesPopFunctions(rules, files);
-	} catch (const SyntaxError &e) {
-		e.print(files);
-		return 2;
-	}
+    try {
+        const auto lexeme_names = createLexemes(files);
+        writeLexemesPopFunctions(lexeme_names, files);
+        const std::vector<std::pair<std::string, Rule>> rules = readRules(files);
+#ifdef DEBUG_RULES
+        for (auto [rule_name, _] : rules) {
+            cout << rule_name << std::endl;
+            cout << _ << std::endl;
+        }
+#endif
+        writeRulesPopFunctions(rules, files);
+    } catch (const SyntaxError &e) {
+        e.print(files);
+        return 2;
+    }
 
     files << FileHandler::WriteMode::CPP << std::endl;
 

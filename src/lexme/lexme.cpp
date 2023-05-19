@@ -27,7 +27,8 @@ std::pair<LexmeList, LexmeList> readLexmes(FileHandler &files) {
 
             if (lexeme_names.find(lexeme_name) != lexeme_names.end()) {
                 throw SyntaxError("Plural lexeme with the same name: " + lexeme_name,
-                                  files.getCurrentLineNumber(), lexeme_name.size(), ErrorType::BnfError);
+                                  files.getCurrentLineNumber(), lexeme_name.size(),
+                                  ErrorType::BnfError);
             }
 
             if (lexeme_name[0] != '.') {
@@ -41,11 +42,12 @@ std::pair<LexmeList, LexmeList> readLexmes(FileHandler &files) {
                   << "const std::regex " + lexeme_name + "_ = std::regex(\"" + lexme_regex + "\");"
                   << std::endl;
         } else {
-			if (auto nameMatch = ctre::starts_with<LEXME_NAME_REGEX>(line)) {
-				throw SyntaxError("Invalid lexeme regex", files.getCurrentLineNumber(), nameMatch.size() + 2 , ErrorType::RegexError);
-			} else {
-            	throw SyntaxError("Invalid lexeme declaration", files.getCurrentLineNumber());
-			}
+            if (auto nameMatch = ctre::starts_with<LEXME_NAME_REGEX>(line)) {
+                throw SyntaxError("Invalid lexeme regex", files.getCurrentLineNumber(),
+                                  nameMatch.size() + 2, ErrorType::RegexError);
+            } else {
+                throw SyntaxError("Invalid lexeme declaration", files.getCurrentLineNumber());
+            }
         }
     }
 

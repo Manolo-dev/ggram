@@ -118,14 +118,14 @@ bool handleParameters(const std::vector<std::string> &args, Configuration &cfg) 
             arg_list.emplace_back(args.at(i));
             i++;
         }
-		try {
-        	handler_ptr->update_configuration(arg_list, cfg);
-		} catch (const ArgumentError &e) {
-			std::cerr << e.what() << std::endl;
-			return false;
-		}
+        try {
+            handler_ptr->update_configuration(arg_list, cfg);
+        } catch (const ArgumentError &e) {
+            std::cerr << e.what() << std::endl;
+            return false;
+        }
     }
-	return true;
+    return true;
 }
 
 void check_arg_list_size(const ArgList &list, const size_t min_val, const size_t max_val) {
@@ -187,7 +187,7 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
             std::cout << param;
         }
     }
-	std::cout << std::endl;
+    std::cout << std::endl;
     exit(0);
 }
 
