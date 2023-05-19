@@ -5727,3 +5727,4 @@ template <typename A, typename B> constexpr auto operator>>(ctre::regular_expres
 #endif
 
 #endif
+// NOLINTEND
