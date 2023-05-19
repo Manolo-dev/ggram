@@ -29,7 +29,7 @@ if(CLANG_TIDY_EXE)
 	set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
 	add_custom_target(
 		tidy
-		COMMAND ${CLANG_TIDY_EXE} "${PROJECT_SOURCE_DIR}/src/*.cpp" --fix -p "${PROJECT_SOURCE_DIR}" -fix-errors
+		COMMAND ${CLANG_TIDY_EXE} "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/src/*/*.cpp" --fix -p "${PROJECT_BINARY_DIR}" -fix-errors
 		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 	)
 else()
