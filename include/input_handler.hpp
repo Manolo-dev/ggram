@@ -13,11 +13,11 @@
  * add a parameter :
  *  - ifthe parameter adds a new information, you have to add this information
  *      to the structure : Configuration , to make it usable in the main program
- *  - declare a update_config_function in this file
+ *  - declare a UpdateConfigFunction in this file
  *  - create a constexpr ParameterHandler structure just below
  *  - DON'T FORGET TO : add the structure tu the PARAMETER_LIST
- *  - finally define the update_config_function in the .cpp file
- *      (and don't forget to verify that length of the ArgList is correct (
+ *  - finally define the UpdateConfigFunction in the .cpp file
+ *      (and don't forget to verify that length of the ArgList is correct)
  */
 namespace InputHandler {
 // These lists contains the arguments recieved fora given parameter
@@ -30,9 +30,9 @@ struct Configuration {
     std::filesystem::path output_filepath_hpp = "parser.hpp";
 };
 
-// update_config_function is intended to update the configuration
+// UpdateConfigFunction is intended to update the configuration
 // given the arguments of the parameter she has responsability over
-using update_config_function = void (*)(const ArgList &, Configuration &);
+using UpdateConfigFunction = void (*)(const ArgList &, Configuration &);
 
 /**
  * ParameterHandler takes responsability over a parameter namely -short_id and
@@ -44,7 +44,7 @@ struct ParameterHandler {
     char const short_id;
     char const *long_id;
     char const *description;
-    update_config_function configuration_updater;
+    UpdateConfigFunction configuration_updater;
 
     void update_configuration(const ArgList & /*arg_list*/, Configuration & /*cfg*/) const;
     std::ostream &print(std::ostream & /*os*/) const;

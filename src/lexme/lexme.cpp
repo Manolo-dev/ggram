@@ -45,9 +45,8 @@ std::pair<LexmeList, LexmeList> readLexmes(FileHandler &files) {
             if (auto nameMatch = ctre::starts_with<LEXME_NAME_REGEX>(line)) {
                 throw SyntaxError("Invalid lexeme regex", files.getCurrentLineNumber(),
                                   nameMatch.size() + 2, ErrorType::RegexError);
-            } else {
-                throw SyntaxError("Invalid lexeme declaration", files.getCurrentLineNumber());
             }
+            throw SyntaxError("Invalid lexeme declaration", files.getCurrentLineNumber());
         }
     }
 
