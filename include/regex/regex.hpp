@@ -146,8 +146,3 @@ static const std::array<std::pair<LexemeName, Matcher>, 13> LEX_GGRAM_FILE{
      {LexemeName::ENDOPTION, endOptionMatcher},
      {LexemeName::STRING, stringMatcher},
      {LexemeName::END, endMatcher}}};
-
-static constexpr auto LEXME_INFOS_REGEX =
-    ctll::fixed_string{R"-(^(\.?[a-zA-Z][a-zA-Z_0-9]*)\s*"(([^"]|\\")*)"$)-"};
-
-static constexpr auto LEXME_NAME_REGEX = ctll::fixed_string{R"-(^\.?[a-zA-Z][a-zA-Z_0-9]*)-"};

@@ -5,6 +5,7 @@
 #include "file_handler.hpp"
 #include "global_defines.hpp"
 #include "regex/regex.hpp"
+#include "regex/lexme_regex.hpp"
 #include <iostream>
 #include <string>
 #include <unordered_set>
