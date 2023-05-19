@@ -25,4 +25,4 @@ LexmeList createLexemes(FileHandler &files);
  * @param token_types the list of token types
  * @param files the file handler
  */
-void writeLexemesPopFunctions(const LexmeList &token_types, FileHandler &files);
+void writeLexemesPopFunctions(const LexmeList &token_types, FileHandler &files) noexcept;

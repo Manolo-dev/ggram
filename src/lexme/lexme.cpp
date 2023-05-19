@@ -71,7 +71,7 @@ LexmeList createLexemes(FileHandler &files) {
     return lexeme_names;
 }
 
-void writeLexemesPopFunctions(const LexmeList &token_types, FileHandler &files) {
+void writeLexemesPopFunctions(const LexmeList &token_types, FileHandler &files) noexcept {
     for (const std::string &token_name : token_types) {
         files << FileHandler::WriteMode::CPP << "bool " << POP_FUNCTION_PREFIX << token_name
               << "(Token &master) { return _pop_type(\"" + token_name + "\", master); }"
