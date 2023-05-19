@@ -1,7 +1,7 @@
 
-IT it_cur; // Iterator for the current tokens checked by the parser
-IT it_end; // Iterator for the end of the tokens
-IT it_err; // Iterator for the bad token for error handling
+IT it_cur; // Iterator forthe current tokens checked by the parser
+IT it_end; // Iterator forthe end of the tokens
+IT it_err; // Iterator forthe bad token forerror handling
 
 /**
  * @brief Create a new element at the end of the std::vector and return a reference to it_cur
@@ -39,7 +39,7 @@ bool _pop_while(popfunction pop, std::vector<Token> &master) {
 }
 
 /**
- * @brief Check if the current token has the right value
+ * @brief Check ifthe current token has the right value
  * @param val
  * @param master
  * @return bool
@@ -58,7 +58,7 @@ bool _pop_value(const std::string& val, Token &master) {
 }
 
 /**
- * @brief Check if the current token has the right type
+ * @brief Check ifthe current token has the right type
  * @param val
  * @param master
  * @return bool

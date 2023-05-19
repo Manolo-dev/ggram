@@ -17,7 +17,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 
 add_executable(ggram src/main.cpp ${sources})
 
-
 target_include_directories(ggram 
 	PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include"
 	PUBLIC "${PROJECT_BINARY_DIR}"
