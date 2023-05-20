@@ -8,7 +8,7 @@ enum class ErrorType { InvalidRule, BnfError, RegexError, SyntaxError };
 
 class SyntaxError : public GgramError {
   public:
-    SyntaxError(const std::string &message, unsigned long line, unsigned long column,
+    SyntaxError(const std::string &message, unsigned long line, unsigned long column_start, unsigned long column_end,
                 ErrorType type = ErrorType::SyntaxError);
     SyntaxError(const std::string &message, unsigned long line = 0,
                 ErrorType type = ErrorType::SyntaxError);
@@ -17,7 +17,9 @@ class SyntaxError : public GgramError {
 
     [[nodiscard]] unsigned long line() const noexcept;
 
-    [[nodiscard]] unsigned long column() const noexcept;
+    [[nodiscard]] unsigned long columnStart() const noexcept;
+
+	[[nodiscard]] unsigned long columnEnd() const noexcept;
 
     [[nodiscard]] ErrorType type() const noexcept;
 
@@ -33,6 +35,7 @@ class SyntaxError : public GgramError {
 
   private:
     unsigned long _line;
-    unsigned long _column;
+    unsigned long _column_start;
+	unsigned long _column_end;
     ErrorType _type;
 };

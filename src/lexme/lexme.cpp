@@ -1,5 +1,26 @@
 #include "lexme/lexme.hpp"
 
+[[noreturn]] void manageErrors(const std::string &line, unsigned long line_number) {
+    size_t pos = line.find_first_of(' ');
+    if (pos == std::string::npos) {
+        pos = line.size();
+    }
+
+    if (line[0] == '<') {
+        throw SyntaxError("Invalid lexeme name, you may have forgoten file separator '" +
+                              std::string(FILE_SEPARATOR) + "' before rule declaration",
+                          line_number, 1, pos, ErrorType::BnfError);
+    }
+
+    if (std::string_view(line).substr(0, FILE_SEPARATOR.size()) == FILE_SEPARATOR) {
+        throw SyntaxError("File separator '" + std::string(FILE_SEPARATOR) +
+                              "' must be alone on the line",
+                          line_number, 4, line.size(), ErrorType::BnfError);
+    }
+
+    throw SyntaxError("Invalid lexeme declaration", line_number, 1, pos, ErrorType::BnfError);
+}
+
 /**
  * @brief Read all the tokens regexes from the input file
  *
@@ -27,7 +48,7 @@ std::pair<LexmeList, LexmeList> readLexmes(FileHandler &files) {
 
             if (lexeme_names.find(lexeme_name) != lexeme_names.end()) {
                 throw SyntaxError("Plural lexeme with the same name: " + lexeme_name,
-                                  files.getCurrentLineNumber(), lexeme_name.size(),
+                                  files.getCurrentLineNumber(), 1, lexeme_name.size(),
                                   ErrorType::BnfError);
             }
 
@@ -44,9 +65,9 @@ std::pair<LexmeList, LexmeList> readLexmes(FileHandler &files) {
         } else {
             if (auto nameMatch = ctre::starts_with<LEXME_NAME_REGEX>(line)) {
                 throw SyntaxError("Invalid lexeme regex", files.getCurrentLineNumber(),
-                                  nameMatch.size() + 2, ErrorType::RegexError);
+                                  nameMatch.size() + 1, line.size(), ErrorType::RegexError);
             }
-            throw SyntaxError("Invalid lexeme declaration", files.getCurrentLineNumber());
+			manageErrors(line, files.getCurrentLineNumber());
         }
     }
 
