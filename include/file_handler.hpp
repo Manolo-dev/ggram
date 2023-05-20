@@ -1,4 +1,6 @@
-#include "error.hpp"
+#pragma once
+
+#include "error/file_errors.hpp"
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -36,12 +38,24 @@ class FileHandler {
     enum class WriteMode { CPP, HPP };
 
     FileHandler();
+    FileHandler(const FileHandler &) = delete;
+    FileHandler(const FileHandler &&) noexcept = delete;
+    FileHandler &operator=(const FileHandler &) = delete;
+    FileHandler &operator=(const FileHandler &&) noexcept = delete;
+
     ~FileHandler();
+
     /**
      * @brief Closes all files
      *
      */
     void close();
+
+    /**
+     * @brief reset the input file to the beginning
+     *
+     */
+    void reset();
 
     /**
      * @brief Opens all files
@@ -67,10 +81,22 @@ class FileHandler {
      * @brief Reads a line from the input file, it acts like std::getline
      *
      * @param line the line to read into
-     * @return true ifa line was read
-     * @return false ifthe end of the file was reached
+     * @return true if a line was read
+     * @return false if the end of the file was reached
      */
     bool getline(std::string &line);
+
+    /**
+     * @brief Reads a line from the input file at a specific line number
+     *
+     * @param line the line to read into
+     * @param line_number the line number to read
+     * @return true if a line was read
+     * @return false if the end of the file was reached before the specified line number
+     */
+    bool getline(std::string &line, unsigned long line_number);
+
+    unsigned long getCurrentLineNumber() const;
 
     /**
      * @brief copy the content of a file to the output file
@@ -97,4 +123,6 @@ class FileHandler {
     std::ifstream input_file;
     std::ofstream out_cpp;
     std::ofstream out_hpp;
+
+    unsigned long line_number = 0;
 };

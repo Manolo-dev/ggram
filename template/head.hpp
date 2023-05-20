@@ -1,22 +1,14 @@
-/***************************************************************************************************************************/
-/***************************************************************************************************************************/
-/***********************************************                            ************************************************/
-/***********************************************       Copied Content       ************************************************/
-/***********************************************                            ************************************************/
-/***************************************************************************************************************************/
-/***************************************************************************************************************************/
-
 #include <cstring>
 #include <iostream>
 #include <regex>
 #include <string>
 #include <vector>
 
-    /**
-     * @brief Token class
-     * @details This class is used to store the tokens of the lexer and the tree of the parser
-     */
-    class Token {
+/**
+ * @brief Token class
+ * @details This class is used to store the tokens of the lexer and the tree of the parser
+ */
+class Token {
   public:
     Token(std::string type = "", std::string value = "", int line = 0, int column = 0,
           bool error = false);
@@ -79,7 +71,7 @@ Token parse(const std::string &code);
 unsigned int indent_lvl = 0;
 std::string indentation() {
     std::string res = "";
-    for(int i = 0; i < indent_lvl && i < 20; ++i) {
+    for (int i = 0; i < indent_lvl && i < 20; ++i) {
         res += "   ";
     }
     return res;

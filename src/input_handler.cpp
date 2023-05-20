@@ -1,5 +1,4 @@
 #include "input_handler.hpp"
-#include "error.hpp"
 #include "version.hpp"
 
 namespace InputHandler {
@@ -14,12 +13,12 @@ void ParameterHandler::update_configuration(const ArgList &arg_list, Configurati
 
 // prints the parameter ids the description associated
 std::ostream &ParameterHandler::print(std::ostream &os) const {
-    if(short_id != '\0') {
+    if (short_id != '\0') {
         os << "-" << short_id;
-        if(long_id != nullptr) {
+        if (long_id != nullptr) {
             os << ", --" << long_id;
         }
-    } else if(long_id != nullptr) {
+    } else if (long_id != nullptr) {
         os << "--" << long_id;
     } else {
         os << "Not accessible";
@@ -35,11 +34,11 @@ std::ostream &operator<<(std::ostream &os, const ParameterHandler &handler) {
 //------------------------ Parameter getters -----------------------------//
 //------------------------------------------------------------------------//
 const ParameterHandler *getHandlerFromParam(const std::string_view &param, std::string &remaining) {
-    if(param.size() < 2 || param[0] != '-') {
+    if (param.size() < 2 || param[0] != '-') {
         remaining = "";
         return nullptr;
     }
-    if(param[1] == '-') {
+    if (param[1] == '-') {
         remaining = "";
         return getHandlerFromLongID(param.substr(2));
     }
@@ -48,8 +47,8 @@ const ParameterHandler *getHandlerFromParam(const std::string_view &param, std::
 }
 
 const ParameterHandler *getHandlerFromShortID(const char short_id) {
-    for(const ParameterHandler &param : PARAMETER_LIST) {
-        if(param.short_id != '\0' && short_id == param.short_id) {
+    for (const ParameterHandler &param : PARAMETER_LIST) {
+        if (param.short_id != '\0' && short_id == param.short_id) {
             return &param;
         }
     }
@@ -57,8 +56,8 @@ const ParameterHandler *getHandlerFromShortID(const char short_id) {
 }
 
 const ParameterHandler *getHandlerFromLongID(const std::string_view &long_id) {
-    for(const ParameterHandler &param : PARAMETER_LIST) {
-        if(param.long_id != nullptr && long_id == param.long_id) {
+    for (const ParameterHandler &param : PARAMETER_LIST) {
+        if (param.long_id != nullptr && long_id == param.long_id) {
             return &param;
         }
     }
@@ -68,10 +67,10 @@ const ParameterHandler *getHandlerFromLongID(const std::string_view &long_id) {
 const ParameterHandler *getHandlerFromAnyID(const std::string_view &id) {
 
     const ParameterHandler *param_ptr = nullptr;
-    if(id.size() == 1) {
+    if (id.size() == 1) {
         param_ptr = getHandlerFromShortID(id[0]);
     }
-    if(param_ptr == nullptr) {
+    if (param_ptr == nullptr) {
         param_ptr = getHandlerFromLongID(id);
     }
     return param_ptr;
@@ -84,13 +83,13 @@ const ParameterHandler *getHandlerFromAnyID(const std::string_view &id) {
  * PARAMETER_LIST */
 /*                    in order to update the default configuration */
 /******************************************************************************************/
-void handleParameters(const std::vector<std::string> &args, Configuration &cfg) {
-    if(args.size() == 1) {
+bool handleParameters(const std::vector<std::string> &args, Configuration &cfg) noexcept {
+    if (args.size() == 1) {
         help({}, cfg);
     }
     uint i = 1;
     // Handles default arguments
-    while(i < args.size() && args.at(i)[0] != '-') {
+    while (i < args.size() && args.at(i)[0] != '-') {
         i++;
     }
     ArgList arg_list = {args.begin() + 1, args.begin() + i};
@@ -99,35 +98,42 @@ void handleParameters(const std::vector<std::string> &args, Configuration &cfg) 
     // Handles named parameters' arguments
     const ParameterHandler *handler_ptr = nullptr;
     std::string remaining;
-    while(i < args.size()) {
+    while (i < args.size()) {
         // argv[i] is a parameter name, because ifnot
         // it would have been added to the precedent arg_list
         handler_ptr = getHandlerFromParam(args.at(i), remaining);
 
-        if(handler_ptr == nullptr) {
-            throw InputError("Unknown Parameter : " + std::string(args.at(i)));
+        if (handler_ptr == nullptr) {
+            std::cerr << "Unknown Parameter : " + std::string(args.at(i)) << std::endl;
+            help({}, cfg);
+            return false;
         }
 
         arg_list.clear();
-        if(!remaining.empty()) {
+        if (!remaining.empty()) {
             arg_list.emplace_back(remaining);
         }
         i++;
-        while(i < args.size() && args.at(i)[0] != '-') {
+        while (i < args.size() && args.at(i)[0] != '-') {
             arg_list.emplace_back(args.at(i));
             i++;
         }
-
-        handler_ptr->update_configuration(arg_list, cfg);
+        try {
+            handler_ptr->update_configuration(arg_list, cfg);
+        } catch (const ArgumentError &e) {
+            std::cerr << e.what() << std::endl;
+            return false;
+        }
     }
+    return true;
 }
 
 void check_arg_list_size(const ArgList &list, const size_t min_val, const size_t max_val) {
-    if(list.size() > max_val) {
-        throw InputError("Too many arguments");
+    if (list.size() > max_val) {
+        throw ArgumentError("Too many arguments");
     }
-    if(list.size() < min_val) {
-        throw InputError("Missing arguments");
+    if (list.size() < min_val) {
+        throw ArgumentError("Missing arguments");
     }
 }
 // ----------------- Default Parameter Handler ----------------- //
@@ -135,13 +141,13 @@ void check_arg_list_size(const ArgList &list, const size_t min_val, const size_t
 // first named parameter
 void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
     check_arg_list_size(arg_list, 0, 3);
-    if(arg_list.empty()) {
+    if (arg_list.empty()) {
         return;
     }
     inputFile({arg_list[0]}, cfg);
-    if(arg_list.size() == 2) {
+    if (arg_list.size() == 2) {
         outputFile({arg_list[1]}, cfg);
-    } else if(arg_list.size() == 3) {
+    } else if (arg_list.size() == 3) {
         outputFile({arg_list[1], arg_list[2]}, cfg);
     }
 }
@@ -169,17 +175,19 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
 [[noreturn]] void help(const ArgList &arg_list, Configuration & /*unused*/) {
     check_arg_list_size(arg_list, 0, 1);
 
-    if(arg_list.size() == 1) {
+    if (arg_list.size() == 1) {
         const ParameterHandler *param_ptr = getHandlerFromAnyID(arg_list[0]);
-        if(param_ptr == nullptr) {
-            throw InputError("Unknown Parameter :\"" + arg_list[0] + "\"");
+        if (param_ptr == nullptr) {
+            throw ArgumentError("Unknown Parameter :\"" + arg_list[0] + "\"");
         }
         std::cout << *param_ptr;
-    } else if(arg_list.empty()) {
-        for(const ParameterHandler &param : PARAMETER_LIST) {
+    } else if (arg_list.empty()) {
+        std::cout << "Usage: ggram input_file [options]" << std::endl;
+        for (const ParameterHandler &param : PARAMETER_LIST) {
             std::cout << param;
         }
     }
+    std::cout << std::endl;
     exit(0);
 }
 
@@ -196,36 +204,36 @@ void inputFile(const ArgList &arg_list, Configuration &cfg) {
 
 void outputFile(const ArgList &arg_list, Configuration &cfg) {
     check_arg_list_size(arg_list, 1, 2);
-    if(arg_list.size() == 1) {
+    if (arg_list.size() == 1) {
         std::filesystem::path filepath = arg_list[0];
-        if(filepath.has_extension() && filepath.extension() != ".cpp" &&
+        if (filepath.has_extension() && filepath.extension() != ".cpp" &&
             filepath.extension() != ".hpp" && filepath.extension() != ".h") {
-            throw InputError("Invalid file extention foran output file : '" +
-                             filepath.extension().string() + "'");
+            throw ArgumentError("Invalid file extention foran output file : '" +
+                                filepath.extension().string() + "'");
         }
         const std::string header_extension = (filepath.extension() == "h") ? "h" : "hpp";
 
         cfg.output_filepath_hpp = filepath.replace_extension(header_extension);
         cfg.output_filepath_cpp = filepath.replace_extension("cpp");
 
-    } else if(arg_list.size() == 2) {
+    } else if (arg_list.size() == 2) {
         std::filesystem::path const filepath0 = arg_list[0];
         std::filesystem::path const filepath1 = arg_list[1];
-        if(filepath0.extension() != ".cpp" && filepath1.extension() != ".cpp") {
-            throw InputError("Neither of the two output files "
-                             "specified is a .cpp file !");
+        if (filepath0.extension() != ".cpp" && filepath1.extension() != ".cpp") {
+            throw ArgumentError("Neither of the two output files "
+                                "specified is a .cpp file !");
         }
-        if(filepath0.extension() == ".cpp") {
+        if (filepath0.extension() == ".cpp") {
             cfg.output_filepath_cpp = filepath0;
             cfg.output_filepath_hpp = filepath1;
         } else {
             cfg.output_filepath_cpp = filepath1;
             cfg.output_filepath_hpp = filepath0;
         }
-        if(cfg.output_filepath_hpp.extension() != ".hpp" &&
+        if (cfg.output_filepath_hpp.extension() != ".hpp" &&
             cfg.output_filepath_hpp.extension() != ".h") {
-            throw InputError("Neither of the two output files specified is a "
-                             ".hpp/.h file !");
+            throw ArgumentError("Neither of the two output files specified is a "
+                                ".hpp/.h file !");
         }
     }
 }
