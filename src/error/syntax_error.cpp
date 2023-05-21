@@ -1,8 +1,9 @@
 #include "error/syntax_error.hpp"
 
-SyntaxError::SyntaxError(const std::string &message, unsigned long line, unsigned long column_start, unsigned long column_end,
-                         ErrorType type)
-    : GgramError(message), _line(line), _column_start(column_start), _column_end(column_end), _type(type) {}
+SyntaxError::SyntaxError(const std::string &message, unsigned long line, unsigned long column_start,
+                         unsigned long column_end, ErrorType type)
+    : GgramError(message), _line(line), _column_start(column_start), _column_end(column_end),
+      _type(type) {}
 
 SyntaxError::SyntaxError(const std::string &message, unsigned long line, ErrorType type)
     : GgramError(message), _line(line), _column_start(0), _column_end(0), _type(type) {}
@@ -59,8 +60,8 @@ void SyntaxError::print(FileHandler &handler) const {
     for (unsigned long i = 0; i < _column_start - 1; i++) {
         std::cerr << " ";
     }
-	for (unsigned long i = _column_start; i < _column_end; i++) {
-		std::cerr << "~";
-	}
+    for (unsigned long i = _column_start; i < _column_end; i++) {
+        std::cerr << "~";
+    }
     std::cerr << "^\n" << std::endl;
 }

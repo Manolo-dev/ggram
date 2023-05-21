@@ -85,7 +85,7 @@ std::string indentation() {
 #define FAILED(name)                                                                               \
     indent_lvl--;                                                                                  \
     cout << indentation() << "Failed " << name << std::endl;
-#define LOOP cout << indentation() << "LOOOP" << std::endl;
+#define LOOP cout << indentation() << "LOOP" << std::endl;
 #else
 #define SEARCH(name)
 #define FOUND(name)

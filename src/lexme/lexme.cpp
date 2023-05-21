@@ -1,10 +1,10 @@
 #include "lexme/lexme.hpp"
 
 bool isRegexEscapeChar(char c) noexcept {
-	return c == '.' || c == '*' || c == '+' || c == '?' || c == '|' || c == '(' || c == ')' ||
-		   c == '[' || c == ']' || c == '{' || c == '}' || c == '\\' || c == '^' || c == '$' ||
-		   c == '-' || c == 'b' || c == 'B' || c == 's' || c == 'S' || c == 'w' || c == 'W' ||
-		   c == 'd' || c == 'D';
+    return c == '.' || c == '*' || c == '+' || c == '?' || c == '|' || c == '(' || c == ')' ||
+           c == '[' || c == ']' || c == '{' || c == '}' || c == '\\' || c == '^' || c == '$' ||
+           c == '-' || c == 'b' || c == 'B' || c == 's' || c == 'S' || c == 'w' || c == 'W' ||
+           c == 'd' || c == 'D';
 }
 
 /**
@@ -23,7 +23,7 @@ std::string escapeRegexSpetialChar(const std::string_view &regex) {
         }
         result += regex[i];
     }
-	return result;
+    return result;
 }
 
 [[noreturn]] void manageErrors(const std::string &line, unsigned long line_number) {
@@ -70,7 +70,7 @@ std::pair<LexmeList, LexmeList> readLexmes(FileHandler &files) {
 
         if (auto match = ctre::starts_with<LEXME_INFOS_REGEX>(line)) {
             std::string lexeme_name = match.get<1>().to_string();
-            const std::string &lexme_regex = match.get<2>().to_string();
+            const std::string_view &lexme_regex = match.get<2>().to_view();
 
             if (lexeme_names.find(lexeme_name) != lexeme_names.end()) {
                 throw SyntaxError("Plural lexeme with the same name: " + lexeme_name,
@@ -86,7 +86,8 @@ std::pair<LexmeList, LexmeList> readLexmes(FileHandler &files) {
             }
 
             files << FileHandler::WriteMode::HPP
-                  << "const std::regex " + lexeme_name + "_ = std::regex(" + escapeRegexSpetialChar(lexme_regex) + ");"
+                  << "const std::regex " + lexeme_name + "_ = std::regex(" +
+                         escapeRegexSpetialChar(lexme_regex) + ");"
                   << std::endl;
         } else {
             if (auto nameMatch = ctre::starts_with<LEXME_NAME_REGEX>(line)) {

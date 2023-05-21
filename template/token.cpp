@@ -1,15 +1,13 @@
-
+/**
+ * @brief Construct a new Token object
+ * @param type
+ * @param value
+ * @param line
+ * @param column
+ * @return Token
+ */
 Token::Token(std::string type, std::string value, int line, int column, bool error)
-    : _type(type), _value(value), _line(line), _column(column), _children(), _is_error(error) {
-    /**
-     * @brief Construct a new Token object
-     * @param type
-     * @param value
-     * @param line
-     * @param column
-     * @return Token
-     */
-}
+    : _type(type), _value(value), _line(line), _column(column), _children(), _is_error(error) {}
 Token::Token(std::string type, bool error) : Token(type, "", 0, 0, error) {}
 
 void Token::make_error() {

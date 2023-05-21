@@ -79,19 +79,19 @@ combinations generateCombinations(const std::vector<std::string> &tree) {
 
 std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
                                           const std::string &name) {
-    std::string result;
-
-    result += "    const IT it_start = it_cur;\n";
-    result +=
-        "    master = Token(\"" + name + "\", \"\", it_start->line(), it_start->column()); \n";
-    result += "    std::vector<Token> current;\n";
-    result += "    SEARCH(\"" + name + "\")\n";
+    std::string result{"    const IT it_start = it_cur;\n"
+                       "    master = Token(\"" +
+                       name +
+                       "\", \"\", it_start->line(), it_start->column()); \n"
+                       "    std::vector<Token> current;\n"
+                       "    SEARCH(\"" +
+                       name + "\")\n"};
 
     std::string prefix;
     std::string suffix;
     for (std::vector<std::string> &rule_combination : generateCombinations(rule)) {
-        result += "    current.clear();\n";
-        result += "    if(";
+        result += "    current.clear();\n"
+                  "    if(";
 
         for (size_t i = 0; i < rule_combination.size(); i++) {
             /*
@@ -139,11 +139,11 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
             }
             result += " || ";
         }
-        result += ") it_cur = it_start;\n";
-        result += "    else {master.children() += current; FOUND(\"" + name + "\") return 0;};\n";
+        result += ") it_cur = it_start;\n"
+                  "    else {master.children() += current; FOUND(\"" + name + "\") return false;};\n";
     }
-    result += "    FAILED(\"" + name + "\")\n";
-    result += "    return 1;\n";
+    result += "    FAILED(\"" + name + "\")\n"
+    		  "    return true;\n";
 
     return result;
 }
