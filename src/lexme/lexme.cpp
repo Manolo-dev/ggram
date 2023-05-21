@@ -1,5 +1,31 @@
 #include "lexme/lexme.hpp"
 
+bool isRegexEscapeChar(char c) noexcept {
+	return c == '.' || c == '*' || c == '+' || c == '?' || c == '|' || c == '(' || c == ')' ||
+		   c == '[' || c == ']' || c == '{' || c == '}' || c == '\\' || c == '^' || c == '$' ||
+		   c == '-' || c == 'b' || c == 'B' || c == 's' || c == 'S' || c == 'w' || c == 'W' ||
+		   c == 'd' || c == 'D';
+}
+
+/**
+ * @brief This functions is used to double the backslash in the given regex if it escape a regex
+ * special character
+ *
+ * @param regex the regex to escape between double quotes
+ * @return std::string the escaped regex
+ */
+std::string escapeRegexSpetialChar(const std::string_view &regex) {
+    std::string result;
+    result.reserve(regex.size());
+    for (size_t i = 0; i < regex.size(); i++) {
+        if (regex[i] == '\\' && isRegexEscapeChar(regex[i + 1])) {
+            result += "\\";
+        }
+        result += regex[i];
+    }
+	return result;
+}
+
 [[noreturn]] void manageErrors(const std::string &line, unsigned long line_number) {
     size_t pos = line.find_first_of(' ');
     if (pos == std::string::npos) {
@@ -52,22 +78,22 @@ std::pair<LexmeList, LexmeList> readLexmes(FileHandler &files) {
                                   ErrorType::BnfError);
             }
 
-            if (lexeme_name[0] != '.') {
-                lexeme_names.emplace(lexeme_name);
-            } else {
+            if (lexeme_name[0] == '.') {
                 special_lexeme_names.emplace(lexeme_name);
                 lexeme_name[0] = '_';
+            } else {
+                lexeme_names.emplace(lexeme_name);
             }
 
             files << FileHandler::WriteMode::HPP
-                  << "const std::regex " + lexeme_name + "_ = std::regex(\"" + lexme_regex + "\");"
+                  << "const std::regex " + lexeme_name + "_ = std::regex(" + escapeRegexSpetialChar(lexme_regex) + ");"
                   << std::endl;
         } else {
             if (auto nameMatch = ctre::starts_with<LEXME_NAME_REGEX>(line)) {
                 throw SyntaxError("Invalid lexeme regex", files.getCurrentLineNumber(),
                                   nameMatch.size() + 1, line.size(), ErrorType::RegexError);
             }
-			manageErrors(line, files.getCurrentLineNumber());
+            manageErrors(line, files.getCurrentLineNumber());
         }
     }
 
