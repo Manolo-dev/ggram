@@ -192,8 +192,10 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
                 default:
                     throw InvalidSyntax("none", "Invalid syntax");
             }
-            result +=
-                prefix + rule_combination[i].substr(1, rule_combination[i].size() - 2) + suffix;
+            std::string sub = prefix + rule_combination[i].substr(1, rule_combination[i].size() - 2) + suffix;
+            result += sub;
+            
+            std::cout << sub << std::endl;
 
             if(i >= rule_combination.size() - 1) {
                 continue;
