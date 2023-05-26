@@ -1,4 +1,5 @@
 #include "rules/rules.hpp"
+#include <regex>
 
 struct PairRuleFunction {
     PairRuleFunction(const std::string &name, const std::string &functionName)
@@ -87,8 +88,6 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
                        "    SEARCH(\"" +
                        name + "\")\n"};
 
-    std::string prefix;
-    std::string suffix;
     for (std::vector<std::string> &rule_combination : generateCombinations(rule)) {
         result += "    current.clear();\n"
                   "    if(";
@@ -102,37 +101,35 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
             it_end) otherwise : INVALID_SYNTAX
             */
 
-            switch (rule_combination[i][0]) {
-                case '{':
-                    if (rule_combination[i].back() != '}') {
-                        throw SyntaxError("Missing '}'");
-                    }
-                    prefix = "_pop_while(";
-                    prefix += POP_FUNCTION_PREFIX;
-                    suffix = ", current)";
-                    break;
+            struct pattern {
+                std::string pattern;
+                std::string replacement;
+            };
 
-                case '<':
-                    if (rule_combination[i].back() != '>') {
-                        throw SyntaxError("Missing '>'");
-                    }
-                    prefix = POP_FUNCTION_PREFIX;
-                    suffix = "(createNext(current))";
-                    break;
+            std::vector<pattern> patterns = {
+                {R"-(\{([a-zA-Z0-9_]+)\})-", R"-(_pop_while(pop_$1, current))-"},
+                {R"-(<([a-zA-Z_][a-zA-Z0-9_]*)>)-", R"-(pop_$1(createNext(current)))-"},
+                {R"-(\"([^\"]*)\")-", R"-(_pop_value("$1", createNext(current)))-"},
+                {R"-(:([a-zA-Z_][a-zA-Z0-9_]*))-", R"-(cgg::$1(it_cur, it_end))-"},
+            };
 
-                case '"':
-                    if (rule_combination[i].back() != '"' || rule_combination[i].size() < 2) {
-                        throw SyntaxError("Missing '\"'");
-                    }
-                    prefix = "_pop_value(\"";
-                    suffix = "\", createNext(current))";
+            std::string rule_element = rule_combination[i];
+            bool found = false;
+            for (pattern &p : patterns) {
+                std::smatch m;
+                if (std::regex_match(rule_element, m, std::regex(p.pattern))
+                    && m.str().size() == rule_element.size()) {
+                    rule_element = std::regex_replace(rule_element, std::regex(p.pattern), p.replacement);
+                    found = true;
                     break;
-
-                default:
-                    throw SyntaxError("Invalid syntax");
+                }
             }
-            result +=
-                prefix + rule_combination[i].substr(1, rule_combination[i].size() - 2) + suffix;
+
+            if (!found) {
+                throw SyntaxError("Invalid syntax", 0);
+            }
+
+            result += rule_element;
 
             if (i >= rule_combination.size() - 1) {
                 continue;
