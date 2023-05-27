@@ -1,11 +1,11 @@
-function "\\b(int|sum|dx|sin|cos|tan|cot|sec|csc|ln|log|sqrt|abs|exp)\\b"
-const "\\b(pi|e)\\b"
+function "\b(int|sum|dx|sin|cos|tan|cot|sec|csc|ln|log|sqrt|abs|exp)\b"
+const "\b(pi|e)\b"
 var "[a-z]"
 int "[1-9][0-9]*|0"
-float "[1-9][0-9]*|0\\.(0*[1-9])+"
-operator "[+*/-\\^]"
-parentheses "[\\[()\\]]"
-.ignore "[ \\n\\r\\t]+"
+float "[1-9][0-9]*|0\.(0*[1-9])+"
+operator "[+*/-\^]"
+parentheses "[\[()\]]"
+.ignore "[ \n\r\t]+"
 
 ---
 

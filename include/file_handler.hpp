@@ -1,4 +1,6 @@
-#include "error.hpp"
+#pragma once
+
+#include "error/file_errors.hpp"
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -29,14 +31,20 @@ class FileHandler {
   public:
     /**
      * @brief Write mode is used to determine which file to write to
-     * 		  with the overloaded operator<< in the FileWriter class
+     *           with the overloaded operator<< in the FileWriter class
      *
      * @see FileWriter
      */
     enum class WriteMode { CPP, HPP };
 
     FileHandler();
+    FileHandler(const FileHandler &) = delete;
+    FileHandler(const FileHandler &&) noexcept = delete;
+    FileHandler &operator=(const FileHandler &) = delete;
+    FileHandler &operator=(const FileHandler &&) noexcept = delete;
+
     ~FileHandler();
+
     /**
      * @brief Closes all files
      *
@@ -44,11 +52,17 @@ class FileHandler {
     void close();
 
     /**
+     * @brief reset the input file to the beginning
+     *
+     */
+    void reset();
+
+    /**
      * @brief Opens all files
      *
      * @param input_path path to the input file
-     * @param cpp_out_path path to the cpp file used for output
-     * @param hpp_out_path path to the hpp file used for output
+     * @param cpp_out_path path to the cpp file used foroutput
+     * @param hpp_out_path path to the hpp file used foroutput
      */
     void open(const std::filesystem::path &input_path, const std::filesystem::path &cpp_out_path,
               const std::filesystem::path &hpp_out_path);
@@ -57,7 +71,7 @@ class FileHandler {
      * @brief Overloaded operator<< to write to a file
      *
      * @param mode WriteMode to determine which file to write to
-     * 			   i.e. CPP or HPP file
+     *                i.e. CPP or HPP file
      * @return FileWriter the FileWriter object to write to the file
      * @see FileWriter
      */
@@ -73,11 +87,23 @@ class FileHandler {
     bool getline(std::string &line);
 
     /**
+     * @brief Reads a line from the input file at a specific line number
+     *
+     * @param line the line to read into
+     * @param line_number the line number to read
+     * @return true if a line was read
+     * @return false if the end of the file was reached before the specified line number
+     */
+    bool getline(std::string &line, unsigned long line_number);
+
+    unsigned long getCurrentLineNumber() const;
+
+    /**
      * @brief copy the content of a file to the output file
      *
      * @param input_path path to the input file
      * @param mode WriteMode to determine which file to write to
-     * 			   i.e. CPP or HPP file
+     *                i.e. CPP or HPP file
      */
     void copy(const std::string &input_path, WriteMode mode);
 
@@ -89,7 +115,7 @@ class FileHandler {
      * @brief get the file to write to based on the WriteMode
      *
      * @param mode WriteMode to determine which we want to write to
-     * 			   i.e. CPP or HPP file
+     *                i.e. CPP or HPP file
      * @return std::ofstream& the file to write to
      */
     std::ofstream &get_file(WriteMode mode);
@@ -97,4 +123,6 @@ class FileHandler {
     std::ifstream input_file;
     std::ofstream out_cpp;
     std::ofstream out_hpp;
+
+    unsigned long line_number = 0;
 };

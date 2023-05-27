@@ -1,5 +1,4 @@
 #include "input_handler.hpp"
-#include "error.hpp"
 #include "version.hpp"
 
 namespace InputHandler {
@@ -84,7 +83,7 @@ const ParameterHandler *getHandlerFromAnyID(const std::string_view &id) {
  * PARAMETER_LIST */
 /*                    in order to update the default configuration */
 /******************************************************************************************/
-void handleParameters(const std::vector<std::string> &args, Configuration &cfg) {
+bool handleParameters(const std::vector<std::string> &args, Configuration &cfg) noexcept {
     if (args.size() == 1) {
         help({}, cfg);
     }
@@ -100,12 +99,14 @@ void handleParameters(const std::vector<std::string> &args, Configuration &cfg) 
     const ParameterHandler *handler_ptr = nullptr;
     std::string remaining;
     while (i < args.size()) {
-        // argv[i] is a parameter name, because if not
+        // argv[i] is a parameter name, because ifnot
         // it would have been added to the precedent arg_list
         handler_ptr = getHandlerFromParam(args.at(i), remaining);
 
         if (handler_ptr == nullptr) {
-            throw InputError("Unknown Parameter : " + std::string(args.at(i)));
+            std::cerr << "Unknown Parameter : " + std::string(args.at(i)) << std::endl;
+            help({}, cfg);
+            return false;
         }
 
         arg_list.clear();
@@ -117,17 +118,22 @@ void handleParameters(const std::vector<std::string> &args, Configuration &cfg) 
             arg_list.emplace_back(args.at(i));
             i++;
         }
-
-        handler_ptr->update_configuration(arg_list, cfg);
+        try {
+            handler_ptr->update_configuration(arg_list, cfg);
+        } catch (const ArgumentError &e) {
+            std::cerr << e.what() << std::endl;
+            return false;
+        }
     }
+    return true;
 }
 
 void check_arg_list_size(const ArgList &list, const size_t min_val, const size_t max_val) {
     if (list.size() > max_val) {
-        throw InputError("Too many arguments");
+        throw ArgumentError("Too many arguments");
     }
     if (list.size() < min_val) {
-        throw InputError("Missing arguments");
+        throw ArgumentError("Missing arguments");
     }
 }
 // ----------------- Default Parameter Handler ----------------- //
@@ -172,14 +178,16 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
     if (arg_list.size() == 1) {
         const ParameterHandler *param_ptr = getHandlerFromAnyID(arg_list[0]);
         if (param_ptr == nullptr) {
-            throw InputError("Unknown Parameter :\"" + arg_list[0] + "\"");
+            throw ArgumentError("Unknown Parameter :\"" + arg_list[0] + "\"");
         }
         std::cout << *param_ptr;
     } else if (arg_list.empty()) {
+        std::cout << "Usage: ggram input_file [options]" << std::endl;
         for (const ParameterHandler &param : PARAMETER_LIST) {
             std::cout << param;
         }
     }
+    std::cout << std::endl;
     exit(0);
 }
 
@@ -200,8 +208,8 @@ void outputFile(const ArgList &arg_list, Configuration &cfg) {
         std::filesystem::path filepath = arg_list[0];
         if (filepath.has_extension() && filepath.extension() != ".cpp" &&
             filepath.extension() != ".hpp" && filepath.extension() != ".h") {
-            throw InputError("Invalid file extention for an output file : '" +
-                             filepath.extension().string() + "'");
+            throw ArgumentError("Invalid file extention foran output file : '" +
+                                filepath.extension().string() + "'");
         }
         const std::string header_extension = (filepath.extension() == "h") ? "h" : "hpp";
 
@@ -212,8 +220,8 @@ void outputFile(const ArgList &arg_list, Configuration &cfg) {
         std::filesystem::path const filepath0 = arg_list[0];
         std::filesystem::path const filepath1 = arg_list[1];
         if (filepath0.extension() != ".cpp" && filepath1.extension() != ".cpp") {
-            throw InputError("Neither of the two output files "
-                             "specified is a .cpp file !");
+            throw ArgumentError("Neither of the two output files "
+                                "specified is a .cpp file !");
         }
         if (filepath0.extension() == ".cpp") {
             cfg.output_filepath_cpp = filepath0;
@@ -224,23 +232,9 @@ void outputFile(const ArgList &arg_list, Configuration &cfg) {
         }
         if (cfg.output_filepath_hpp.extension() != ".hpp" &&
             cfg.output_filepath_hpp.extension() != ".h") {
-            throw InputError("Neither of the two output files specified is a "
-                             ".hpp/.h file !");
+            throw ArgumentError("Neither of the two output files specified is a "
+                                ".hpp/.h file !");
         }
-    }
-}
-
-void resultParserType(const ArgList &arg_list, Configuration &cfg) {
-    check_arg_list_size(arg_list, 1, 1);
-    const std::string arg = arg_list[0];
-    if (arg == "TRY_CATCHS" || arg == "tc") {
-        cfg.result_type = ResultType::TRY_CATCHS;
-    } else if (arg == "ORS" || arg == "or") {
-        cfg.result_type = ResultType::ORS;
-    } else if (arg == "ERROR_TOKEN" || arg == "etk") {
-        cfg.result_type = ResultType::ERROR_TOKEN;
-    } else {
-        throw InputError("Invalid argument :" + arg);
     }
 }
 } // namespace InputHandler

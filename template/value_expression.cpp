@@ -8,7 +8,7 @@ IT it_err; // Iterator for the bad token for error handling
  * @param v
  * @return T&
  */
-template<typename T> T& createNext(std::vector<T> &v) {
+template<typename T> T &createNext(std::vector<T> &v) {
     v.emplace_back();
     return v.back();
 }
@@ -23,15 +23,14 @@ typedef bool (*popfunction)(Token &);
 bool _pop_while(popfunction pop, std::vector<Token> &master) {
     SEARCH("while")
     Token c;
-    if(pop(c)) {
+    if (pop(c)) {
         FAILED("while")
         it_err = it_cur;
         return true;
     }
     master += c.children();
-    while(it_cur != it_end) {
-        LOOP
-        if(pop(c)) break;
+    while (it_cur != it_end) {
+        LOOP if (pop(c)) break;
         master += c.children();
     }
     FOUND("while")
@@ -39,14 +38,14 @@ bool _pop_while(popfunction pop, std::vector<Token> &master) {
 }
 
 /**
- * @brief Check if the current token has the right value
+ * @brief Check ifthe current token has the right value
  * @param val
  * @param master
  * @return bool
  */
-bool _pop_value(const std::string& val, Token &master) {
+bool _pop_value(const std::string &val, Token &master) {
     SEARCH("value :" << val)
-    if(it_cur == it_end || it_cur->value() != val) {
+    if (it_cur == it_end || it_cur->value() != val) {
         FAILED("value: " << (it_cur == it_end ? "EOF" : it_cur->value()))
         it_err = it_cur;
         return true;
@@ -58,14 +57,14 @@ bool _pop_value(const std::string& val, Token &master) {
 }
 
 /**
- * @brief Check if the current token has the right type
+ * @brief Check ifthe current token has the right type
  * @param val
  * @param master
  * @return bool
  */
-bool _pop_type(const std::string& val, Token &master) {
+bool _pop_type(const std::string &val, Token &master) {
     SEARCH("type : " << val)
-    if(it_cur == it_end || it_cur->type() != val) {
+    if (it_cur == it_end || it_cur->type() != val) {
         FAILED("type: " << (it_cur == it_end ? "EOF" : it_cur->type()))
         it_err = it_cur;
         return true;
@@ -76,14 +75,14 @@ bool _pop_type(const std::string& val, Token &master) {
     return false;
 }
 
-Token parse(std::vector<Token>& tokens){
+Token parse(std::vector<Token> &tokens) {
     it_cur = tokens.begin();
     it_end = tokens.end();
     Token tree;
-    if(pop_program(tree)){
+    if (pop_program(tree)) {
         throw syntax_error(it_err);
     }
-    if(it_cur != it_end){
+    if (it_cur != it_end) {
         throw syntax_error(it_cur);
     }
     return tree;

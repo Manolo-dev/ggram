@@ -1,12 +1,10 @@
 
-
+/**
+ * @brief Lex the code
+ * @param code
+ * @return std::vector<Token>
+ */
 std::vector<Token> lex(std::string code) {
-    /**
-     * @brief Lex the code
-     * @param code
-     * @return std::vector<Token>
-     */
-
     std::vector<Token> tokens{}; // Vector of tokens
     int column = 0;
     int line = 0;
@@ -17,7 +15,7 @@ std::vector<Token> lex(std::string code) {
         // If no lexeme match, we raise an error
         bool found = false;
         for (const Lexeme &lexeme : LEXEME_LIST) {
-            const std::regex current_regex(lexeme.regex); // Regex for the current lexeme
+            const std::regex current_regex(lexeme.regex); // Regex forthe current lexeme
             std::smatch match;
             // Try to match current regex at the beginning of the remaining code
             if (regex_search(code, match, current_regex,

@@ -8,6 +8,7 @@ FileWriter &FileWriter::operator<<(std::ostream &(*os)(std::ostream &)) {
 }
 
 FileHandler::FileHandler() = default;
+
 FileHandler::~FileHandler() {
     close();
 }
@@ -16,6 +17,11 @@ void FileHandler::close() {
     input_file.close();
     out_cpp.close();
     out_hpp.close();
+}
+
+void FileHandler::reset() {
+    input_file.clear();
+    input_file.seekg(0, std::ios::beg);
 }
 
 void FileHandler::open(const std::filesystem::path &input_path,
@@ -63,7 +69,27 @@ FileWriter FileHandler::operator<<(WriteMode mode) {
 }
 
 bool FileHandler::getline(std::string &line) {
+    line_number++;
     return bool(std::getline(input_file, line));
+}
+
+bool FileHandler::getline(std::string &line, unsigned long line_number) {
+    if (this->line_number > line_number) {
+        reset();
+    } else {
+        line_number -= this->line_number;
+    }
+    for (unsigned long i = 0; i < line_number; i++) {
+        if (!std::getline(input_file, line)) {
+            return false;
+        }
+    }
+
+    return getline(line);
+}
+
+unsigned long FileHandler::getCurrentLineNumber() const {
+    return line_number;
 }
 
 void FileHandler::copy(const std::string &input_path, WriteMode mode) {

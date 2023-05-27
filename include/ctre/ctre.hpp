@@ -1,3 +1,4 @@
+// NOLINTBEGIN
 /*
                                  Apache License
                            Version 2.0, January 2004
@@ -5726,3 +5727,4 @@ template <typename A, typename B> constexpr auto operator>>(ctre::regular_expres
 #endif
 
 #endif
+// NOLINTEND
