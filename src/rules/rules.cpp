@@ -8,6 +8,11 @@ struct PairRuleFunction {
     std::string function;
 };
 
+struct PatternParser {
+    std::string pattern;
+    std::string replacement;
+};
+
 inline std::vector<std::string> getInsideBrackets(const std::vector<std::string> &tree, size_t &i,
                                                   const std::string_view &open_bracket,
                                                   const std::string_view &closed_bracket) {
@@ -101,12 +106,7 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
             it_end) otherwise : INVALID_SYNTAX
             */
 
-            struct pattern {
-                std::string pattern;
-                std::string replacement;
-            };
-
-            std::vector<pattern> patterns = {
+            std::vector<PatternParser> patterns = {
                 {R"-(\{([a-zA-Z0-9_]+)\})-", R"-(_pop_while(pop_$1, current))-"},
                 {R"-(<([a-zA-Z_][a-zA-Z0-9_]*)>)-", R"-(pop_$1(createNext(current)))-"},
                 {R"-(\"([^\"]*)\")-", R"-(_pop_value("$1", createNext(current)))-"},
@@ -115,7 +115,7 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 
             std::string rule_element = rule_combination[i];
             bool found = false;
-            for (pattern &p : patterns) {
+            for (PatternParser &p : patterns) {
                 std::smatch m;
                 if (std::regex_match(rule_element, m, std::regex(p.pattern))
                     && m.str().size() == rule_element.size()) {

@@ -8,7 +8,7 @@
 #include <tuple>
 
 using MatchResult = std::optional<std::pair<std::string_view, size_t>>;
-using Matcher = std::function<MatchResult(std::string_view)>;
+typedef MatchResult (*Matcher)(std::string_view);
 
 enum class LexemeName {
     IGNORE,
@@ -23,7 +23,8 @@ enum class LexemeName {
     OPTION,
     ENDOPTION,
     STRING,
-    END
+    END,
+    LIBRARY,
 };
 
 static constexpr auto ignorePattern = ctll::fixed_string{R"-([ \n\r\s\t]+)-"};
@@ -131,18 +132,18 @@ constexpr MatchResult endMatcher(std::string_view str) {
 }
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-static const std::array<std::pair<LexemeName, Matcher>, 13> LEX_GGRAM_FILE{
-    {// iteration on that, that why it isn't map
-     {LexemeName::IGNORE, ignoreMatcher},
-     {LexemeName::COMMENT, commentMatcher},
-     {LexemeName::RULENAME, ruleNameMatcher},
-     {LexemeName::ASSIGN, assignMatcher},
-     {LexemeName::OR, orMatcher},
-     {LexemeName::PARENTH, parenthMatcher},
-     {LexemeName::ENDPARENTH, endParenthMatcher},
-     {LexemeName::LOOP, loopMatcher},
-     {LexemeName::ENDLOOP, endLoopMatcher},
-     {LexemeName::OPTION, optionMatcher},
-     {LexemeName::ENDOPTION, endOptionMatcher},
-     {LexemeName::STRING, stringMatcher},
-     {LexemeName::END, endMatcher}}};
+static std::vector<std::pair<LexemeName, Matcher>> LEX_GGRAM_FILE = {
+    // iteration and append (for lib), that is why we use std::vector
+    {LexemeName::IGNORE, ignoreMatcher},
+    {LexemeName::COMMENT, commentMatcher},
+    {LexemeName::RULENAME, ruleNameMatcher},
+    {LexemeName::ASSIGN, assignMatcher},
+    {LexemeName::OR, orMatcher},
+    {LexemeName::PARENTH, parenthMatcher},
+    {LexemeName::ENDPARENTH, endParenthMatcher},
+    {LexemeName::LOOP, loopMatcher},
+    {LexemeName::ENDLOOP, endLoopMatcher},
+    {LexemeName::OPTION, optionMatcher},
+    {LexemeName::ENDOPTION, endOptionMatcher},
+    {LexemeName::STRING, stringMatcher},
+    {LexemeName::END, endMatcher}};

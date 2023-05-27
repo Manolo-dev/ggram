@@ -237,4 +237,36 @@ void outputFile(const ArgList &arg_list, Configuration &cfg) {
         }
     }
 }
+
+void libraryFile(const ArgList &arg_list, Configuration &/*unused*/) {
+    for(auto &arg : arg_list) {
+        void* libraryHandle = dlopen(arg.c_str(), RTLD_LAZY);
+
+        if (libraryHandle == nullptr) {
+            throw ArgumentError("Cannot open library: " + std::string(dlerror()));
+        }
+
+        typedef std::vector<std::string> (*AllMatcher)();
+
+        AllMatcher allMatcher = reinterpret_cast<AllMatcher>(dlsym(libraryHandle, "get_matchers"));
+
+        if (allMatcher == nullptr) {
+            throw ArgumentError("Cannot load symbol 'allMatcher': " + std::string(dlerror()));
+        }
+
+        std::vector<std::string> matchers = allMatcher();
+
+        for(auto &matcher : matchers) {
+            Matcher m = reinterpret_cast<Matcher>(dlsym(libraryHandle, matcher.c_str()));
+
+            if (m == nullptr) {
+                throw ArgumentError("Cannot load symbol '" + matcher + "': " + std::string(dlerror()));
+            }
+
+            LEX_GGRAM_FILE.push_back({LexemeName::LIBRARY, m});
+        }
+
+        dlclose(libraryHandle);
+    }
+}
 } // namespace InputHandler

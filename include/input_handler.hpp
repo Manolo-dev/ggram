@@ -1,12 +1,14 @@
 #pragma once
 
 #include "error/argument_error.hpp"
+#include "regex/regex.hpp"
 #include <array>
 #include <filesystem>
 #include <iostream>
 #include <string>
 #include <string_view>
 #include <vector>
+#include <dlfcn.h>
 
 /**
  * This is the part that handles inputs from the user, these are the steps to
@@ -115,8 +117,12 @@ void outputFile(const ArgList &arg_list, Configuration &cfg);
 constexpr ParameterHandler outputFile_description = {
     'o', nullptr, "takes the output .cpp file, forthe result (default : parser.cpp)", &outputFile};
 
+void libraryFile(const ArgList &arg_list, Configuration &cfg);
+constexpr ParameterHandler libraryFile_description = {
+    'l', nullptr, "takes the output .so file, to be used as a library", &libraryFile};
+
 // This is the list of all parameter handlers that will be tested on the input
 constexpr std::array<ParameterHandler, 6> PARAMETER_LIST = {
     eddyMalou_description, help_description, version_description, inputFile_description,
-    outputFile_description};
+    outputFile_description, libraryFile_description};
 } // namespace InputHandler
