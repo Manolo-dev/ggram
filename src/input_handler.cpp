@@ -238,7 +238,7 @@ void outputFile(const ArgList &arg_list, Configuration &cfg) {
     }
 }
 
-void libraryFile(const ArgList &arg_list, Configuration &/*unused*/) {
+void libraryFile(const ArgList &arg_list, Configuration &cfg) {
     for(auto &arg : arg_list) {
         void* libraryHandle = dlopen(arg.c_str(), RTLD_LAZY);
 
@@ -246,7 +246,8 @@ void libraryFile(const ArgList &arg_list, Configuration &/*unused*/) {
             throw ArgumentError("Cannot open library: " + std::string(dlerror()));
         }
 
-        typedef std::vector<std::string> (*AllMatcher)();
+        typedef std::vector<std::pair<std::string_view, Matcher>> PairAllMatcher;
+        typedef PairAllMatcher (*AllMatcher)();
 
         AllMatcher allMatcher = reinterpret_cast<AllMatcher>(dlsym(libraryHandle, "get_matchers"));
 
@@ -256,23 +257,11 @@ void libraryFile(const ArgList &arg_list, Configuration &/*unused*/) {
 
         dlerror();
 
-        std::vector<std::string> matchers = allMatcher();
+        PairAllMatcher matchers = allMatcher();
 
-        for(auto &matcher : matchers) {
-            Matcher m = reinterpret_cast<Matcher>(dlsym(libraryHandle, matcher.c_str()));
-
-            if (m == nullptr) {
-                throw ArgumentError("Cannot load symbol '" + matcher + "': " + std::string(dlerror()));
-            }
-
-            dlerror();
-
-            LEX_GGRAM_FILE.push_back({LexemeName::LIBRARY, m});
+        for (auto &pair : matchers) {
+            cfg.lex_ggram_file.push_back(pair);
         }
-
-        std::cout << LEX_GGRAM_FILE.size() << std::endl;
-
-        dlclose(libraryHandle);
     }
 }
 } // namespace InputHandler

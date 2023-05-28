@@ -1,4 +1,5 @@
 #include "rules/rules.hpp"
+#include "input_handler.hpp"
 #include <regex>
 
 struct PairRuleFunction {
@@ -163,14 +164,12 @@ void addRulePopFunctions(const Rule &rule, const std::string &name,
     result.emplace_back(name, generateSimpleRulePopFunction(newRule, name));
 }
 
-std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files) {
+std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, InputHandler::Configuration &cfg) {
     std::vector<std::pair<std::string, Rule>> rules;
     std::vector<std::string> allRuleNames;
     std::string line;
     Rule currentRule;
-    std::stack<LexemeName> brackets;
-
-    std::cout << LEX_GGRAM_FILE.size() << std::endl;
+    std::stack<std::string_view> brackets;
 
     while (files.getline(line)) {
         if (line[0] == '#' || line.empty()) {
@@ -184,69 +183,18 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files) {
         bool match_found = false;
         while (!line_view.empty()) {
             match_found = false;
-            for (size_t i = 0; i < LEX_GGRAM_FILE.size() && !match_found; i++) {
-                const auto &[name, matcher] = LEX_GGRAM_FILE.at(i);
+            for (const auto &[name, matcher] : cfg.lex_ggram_file) {
+                if (match_found) break;
+                if (matcher == nullptr) throw std::runtime_error("Matcher is null");
                 const MatchResult result = matcher(line_view);
-                if (result == std::nullopt) {
-                    continue;
-                }
+                if (result == std::nullopt) continue;
+
+                
+                
                 match_found = true;
                 const auto &match = result.value();
-                if (name == LexemeName::IGNORE || name == LexemeName::COMMENT) {
-                    line_view = line_view.substr(match.second);
-                } else if (name == LexemeName::END) {
-                    if (currentRule.size() < 2) {
-                        throw SyntaxError("Expected rule name", files.getCurrentLineNumber());
-                    }
-                    if (!brackets.empty()) {
-                        throw SyntaxError("Expected ')', '}' or ']'", files.getCurrentLineNumber());
-                    }
-                    rules.emplace_back(currentRule[0].substr(1, currentRule[0].size() - 2),
-                                       Rule(currentRule.begin() + 2, currentRule.end()));
-                    allRuleNames.push_back(currentRule[0]);
-                    line_view = line_view.substr(match.second);
-                    currentRule.clear();
-                } else {
-                    const std::string &match_str = std::string(match.first);
-                    if (currentRule.empty() && name != LexemeName::RULENAME) {
-                        throw SyntaxError("Expected rule name", files.getCurrentLineNumber());
-                    }
-                    if (currentRule.size() == 1 && name != LexemeName::ASSIGN) {
-                        throw SyntaxError("Expected '::='", files.getCurrentLineNumber());
-                    }
-                    if (currentRule.empty() && find(allRuleNames.begin(), allRuleNames.end(),
-                                                    match_str) != allRuleNames.end()) {
-                        throw SyntaxError("Rule '" + match_str + "' already defined",
-                                          files.getCurrentLineNumber());
-                    }
-                    if (name == LexemeName::PARENTH || name == LexemeName::LOOP ||
-                        name == LexemeName::OPTION) {
-                        brackets.push(name);
-                    } else if (name == LexemeName::ENDPARENTH || name == LexemeName::ENDLOOP ||
-                               name == LexemeName::ENDOPTION) {
-                        if (name == LexemeName::ENDPARENTH &&
-                            brackets.top() != LexemeName::PARENTH) {
-                            throw SyntaxError("Unexpected '" + match_str + "'",
-                                              files.getCurrentLineNumber());
-                        }
-                        if (brackets.empty()) {
-                            throw SyntaxError("Unexpected '" + match_str + "'",
-                                              files.getCurrentLineNumber());
-                        }
-                        if (name == LexemeName::ENDLOOP && brackets.top() != LexemeName::LOOP) {
-                            throw SyntaxError("Unexpected '" + match_str + "'",
-                                              files.getCurrentLineNumber());
-                        }
-                        if (name == LexemeName::ENDOPTION && brackets.top() != LexemeName::OPTION) {
-                            throw SyntaxError("Unexpected '" + match_str + "'",
-                                              files.getCurrentLineNumber());
-                        }
-                        brackets.pop();
-                    }
-
-                    currentRule.push_back(match_str);
-                    line_view = line_view.substr(match.second);
-                }
+                const std::string &match_str = std::string(match.first);
+                line_view = line_view.substr(match.second);
             }
             if (!match_found) {
                 throw SyntaxError("Unexpected token", files.getCurrentLineNumber());

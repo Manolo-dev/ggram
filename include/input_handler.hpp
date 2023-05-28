@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <map>
 #include <dlfcn.h>
 
 /**
@@ -30,6 +31,35 @@ struct Configuration {
     std::string input_filename;
     std::filesystem::path output_filepath_cpp = "parser.cpp";
     std::filesystem::path output_filepath_hpp = "parser.hpp";
+    std::vector<std::pair<std::string_view, Matcher>> lex_ggram_file = {
+    // iteration and append (for lib), that is why we use std::vector
+        {"IGNORE", ignoreMatcher},
+        {"COMMENT", commentMatcher},
+        {"RULENAME", ruleNameMatcher},
+        {"ASSIGN", assignMatcher},
+        {"OR", orMatcher},
+        {"PARENTH", parenthMatcher},
+        {"ENDPARENTH", endParenthMatcher},
+        {"LOOP", loopMatcher},
+        {"ENDLOOP", endLoopMatcher},
+        {"OPTION", optionMatcher},
+        {"ENDOPTION", endOptionMatcher},
+        {"STRING", stringMatcher},
+        {"END", endMatcher}};
+    std::vector<std::pair<std::string_view, Parser>> parse_ggram_file = {
+        {"IGNORE", ignoreParser},
+        {"COMMENT", commentParser},
+        {"RULENAME", ruleNameParser},
+        {"ASSIGN", assignParser},
+        {"OR", orParser},
+        {"PARENTH", parenthParser},
+        {"ENDPARENTH", endParenthParser},
+        {"LOOP", loopParser},
+        {"ENDLOOP", endLoopParser},
+        {"OPTION", optionParser},
+        {"ENDOPTION", endOptionParser},
+        {"STRING", stringParser},
+        {"END", endParser}};
 };
 
 // UpdateConfigFunction is intended to update the configuration
