@@ -10,9 +10,9 @@ extern "C" {
         return {"funMatcher"};
     }
 
-    static constexpr auto endPattern = ctll::fixed_string{R"-(:([a-zA-Z][a-zA-Z0-9_]*))-"};
-    constexpr MatchResult funMatcher(std::string_view str) {
-        if (auto match = ctre::starts_with<endPattern>(str); match) {
+    static constexpr auto funPattern = ctll::fixed_string{R"-(:([a-zA-Z][a-zA-Z0-9_]*))-"};
+    MatchResult funMatcher(std::string_view str) {
+        if (auto match = ctre::starts_with<funPattern>(str); match) {
             return std::make_pair(match.get<0>().to_view(), match.size());
         }
         return std::nullopt;

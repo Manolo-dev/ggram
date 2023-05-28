@@ -11,4 +11,4 @@ eq "="
 <expr> ::= <id> "=" <expr>
     | <term> [ { <op> <term> } ] ;
 
-<term> ::= <id> | <int> ;
+<term> ::= <id> | <int> :aaa ;

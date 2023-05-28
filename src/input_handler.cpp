@@ -159,13 +159,13 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
 [[noreturn]] void eddyMalou(const ArgList &arg_list, Configuration & /*unused*/) {
     check_arg_list_size(arg_list, 0, 0);
     std::cout << "On ne peut pas parler de politique administrative scientifique,"
-              << " le colloque à l'égard de la complexité doit vanter les "
+                 " le colloque à l'égard de la complexité doit vanter les "
                  "encadrés "
                  "avec la formule 1+(2x5), mais oui."
-              << " Pour emphysiquer l'animalculisme, la congolexicomatisation "
+                 " Pour emphysiquer l'animalculisme, la congolexicomatisation "
                  "par "
                  "rapport aux diplomaties peut aider"
-              << " le conpemdium autour des gens qui connaissent beaucoup de "
+                 " le conpemdium autour des gens qui connaissent beaucoup de "
                  "choses, "
                  "tu sais ça."
               << std::endl;
@@ -254,6 +254,8 @@ void libraryFile(const ArgList &arg_list, Configuration &/*unused*/) {
             throw ArgumentError("Cannot load symbol 'allMatcher': " + std::string(dlerror()));
         }
 
+        dlerror();
+
         std::vector<std::string> matchers = allMatcher();
 
         for(auto &matcher : matchers) {
@@ -263,8 +265,12 @@ void libraryFile(const ArgList &arg_list, Configuration &/*unused*/) {
                 throw ArgumentError("Cannot load symbol '" + matcher + "': " + std::string(dlerror()));
             }
 
+            dlerror();
+
             LEX_GGRAM_FILE.push_back({LexemeName::LIBRARY, m});
         }
+
+        std::cout << LEX_GGRAM_FILE.size() << std::endl;
 
         dlclose(libraryHandle);
     }

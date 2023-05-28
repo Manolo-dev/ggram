@@ -170,6 +170,8 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files) {
     Rule currentRule;
     std::stack<LexemeName> brackets;
 
+    std::cout << LEX_GGRAM_FILE.size() << std::endl;
+
     while (files.getline(line)) {
         if (line[0] == '#' || line.empty()) {
             continue;
