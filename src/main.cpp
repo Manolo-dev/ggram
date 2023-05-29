@@ -11,18 +11,18 @@ void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files)
     files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);
 
     // Step 2: Compute the module part
-	//   syntax still to decide, but kiss
+    //   syntax still to decide, but kiss
 
-	// Step 3: Compute the lexer part
-	//    
-	//    return a list of couples (name, regex)
-	//  Lex the 
+    // Step 3: Compute the lexer part
+    //
+    //    return a list of couples (name, regex)
+    //  Lex the
 
-	// Step 4: Compute the parser part
-	// 
+    // Step 4: Compute the parser part
+    //
 
-	// Step 5: Generate the code
-	//
+    // Step 5: Generate the code
+    //
 
     files.copy("template/head.hpp", FileHandler::WriteMode::HPP);
 

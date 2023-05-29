@@ -27,9 +27,9 @@ int main(int argc, char const **argv) {
         std::ifstream t(argv[1]);
         code = std::string((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
     } else {
-		std::cout << "Usage: " << argv[0] << " [file]" << std::endl;
-		return 1;
-	}
+        std::cout << "Usage: " << argv[0] << " [file]" << std::endl;
+        return 1;
+    }
 
     microseconds duration(0);
     for (int i = 0; i < 100; i++) {

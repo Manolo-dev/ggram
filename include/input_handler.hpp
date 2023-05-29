@@ -2,14 +2,15 @@
 
 #include "error/argument_error.hpp"
 #include "regex/regex.hpp"
+#include "utils.hpp"
 #include <array>
+#include <dlfcn.h>
 #include <filesystem>
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
-#include <map>
-#include <dlfcn.h>
 
 /**
  * This is the part that handles inputs from the user, these are the steps to
@@ -25,41 +26,28 @@
 namespace InputHandler {
 // These lists contains the arguments recieved fora given parameter
 using ArgList = std::vector<std::string>;
+using LexerRule = std::tuple<std::string, Matcher, Parser>;
 
 // The configuration, will contain everything we got from the input arguments
 struct Configuration {
     std::string input_filename;
     std::filesystem::path output_filepath_cpp = "parser.cpp";
     std::filesystem::path output_filepath_hpp = "parser.hpp";
-    std::vector<std::pair<std::string_view, Matcher>> lex_ggram_file = {
-    // iteration and append (for lib), that is why we use std::vector
-        {"IGNORE", ignoreMatcher},
-        {"COMMENT", commentMatcher},
-        {"RULENAME", ruleNameMatcher},
-        {"ASSIGN", assignMatcher},
-        {"OR", orMatcher},
-        {"PARENTH", parenthMatcher},
-        {"ENDPARENTH", endParenthMatcher},
-        {"LOOP", loopMatcher},
-        {"ENDLOOP", endLoopMatcher},
-        {"OPTION", optionMatcher},
-        {"ENDOPTION", endOptionMatcher},
-        {"STRING", stringMatcher},
-        {"END", endMatcher}};
-    std::map<std::string_view, Parser> parse_ggram_file = {
-        {"IGNORE", ignoreParser},
-        {"COMMENT", commentParser},
-        {"RULENAME", ruleNameParser},
-        {"ASSIGN", assignParser},
-        {"OR", orParser},
-        {"PARENTH", parenthParser},
-        {"ENDPARENTH", endParenthParser},
-        {"LOOP", loopParser},
-        {"ENDLOOP", endLoopParser},
-        {"OPTION", optionParser},
-        {"ENDOPTION", endOptionParser},
-        {"STRING", stringParser},
-        {"END", endParser}};
+    std::vector<LexerRule> lex_ggram_file = {
+        // iteration and append (for lib), that is why we use std::vector
+        {"IGNORE", ignoreMatcher, ignoreParser},
+        {"COMMENT", commentMatcher, commentParser},
+        {"RULENAME", ruleNameMatcher, ruleNameParser},
+        {"ASSIGN", assignMatcher, assignParser},
+        {"OR", orMatcher, orParser},
+        {"PARENTH", parenthMatcher, parenthParser},
+        {"ENDPARENTH", endParenthMatcher, endParenthParser},
+        {"LOOP", loopMatcher, loopParser},
+        {"ENDLOOP", endLoopMatcher, endLoopParser},
+        {"OPTION", optionMatcher, optionParser},
+        {"ENDOPTION", endOptionMatcher, endOptionParser},
+        {"STRING", stringMatcher, stringParser},
+        {"END", endMatcher, endParser}};
 };
 
 // UpdateConfigFunction is intended to update the configuration
@@ -153,6 +141,6 @@ constexpr ParameterHandler libraryFile_description = {
 
 // This is the list of all parameter handlers that will be tested on the input
 constexpr std::array<ParameterHandler, 6> PARAMETER_LIST = {
-    eddyMalou_description, help_description, version_description, inputFile_description,
-    outputFile_description, libraryFile_description};
+    eddyMalou_description, help_description,       version_description,
+    inputFile_description, outputFile_description, libraryFile_description};
 } // namespace InputHandler

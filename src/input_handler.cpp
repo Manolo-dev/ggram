@@ -192,9 +192,9 @@ void defaultParameterHandler(const ArgList &arg_list, Configuration &cfg) {
 }
 
 [[noreturn]] void version(const ArgList &arg_list, Configuration & /*unused*/) {
-	check_arg_list_size(arg_list, 0, 0);
-	std::cout << "version " << GGRAM_VERSION << std::endl;
-	exit(0);
+    check_arg_list_size(arg_list, 0, 0);
+    std::cout << "version " << GGRAM_VERSION << std::endl;
+    exit(0);
 }
 
 void inputFile(const ArgList &arg_list, Configuration &cfg) {
@@ -239,44 +239,25 @@ void outputFile(const ArgList &arg_list, Configuration &cfg) {
 }
 
 void libraryFile(const ArgList &arg_list, Configuration &cfg) {
-    for(auto &arg : arg_list) {
-        void* libraryHandle = dlopen(arg.c_str(), RTLD_LAZY);
+    for (const auto &arg : arg_list) {
+        void *libraryHandle = dlopen(arg.c_str(), RTLD_LAZY);
 
         if (libraryHandle == nullptr) {
             throw ArgumentError("Cannot open library: " + std::string(dlerror()));
         }
 
-        using PairAllMatcher = std::vector<std::pair<std::string_view, Matcher>>;
-        using AllMatcher = PairAllMatcher(*)();
-        using PairAllParser = std::vector<std::pair<std::string_view, Parser>>;
-        using AllParser = PairAllParser(*)();
+        using getLexerRules = std::vector<LexerRule> (*)();
 
-        AllMatcher allMatcher = reinterpret_cast<AllMatcher>(dlsym(libraryHandle, "get_matchers"));
+        const auto rulesImport =
+            reinterpret_cast<getLexerRules>(dlsym(libraryHandle, "getLexerRules"));
 
-        if (allMatcher == nullptr) {
-            throw ArgumentError("Cannot load symbol 'allMatcher': " + std::string(dlerror()));
+        if (rulesImport == nullptr) {
+            throw ArgumentError("Cannot load getLexerRules function: " + std::string(dlerror()));
         }
-
         dlerror();
 
-        PairAllMatcher matchers = allMatcher();
-
-        for (auto &pair : matchers) {
-            cfg.lex_ggram_file.push_back(pair);
-        }
-
-        AllParser allParser = reinterpret_cast<AllParser>(dlsym(libraryHandle, "get_parsers"));
-
-        if (allParser == nullptr) {
-            throw ArgumentError("Cannot load symbol 'allParser': " + std::string(dlerror()));
-        }
-
-        dlerror();
-
-        for (auto &pair : allParser()) {
-            cfg.parse_ggram_file[pair.first] = pair.second;
-        }
-        
+        auto rules = rulesImport();
+        extend(cfg.lex_ggram_file, rules);
     }
 }
 } // namespace InputHandler

@@ -107,7 +107,7 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
             it_end) otherwise : INVALID_SYNTAX
             */
 
-            std::vector<PatternParser> patterns = {
+            std::vector<PatternParser> const patterns = {
                 {R"-(\{([a-zA-Z0-9_]+)\})-", R"-(_pop_while(pop_$1, current))-"},
                 {R"-(<([a-zA-Z_][a-zA-Z0-9_]*)>)-", R"-(pop_$1(createNext(current)))-"},
                 {R"-(\"([^\"]*)\")-", R"-(_pop_value("$1", createNext(current)))-"},
@@ -116,11 +116,12 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 
             std::string rule_element = rule_combination[i];
             bool found = false;
-            for (PatternParser &p : patterns) {
+            for (PatternParser const &p : patterns) {
                 std::smatch m;
-                if (std::regex_match(rule_element, m, std::regex(p.pattern))
-                    && m.str().size() == rule_element.size()) {
-                    rule_element = std::regex_replace(rule_element, std::regex(p.pattern), p.replacement);
+                if (std::regex_match(rule_element, m, std::regex(p.pattern)) &&
+                    m.str().size() == rule_element.size()) {
+                    rule_element =
+                        std::regex_replace(rule_element, std::regex(p.pattern), p.replacement);
                     found = true;
                     break;
                 }
@@ -138,10 +139,12 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
             result += " || ";
         }
         result += ") it_cur = it_start;\n"
-                  "    else {master.children() += current; FOUND(\"" + name + "\") return false;};\n";
+                  "    else {master.children() += current; FOUND(\"" +
+                  name + "\") return false;};\n";
     }
-    result += "    FAILED(\"" + name + "\")\n"
-    		  "    return true;\n";
+    result += "    FAILED(\"" + name +
+              "\")\n"
+              "    return true;\n";
 
     return result;
 }
@@ -164,13 +167,14 @@ void addRulePopFunctions(const Rule &rule, const std::string &name,
     result.emplace_back(name, generateSimpleRulePopFunction(newRule, name));
 }
 
-std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, InputHandler::Configuration &cfg) {
+std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
+                                                    InputHandler::Configuration &cfg) {
     std::vector<std::pair<std::string, Rule>> rules;
-    std::vector<std::string> allRuleNames;
+    std::unordered_set<std::string> allRuleNames;
     std::string line;
     Rule currentRule;
+    std::string currentRuleName;
     std::stack<std::string_view> brackets;
-    std::string_view currentRuleName = "";
     bool assigned = false;
 
     while (files.getline(line)) {
@@ -182,27 +186,32 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, InputHan
                               files.getCurrentLineNumber());
         }
         std::string_view line_view = line;
+        std::string error;
         bool match_found = false;
         while (!line_view.empty()) {
             match_found = false;
-            for (const auto &[name, matcher] : cfg.lex_ggram_file) {
-                if (match_found) break;
-                if (matcher == nullptr) throw std::runtime_error("Matcher is null");
+            std::cout << "line_view : " << line_view << std::endl;
+            for (auto it = cfg.lex_ggram_file.begin();
+                 it != cfg.lex_ggram_file.end() && !match_found; it++) {
+                const auto &[name, matcher, parser] = *it;
+                if (matcher == nullptr) {
+                    throw std::runtime_error("Matcher is null");
+                }
                 const MatchResult result = matcher(line_view);
-                if (result == std::nullopt) continue;
+                if (result == std::nullopt) {
+                    continue;
+                }
 
                 const auto &match = result.value();
                 const std::string &match_str = std::string(match.first);
 
-                std::string error;
-                bool temp = cfg.parse_ggram_file[name](brackets, currentRule, allRuleNames, currentRuleName, assigned,
-                                           match_str, error, rules);
-                if(temp) {
+                bool const temp = parser(brackets, currentRule, allRuleNames, currentRuleName,
+                                         assigned, match_str, error, rules);
+                if (temp) {
                     throw SyntaxError(error, files.getCurrentLineNumber());
                 }
 
-                std::cout << "Name : " << currentRuleName << std::endl;
-
+                std::cout << "Name (for loop " << name << ") : " << currentRuleName << std::endl;
 
                 match_found = true;
                 line_view = line_view.substr(match.second);
@@ -216,9 +225,9 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, InputHan
         throw SyntaxError("Expected ';'", files.getCurrentLineNumber());
     }
     std::cout << "Rules:" << std::endl;
-    for(const auto &rule : rules) {
+    for (const auto &rule : rules) {
         std::cout << rule.first << " : ";
-        for(const auto &elem : rule.second) {
+        for (const auto &elem : rule.second) {
             std::cout << elem << " ";
         }
         std::cout << std::endl;
