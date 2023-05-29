@@ -9,7 +9,7 @@
 #include "rules/parser.hpp"
 #include "rules/rules.hpp"
 
-#define DEBUG_PARAMETERS "./test/test3.gg", "./test/out", "-l", "./libs/lib.so"
+#define DEBUG_PARAMETERS "./test/test2.gg", "./test/out", "-l", "./libs/lib.so"
 
 void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files) {
     files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);

@@ -6,9 +6,7 @@ test/*
 .vscode
 idea/*
 build/*
-test/parser.cpp
-test/output.hpp
-test/parser.hpp
+!libs/Makefile
 
 # Prerequisites
 *.d

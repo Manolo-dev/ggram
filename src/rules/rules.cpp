@@ -190,7 +190,6 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
         bool match_found = false;
         while (!line_view.empty()) {
             match_found = false;
-            std::cout << "line_view : " << line_view << std::endl;
             for (auto it = cfg.lex_ggram_file.begin();
                  it != cfg.lex_ggram_file.end() && !match_found; it++) {
                 const auto &[name, matcher, parser] = *it;
@@ -211,8 +210,6 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
                     throw SyntaxError(error, files.getCurrentLineNumber());
                 }
 
-                std::cout << "Name (for loop " << name << ") : " << currentRuleName << std::endl;
-
                 match_found = true;
                 line_view = line_view.substr(match.second);
             }
@@ -223,14 +220,6 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
     }
     if (!currentRule.empty()) {
         throw SyntaxError("Expected ';'", files.getCurrentLineNumber());
-    }
-    std::cout << "Rules:" << std::endl;
-    for (const auto &rule : rules) {
-        std::cout << rule.first << " : ";
-        for (const auto &elem : rule.second) {
-            std::cout << elem << " ";
-        }
-        std::cout << std::endl;
     }
     return rules;
 }
