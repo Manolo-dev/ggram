@@ -19,7 +19,7 @@ template<typename T> T &createNext(std::vector<T> &v) {
  * @param master
  * @return bool
  */
-typedef bool (*popfunction)(Token &);
+using popfunction = bool(*)(Token &);
 bool _pop_while(popfunction pop, std::vector<Token> &master) {
     SEARCH("while")
     Token c;

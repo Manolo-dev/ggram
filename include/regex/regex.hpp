@@ -2,16 +2,27 @@
 
 #include "ctre/ctre.hpp"
 #include "error/syntax_error.hpp"
+#include "global_defines.hpp"
 #include <array>
 #include <functional>
 #include <optional>
 #include <string>
 #include <tuple>
 #include <stack>
+#include <vector>
+#include <algorithm>
 
 using MatchResult = std::optional<std::pair<std::string_view, size_t>>;
-typedef MatchResult (*Matcher)(std::string_view);
-typedef void (*Parser)(std::stack<std::string_view> &, bool &, bool &, FileHandler &);
+using Matcher = MatchResult(*)(std::string_view);
+using Parser = bool(*)(
+    std::stack<std::string_view> &,
+    Rule &,
+    std::vector<std::string> &,
+    std::string_view &,
+    bool &,
+    const std::string &,
+    std::string &,
+    std::vector<std::pair<std::string, Rule>> &);
 
 static constexpr auto ignorePattern = ctll::fixed_string{R"-([ \n\r\s\t]+)-"};
 constexpr MatchResult ignoreMatcher(std::string_view str) {
@@ -20,9 +31,15 @@ constexpr MatchResult ignoreMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void ignoreParser(std::stack<std::string_view> &/*unused*/, bool &/*unused*/, bool &/*unused*/, FileHandler &/*unused*/) {
-    return;
-}
+[[maybe_unused]] bool ignoreParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &/*unused*/,
+    const std::string &/*unused*/,
+    std::string &/*unused*/,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto commentPattern = ctll::fixed_string{R"-(#.+$)-"};
 constexpr MatchResult commentMatcher(std::string_view str) {
@@ -31,9 +48,15 @@ constexpr MatchResult commentMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void commentParser(std::stack<std::string_view> &/*unused*/, bool &/*unused*/, bool &/*unused*/, FileHandler &/*unused*/) {
-    return;
-}
+[[maybe_unused]] bool commentParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &/*unused*/,
+    const std::string &/*unused*/,
+    std::string &/*unused*/,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto ruleNamePattern = ctll::fixed_string{R"-(<[a-zA-Z][a-zA-Z0-9_]*>)-"};
 constexpr MatchResult ruleNameMatcher(std::string_view str) {
@@ -42,16 +65,15 @@ constexpr MatchResult ruleNameMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void ruleNameParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        if (brackets.empty()) {
-            named = true;
-            return;
-        } else {
-            throw SyntaxError("Expected rule name", files.getCurrentLineNumber());
-        }
-    }
-}
+[[maybe_unused]] bool ruleNameParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &currentRule,
+    std::vector<std::string> &allRuleNames,
+    std::string_view &currentRuleName,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto assignPattern = ctll::fixed_string{R"-(::=)-"};
 constexpr MatchResult assignMatcher(std::string_view str) {
@@ -60,16 +82,15 @@ constexpr MatchResult assignMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void assignParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (named && !assigned) {
-        if (brackets.empty()) {
-            assigned = true;
-            return;
-        } else {
-            throw SyntaxError("Expected assignment ('::=')", files.getCurrentLineNumber());
-        }
-    }
-}
+[[maybe_unused]] bool assignParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &currentRuleName,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto orPattern = ctll::fixed_string{R"-(\|)-"};
 constexpr MatchResult orMatcher(std::string_view str) {
@@ -78,11 +99,15 @@ constexpr MatchResult orMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void orParser(std::stack<std::string_view> &/*unused*/, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    };
-}
+[[maybe_unused]] bool orParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto parenthPattern = ctll::fixed_string{R"-(\()-"};
 constexpr MatchResult parenthMatcher(std::string_view str) {
@@ -91,12 +116,15 @@ constexpr MatchResult parenthMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void parenthParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    }
-    brackets.push("(");
-}
+[[maybe_unused]] bool parenthParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto endParenthPattern = ctll::fixed_string{R"-(\))-"};
 constexpr MatchResult endParenthMatcher(std::string_view str) {
@@ -105,17 +133,15 @@ constexpr MatchResult endParenthMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void endParenthParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    }
-    if (brackets.empty()) {
-        throw SyntaxError("Unexpected ')'", files.getCurrentLineNumber());
-    }
-    if (brackets.top() != "(") {
-        throw SyntaxError("Expected ')'", files.getCurrentLineNumber());
-    }
-}
+[[maybe_unused]] bool endParenthParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto loopPattern = ctll::fixed_string{R"-(\{)-"};
 constexpr MatchResult loopMatcher(std::string_view str) {
@@ -124,12 +150,15 @@ constexpr MatchResult loopMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void loopParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    }
-    brackets.push("{");
-}
+[[maybe_unused]] bool loopParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto endLoopPattern = ctll::fixed_string{R"-(\})-"};
 constexpr MatchResult endLoopMatcher(std::string_view str) {
@@ -138,17 +167,15 @@ constexpr MatchResult endLoopMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void endLoopParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    }
-    if (brackets.empty()) {
-        throw SyntaxError("Unexpected '}'", files.getCurrentLineNumber());
-    }
-    if (brackets.top() != "{") {
-        throw SyntaxError("Expected '}'", files.getCurrentLineNumber());
-    }
-}
+[[maybe_unused]] bool endLoopParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto optionPattern = ctll::fixed_string{R"-(\[)-"};
 constexpr MatchResult optionMatcher(std::string_view str) {
@@ -157,12 +184,15 @@ constexpr MatchResult optionMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void optionParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    }
-    brackets.push("[");
-}
+[[maybe_unused]] bool optionParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto endOptionPattern = ctll::fixed_string{R"-(\])-"};
 constexpr MatchResult endOptionMatcher(std::string_view str) {
@@ -171,17 +201,15 @@ constexpr MatchResult endOptionMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void endOptionParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    }
-    if (brackets.empty()) {
-        throw SyntaxError("Unexpected ']'", files.getCurrentLineNumber());
-    }
-    if (brackets.top() != "[") {
-        throw SyntaxError("Expected ']'", files.getCurrentLineNumber());
-    }
-}
+[[maybe_unused]] bool endOptionParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto stringPattern = ctll::fixed_string{R"-(\"([^"]|\\")*\")-"};
 constexpr MatchResult stringMatcher(std::string_view str) {
@@ -190,11 +218,15 @@ constexpr MatchResult stringMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void stringParser(std::stack<std::string_view> &/*unused*/, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    }
-}
+[[maybe_unused]] bool stringParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/);
 
 static constexpr auto endPattern = ctll::fixed_string{R"-(;)-"};
 constexpr MatchResult endMatcher(std::string_view str) {
@@ -203,11 +235,12 @@ constexpr MatchResult endMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-static void endParser(std::stack<std::string_view> &brackets, bool &named, bool &assigned, FileHandler &files) {
-    if (!named && !assigned) {
-        throw SyntaxError("Expected rule name and assignment", files.getCurrentLineNumber());
-    }
-    if (!brackets.empty()) {
-        throw SyntaxError("Expected " + std::string(brackets.top()) + " to be closed", files.getCurrentLineNumber());
-    }
-}
+[[maybe_unused]] bool endParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &currentRuleName,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &rules);

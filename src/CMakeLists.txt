@@ -9,4 +9,5 @@ list(APPEND sources
 	${CMAKE_CURRENT_LIST_DIR}/file_handler.cpp
 	${CMAKE_CURRENT_LIST_DIR}/lexme/lexme.cpp
 	${CMAKE_CURRENT_LIST_DIR}/rules/rules.cpp
+	${CMAKE_CURRENT_LIST_DIR}/regex/regex.cpp
 )

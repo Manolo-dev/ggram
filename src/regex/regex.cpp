@@ -1,0 +1,265 @@
+#include "regex/regex.hpp"
+
+bool ignoreParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &/*unused*/,
+    const std::string &/*unused*/,
+    std::string &/*unused*/,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    return false;
+}
+
+bool commentParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &/*unused*/,
+    const std::string &/*unused*/,
+    std::string &/*unused*/,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    return false;
+}
+
+bool ruleNameParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &currentRule,
+    std::vector<std::string> &allRuleNames,
+    std::string_view &currentRuleName,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if(!assigned) {
+        if (std::count(allRuleNames.begin(), allRuleNames.end(), value)) {
+            error = "Rule name already exists";
+            return true;
+        }
+        currentRuleName = value.substr(1, value.size() - 2);
+        std::cout << "Rule name: " << currentRuleName << std::endl;
+        allRuleNames.push_back(value.substr(1, value.size() - 2));
+    }
+    currentRule.push_back(value);
+    return false;
+}
+
+bool assignParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &currentRuleName,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (assigned) {
+        error = "Unexpected assignment";
+        return true;
+    }
+    if (currentRuleName == "") {
+        error = "Expected rule name";
+        return true;
+    }
+    assigned = true;
+    currentRule.push_back(value);
+    return false;
+}
+
+bool orParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    currentRule.push_back(value);
+    return false;
+}
+
+bool parenthParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    brackets.push("(");
+    currentRule.push_back(value);
+    return false;
+}
+
+bool endParenthParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    if (brackets.empty()) {
+        error = "Unexpected end of parentheses";
+        return true;
+    }
+    if (brackets.top() != "(") {
+        error = "Unexpected end of parentheses";
+        return true;
+    }
+    brackets.pop();
+    currentRule.push_back(value);
+    return false;
+}
+
+bool loopParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    brackets.push("{");
+    currentRule.push_back(value);
+    return false;
+}
+
+bool endLoopParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    if (brackets.empty()) {
+        error = "Unexpected end of loop";
+        return true;
+    }
+    if (brackets.top() != "{") {
+        error = "Unexpected end of loop";
+        return true;
+    }
+    brackets.pop();
+    currentRule.push_back(value);
+    return false;
+}
+
+bool optionParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    brackets.push("[");
+    currentRule.push_back(value);
+    return false;
+}
+
+bool endOptionParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    if (brackets.empty()) {
+        error = "Unexpected end of option";
+        return true;
+    }
+    if (brackets.top() != "[") {
+        error = "Unexpected end of option";
+        return true;
+    }
+    brackets.pop();
+    currentRule.push_back(value);
+    return false;
+}
+
+bool stringParser(
+    std::stack<std::string_view> &/*unused*/,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &/*unused*/,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &/*unused*/) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    if (value.size() < 2) {
+        error = "Unexpected content of string";
+        return true;
+    }
+    currentRule.push_back(value);
+    return false;
+}
+
+bool endParser(
+    std::stack<std::string_view> &brackets,
+    Rule &currentRule,
+    std::vector<std::string> &/*unused*/,
+    std::string_view &currentRuleName,
+    bool &assigned,
+    const std::string &value,
+    std::string &error,
+    std::vector<std::pair<std::string, Rule>> &rules) {
+    if (!assigned) {
+        error = "Expected assignment";
+        return true;
+    }
+    if (!brackets.empty()) {
+        error = "Unexpected " + std::string(brackets.top());
+        return true;
+    }
+    currentRule.push_back(value);
+    rules.emplace_back(currentRuleName, currentRule);
+    std::cout << "Rule " << currentRuleName << std::endl;
+    currentRule.clear();
+    assigned = false;
+    currentRuleName = "";
+    return false;
+}

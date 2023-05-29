@@ -170,6 +170,8 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, InputHan
     std::string line;
     Rule currentRule;
     std::stack<std::string_view> brackets;
+    std::string_view currentRuleName = "";
+    bool assigned = false;
 
     while (files.getline(line)) {
         if (line[0] == '#' || line.empty()) {
@@ -189,11 +191,20 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, InputHan
                 const MatchResult result = matcher(line_view);
                 if (result == std::nullopt) continue;
 
-                
-                
-                match_found = true;
                 const auto &match = result.value();
                 const std::string &match_str = std::string(match.first);
+
+                std::string error;
+                bool temp = cfg.parse_ggram_file[name](brackets, currentRule, allRuleNames, currentRuleName, assigned,
+                                           match_str, error, rules);
+                if(temp) {
+                    throw SyntaxError(error, files.getCurrentLineNumber());
+                }
+
+                std::cout << "Name : " << currentRuleName << std::endl;
+
+
+                match_found = true;
                 line_view = line_view.substr(match.second);
             }
             if (!match_found) {
@@ -204,8 +215,17 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files, InputHan
     if (!currentRule.empty()) {
         throw SyntaxError("Expected ';'", files.getCurrentLineNumber());
     }
+    std::cout << "Rules:" << std::endl;
+    for(const auto &rule : rules) {
+        std::cout << rule.first << " : ";
+        for(const auto &elem : rule.second) {
+            std::cout << elem << " ";
+        }
+        std::cout << std::endl;
+    }
     return rules;
 }
+
 void writeRulesPopFunctions(const std::vector<std::pair<std::string, Rule>> &rules,
                             FileHandler &files) {
     // Declare rules' pop functions

@@ -246,8 +246,10 @@ void libraryFile(const ArgList &arg_list, Configuration &cfg) {
             throw ArgumentError("Cannot open library: " + std::string(dlerror()));
         }
 
-        typedef std::vector<std::pair<std::string_view, Matcher>> PairAllMatcher;
-        typedef PairAllMatcher (*AllMatcher)();
+        using PairAllMatcher = std::vector<std::pair<std::string_view, Matcher>>;
+        using AllMatcher = PairAllMatcher(*)();
+        using PairAllParser = std::vector<std::pair<std::string_view, Parser>>;
+        using AllParser = PairAllParser(*)();
 
         AllMatcher allMatcher = reinterpret_cast<AllMatcher>(dlsym(libraryHandle, "get_matchers"));
 
@@ -262,6 +264,19 @@ void libraryFile(const ArgList &arg_list, Configuration &cfg) {
         for (auto &pair : matchers) {
             cfg.lex_ggram_file.push_back(pair);
         }
+
+        AllParser allParser = reinterpret_cast<AllParser>(dlsym(libraryHandle, "get_parsers"));
+
+        if (allParser == nullptr) {
+            throw ArgumentError("Cannot load symbol 'allParser': " + std::string(dlerror()));
+        }
+
+        dlerror();
+
+        for (auto &pair : allParser()) {
+            cfg.parse_ggram_file[pair.first] = pair.second;
+        }
+        
     }
 }
 } // namespace InputHandler

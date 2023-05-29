@@ -46,7 +46,7 @@ struct Configuration {
         {"ENDOPTION", endOptionMatcher},
         {"STRING", stringMatcher},
         {"END", endMatcher}};
-    std::vector<std::pair<std::string_view, Parser>> parse_ggram_file = {
+    std::map<std::string_view, Parser> parse_ggram_file = {
         {"IGNORE", ignoreParser},
         {"COMMENT", commentParser},
         {"RULENAME", ruleNameParser},

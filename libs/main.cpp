@@ -11,7 +11,7 @@ int main() {
     }
 
     // Récupérer le pointeur de la fonction souhaitée depuis la bibliothèque
-    typedef void (*MyFunctionType)();
+    using MyFunctionType = void(*)();
     MyFunctionType myFunction = reinterpret_cast<MyFunctionType>(dlsym(libraryHandle, "print"));
 
     if (myFunction == nullptr) {
