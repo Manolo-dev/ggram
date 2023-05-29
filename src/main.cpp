@@ -3,8 +3,10 @@
 #include <vector>
 
 #include "file_handler.hpp"
-#include "input_handler.hpp"
+#include "input_handler/input_handler.hpp"
 #include "lexme/lexme.hpp"
+#include "regex/regex.hpp"
+#include "rules/parser.hpp"
 #include "rules/rules.hpp"
 
 void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files) {
@@ -36,6 +38,22 @@ void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files)
 
 int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
+
+    cfg.lex_ggram_file = {// iteration and append (for lib), that is why we use std::vector
+                          {"IGNORE", ignoreMatcher, ignoreParser},
+                          {"COMMENT", commentMatcher, commentParser},
+                          {"RULENAME", ruleNameMatcher, ruleNameParser},
+                          {"ASSIGN", assignMatcher, assignParser},
+                          {"OR", orMatcher, orParser},
+                          {"PARENTH", parenthMatcher, parenthParser},
+                          {"ENDPARENTH", endParenthMatcher, endParenthParser},
+                          {"LOOP", loopMatcher, loopParser},
+                          {"ENDLOOP", endLoopMatcher, endLoopParser},
+                          {"OPTION", optionMatcher, optionParser},
+                          {"ENDOPTION", endOptionMatcher, endOptionParser},
+                          {"STRING", stringMatcher, stringParser},
+                          {"END", endMatcher, endParser}};
+
     if (!InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg)) {
         return 1;
     }

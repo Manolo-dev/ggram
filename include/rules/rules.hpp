@@ -7,7 +7,7 @@
 
 #include "error/syntax_error.hpp"
 #include "global_defines.hpp"
-#include "input_handler.hpp"
+#include "input_handler/input_handler.hpp"
 #include "regex/regex.hpp"
 #include "utils.hpp"
 
