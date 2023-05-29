@@ -9,6 +9,8 @@
 #include "rules/parser.hpp"
 #include "rules/rules.hpp"
 
+#define DEBUG_PARAMETERS "./test/test3.gg", "./test/out", "-l", "./libs/lib.so"
+
 void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files) {
     files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);
 
@@ -53,10 +55,17 @@ int main(int argc, char const *argv[]) {
                           {"ENDOPTION", endOptionMatcher, endOptionParser},
                           {"STRING", stringMatcher, stringParser},
                           {"END", endMatcher, endParser}};
-
+#ifdef DEBUG_PARAMETERS
+    (void)argc;
+    (void)argv;
+    if (!InputHandler::handleParameters(std::vector<std::string>{"ggram", DEBUG_PARAMETERS}, cfg)) {
+        return 1;
+    }
+#else
     if (!InputHandler::handleParameters(std::vector<std::string>{argv, argv + argc}, cfg)) {
         return 1;
     }
+#endif
     FileHandler files;
     initOutputFiles(cfg, files);
     try {

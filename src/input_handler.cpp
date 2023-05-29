@@ -257,6 +257,7 @@ void libraryFile(const ArgList &arg_list, Configuration &cfg) {
         dlerror();
 
         auto rules = rulesImport();
+		std::cout << "Imported " << rules.size() << " rules from " << arg << std::endl;
         extend(cfg.lex_ggram_file, rules);
     }
 }

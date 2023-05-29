@@ -1,15 +1,14 @@
-#include "ctre.hpp"
+#include "ctre/ctre.hpp"
+#include "global_defines.hpp"
+#include "regex/types.hpp"
+#include "rules/types.hpp"
+#include "input_handler/types.hpp"
+
 #include <optional>
 #include <stack>
 #include <string>
 #include <vector>
-
-using Rule = std::vector<std::string>;
-using MatchResult = std::optional<std::pair<std::string_view, size_t>>;
-using Matcher = MatchResult (*)(std::string_view);
-using Parser = bool (*)(std::stack<std::string_view> &, Rule &, std::vector<std::string> &, bool &,
-                        const std::string &, std::string &);
-using LexerRule = std::tuple<std::string_view, Matcher, Parser>;
+#include <unordered_set>
 
 extern "C" {
 constexpr auto funPattern = ctll::fixed_string{R"-(:([a-zA-Z][a-zA-Z0-9_]*))-"};
@@ -19,9 +18,11 @@ constexpr MatchResult funMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-[[maybe_unused]] static bool optionParser(std::stack<std::string_view> &brackets, Rule &currentRule,
-                                          std::vector<std::string> &allRuleNames, bool &assigned,
-                                          const std::string &value, std::string &error) {
+[[maybe_unused]] bool optionParser(std::stack<std::string_view> & /* unused */, Rule &currentRule,
+                                   std::unordered_set<std::string> & /* unused */,
+                                   std::string & /* unused */, bool &assigned,
+                                   const std::string &value, std::string &error,
+                                   std::vector<std::pair<std::string, Rule>> & /* unused */) {
     if (!assigned) {
         error = "Expected assignment";
         return true;
@@ -30,7 +31,7 @@ constexpr MatchResult funMatcher(std::string_view str) {
     return false;
 }
 
-std::vector<LexerRule> getLexerRules() {
+std::vector<InputHandler::LexerRule> getLexerRules() {
     return {{"FUN", funMatcher, optionParser}};
 }
 }
