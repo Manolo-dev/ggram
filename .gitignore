@@ -6,9 +6,9 @@ test/*
 .vscode
 idea/*
 build/*
-parser.cpp
-output.hpp
-parser.hpp
+test/parser.cpp
+test/output.hpp
+test/parser.hpp
 
 # Prerequisites
 *.d
