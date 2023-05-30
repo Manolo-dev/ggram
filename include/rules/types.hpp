@@ -8,6 +8,13 @@
 #include <unordered_set>
 #include <vector>
 
-using Parser = std::function<bool(
-    std::stack<std::string_view> &, Rule &, std::unordered_set<std::string> &, std::string &,
-    bool &, const std::string &, std::string &, std::vector<std::pair<std::string, Rule>> &)>;
+struct ParserContext {
+    std::vector<std::pair<std::string, Rule>> rules;
+    std::unordered_set<std::string> allRuleNames;
+    Rule currentRule;
+    std::string currentRuleName;
+    std::stack<std::string_view> brackets;
+    bool assigned = false;
+};
+
+using Parser = std::function<bool(ParserContext &, const std::string &, std::string &)>;

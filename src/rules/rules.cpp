@@ -161,13 +161,8 @@ void addRulePopFunctions(const Rule &rule, const std::string &name,
 
 std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
                                                     InputHandler::Configuration &cfg) {
-    std::vector<std::pair<std::string, Rule>> rules;
-    std::unordered_set<std::string> allRuleNames;
+    ParserContext context;
     std::string line;
-    Rule currentRule;
-    std::string currentRuleName;
-    std::stack<std::string_view> brackets;
-    bool assigned = false;
     unsigned long column = 0;
 
     while (files.getline(line)) {
@@ -198,8 +193,7 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
                 const auto &match = result.value();
                 const std::string &match_str = std::string(match.first);
 
-                bool const temp = parser(brackets, currentRule, allRuleNames, currentRuleName,
-                                         assigned, match_str, error, rules);
+                bool const temp = parser(context, match_str, error);
                 if (temp) {
                     throw SyntaxError(error, files.getCurrentLineNumber(), column + 1,
                                       column + match.second);
@@ -216,10 +210,10 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
             }
         }
     }
-    if (!currentRule.empty()) {
+    if (!context.currentRule.empty()) {
         throw SyntaxError("Expected ';'", files.getCurrentLineNumber(), column, column);
     }
-    return rules;
+    return context.rules;
 }
 
 void writeRulesPopFunctions(const std::vector<std::pair<std::string, Rule>> &rules,
