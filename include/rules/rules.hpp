@@ -15,4 +15,6 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
                                                     InputHandler::Configuration &cfg);
 
 void writeRulesPopFunctions(const std::vector<std::pair<std::string, Rule>> &rules,
-                            FileHandler &files);
+                            FileHandler &files, InputHandler::Configuration &cfg);
+
+void writeParseFunction(FileHandler &files, InputHandler::Configuration &cfg);

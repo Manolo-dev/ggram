@@ -8,8 +8,9 @@
 #include "regex/regex.hpp"
 #include "rules/parser.hpp"
 #include "rules/rules.hpp"
+#include "rules/generator.hpp"
 
-#define DEBUG_PARAMETERS "./test/test3.gg", "./test/out", "-l", "./libs/lib.so"
+#define DEBUG_PARAMETERS "./test/test2.gg", "./test/out", "-l", "./libs/lib.so"
 
 void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files) {
     files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);
@@ -55,6 +56,9 @@ int main(int argc, char const *argv[]) {
                           {"ENDOPTION", endOptionMatcher, endOptionParser},
                           {"STRING", stringMatcher, stringParser},
                           {"END", endMatcher, endParser}};
+    
+    cfg.gen_ggram_file = {loopGen, ruleGen, stringGen};
+
 #ifdef DEBUG_PARAMETERS
     (void)argc;
     (void)argv;
@@ -78,7 +82,8 @@ int main(int argc, char const *argv[]) {
             cout << _ << std::endl;
         }
 #endif
-        writeRulesPopFunctions(rules, files);
+        writeRulesPopFunctions(rules, files, cfg);
+        writeParseFunction(files, cfg);
     } catch (const SyntaxError &e) {
         e.print(files);
         return 2;

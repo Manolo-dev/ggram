@@ -1,9 +1,3 @@
-Token parse(const std::string &code) {
-    std::vector<Token> tokens = lex(code);
-    // std::cout << tokens << std::endl;
-    return parse(tokens);
-}
-
 #include <chrono>
 #include <fstream>
 

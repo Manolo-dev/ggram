@@ -246,7 +246,7 @@ void libraryFile(const ArgList &arg_list, Configuration &cfg) {
             throw ArgumentError("Cannot open library: " + std::string(dlerror()));
         }
 
-        using getLexerRules = std::vector<LexerRule> (*)();
+        using getLexerRules = std::vector<LexerRule>(*)();
 
         const auto rulesImport =
             reinterpret_cast<getLexerRules>(dlsym(libraryHandle, "getLexerRules"));
@@ -257,8 +257,33 @@ void libraryFile(const ArgList &arg_list, Configuration &cfg) {
         dlerror();
 
         auto rules = rulesImport();
-		std::cout << "Imported " << rules.size() << " rules from " << arg << std::endl;
         extend(cfg.lex_ggram_file, rules);
+
+        using getGenRules = std::vector<GenRule>(*)();
+
+        const auto genRulesImport =
+            reinterpret_cast<getGenRules>(dlsym(libraryHandle, "getGenRules"));
+        
+        if (genRulesImport == nullptr) {
+            throw ArgumentError("Cannot load getGenRules function: " + std::string(dlerror()));
+        }
+        dlerror();
+
+        auto genRules = genRulesImport();
+        extend(cfg.gen_ggram_file, genRules);
+
+        using getPreFunctions = std::vector<PreFunction>(*)();
+
+        const auto preFunctionsImport =
+            reinterpret_cast<getPreFunctions>(dlsym(libraryHandle, "getPreFunctions"));
+
+        if (preFunctionsImport == nullptr) {
+            throw ArgumentError("Cannot load preFunctions function: " + std::string(dlerror()));
+        }
+        dlerror();
+        
+        auto preFunctions = preFunctionsImport();
+        extend(cfg.pre_functions, preFunctions);
     }
 }
 } // namespace InputHandler

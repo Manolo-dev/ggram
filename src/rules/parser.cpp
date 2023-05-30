@@ -25,14 +25,15 @@ bool ruleNameParser(std::stack<std::string_view> & /*unused*/, Rule &currentRule
         }
         currentRuleName = std::string_view(value).substr(1, value.size() - 2);
         allRuleNames.emplace(std::string(currentRuleName));
+    } else {
+        currentRule.push_back(value);
     }
-    currentRule.push_back(value);
     return false;
 }
 
-bool assignParser(std::stack<std::string_view> & /*unused*/, Rule &currentRule,
+bool assignParser(std::stack<std::string_view> & /*unused*/, Rule &/*unused*/,
                   std::unordered_set<std::string> /*unused*/, std::string &currentRuleName,
-                  bool &assigned, const std::string &value, std::string &error,
+                  bool &assigned, const std::string &/*unused*/, std::string &error,
                   std::vector<std::pair<std::string, Rule>> & /*unused*/) {
     if (assigned) {
         error = "Unexpected assignment";
@@ -43,7 +44,6 @@ bool assignParser(std::stack<std::string_view> & /*unused*/, Rule &currentRule,
         return true;
     }
     assigned = true;
-    currentRule.push_back(value);
     return false;
 }
 
@@ -179,7 +179,7 @@ bool stringParser(std::stack<std::string_view> & /*unused*/, Rule &currentRule,
 
 bool endParser(std::stack<std::string_view> &brackets, Rule &currentRule,
                std::unordered_set<std::string> /*unused*/, std::string &currentRuleName,
-               bool &assigned, const std::string &value, std::string &error,
+               bool &assigned, const std::string &/*unused*/, std::string &error,
                std::vector<std::pair<std::string, Rule>> &rules) {
     if (!assigned) {
         error = "Expected assignment";
@@ -189,7 +189,6 @@ bool endParser(std::stack<std::string_view> &brackets, Rule &currentRule,
         error = "Unexpected " + std::string(brackets.top());
         return true;
     }
-    currentRule.push_back(value);
     rules.emplace_back(currentRuleName, currentRule);
     currentRule.clear();
     assigned = false;
