@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <sstream>
 
 static constexpr auto ignorePattern = ctll::fixed_string{R"-([ \n\r\s\t]+)-"};
 constexpr MatchResult ignoreMatcher(std::string_view str) {
@@ -89,6 +90,7 @@ constexpr MatchResult optionMatcher(std::string_view str) {
 }
 
 static constexpr auto endOptionPattern = ctll::fixed_string{R"-(\])-"};
+static constexpr auto endOptionMatch = ctre::starts_with<endOptionPattern>;
 constexpr MatchResult endOptionMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<endOptionPattern>(str); match) {
         return std::make_pair(match.get<0>().to_view(), match.size());
@@ -111,3 +113,15 @@ constexpr MatchResult endMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
+
+/**
+ * @brief Replace the input string with the replacement string if the pattern match
+ *
+ * @param pattern the pattern to match
+ * @param replacement the replacement string
+ * @param str the input string
+ * @return const std::optional<std::string> the replaced string or nullopt if the pattern doesn't
+ * match
+ */
+template<CTRE_REGEX_INPUT_TYPE input, typename... Modifiers>
+std::optional<std::string> replace(const std::string_view &str, const std::string_view &replacement);
