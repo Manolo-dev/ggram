@@ -258,6 +258,19 @@ void libraryFile(const ArgList &arg_list, Configuration &cfg) {
 
         auto rules = rulesImport();
         extend(cfg.lex_ggram_file, rules);
+
+        using getGenRules = std::vector<GenRule> (*)();
+
+        const auto genRulesImport =
+            reinterpret_cast<getGenRules>(dlsym(libraryHandle, "getGenRules"));
+        
+        if (genRulesImport == nullptr) {
+            throw ArgumentError("Cannot load getGenRules function: " + std::string(dlerror()));
+        }
+        dlerror();
+
+        auto genRules = genRulesImport();
+        extend(cfg.gen_ggram_file, genRules);
     }
 }
 } // namespace InputHandler
