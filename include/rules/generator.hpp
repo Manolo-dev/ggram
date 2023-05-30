@@ -2,6 +2,7 @@
 
 #include "regex/regex.hpp"
 
+
 static constexpr auto loopGenPattern = ctll::fixed_string{R"-(\{([a-zA-Z0-9_]+)\})-"};
 bool loopGen(std::string_view str, std::string& rule_element);
 

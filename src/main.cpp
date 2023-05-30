@@ -83,6 +83,7 @@ int main(int argc, char const *argv[]) {
         }
 #endif
         writeRulesPopFunctions(rules, files, cfg);
+        writeParseFunction(files, cfg);
     } catch (const SyntaxError &e) {
         e.print(files);
         return 2;

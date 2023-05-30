@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rules/types.hpp"
+#include "file_handler.hpp"
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -10,6 +11,7 @@ namespace InputHandler {
 using ArgList = std::vector<std::string>;
 using LexerRule = std::tuple<std::string, Matcher, Parser>;
 using GenRule = bool(*)(std::string_view, std::string&);
+using PreFunction = void(*)(FileHandler &);
 
 // The configuration, will contain everything we got from the input arguments
 struct Configuration {
@@ -18,6 +20,8 @@ struct Configuration {
     std::filesystem::path output_filepath_hpp = "parser.hpp";
     std::vector<LexerRule> lex_ggram_file;
     std::vector<GenRule> gen_ggram_file;
+    std::vector<PreFunction> pre_functions;
+
 };
 
 // UpdateConfigFunction is intended to update the configuration

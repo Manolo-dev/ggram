@@ -38,7 +38,7 @@ std::vector<InputHandler::LexerRule> getLexerRules() {
 constexpr auto funGenPattern = ctll::fixed_string{R"-(:([a-zA-Z0-9_]+))-"};
 bool funGen(std::string_view str, std::string &rule_element) {
     if (auto match = ctre::starts_with<funGenPattern>(str); match) {
-        rule_element = "cgg::" + match.get<1>().to_string() + "(it_cur, it_end)";
+        rule_element = "fun::" + match.get<1>().to_string() + "(it_cur, it_end)";
         return true;
     }
     return false;
@@ -46,5 +46,14 @@ bool funGen(std::string_view str, std::string &rule_element) {
 
 std::vector<InputHandler::GenRule> getGenRules() {
     return {funGen};
+}
+
+void funPreFunction(FileHandler &files) {
+    files << FileHandler::WriteMode::CPP << std::endl
+          << "    std::cout << \"truc\" << std::endl;" << std::endl;
+}
+
+std::vector<InputHandler::PreFunction> getPreFunctions() {
+    return {funPreFunction};
 }
 } // extern "C"

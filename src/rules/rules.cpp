@@ -262,3 +262,17 @@ void writeRulesPopFunctions(const std::vector<std::pair<std::string, Rule>> &rul
         }
     }
 }
+
+void writeParseFunction(FileHandler &files, InputHandler::Configuration &cfg) {
+    files << FileHandler::WriteMode::CPP << std::endl
+          << "Token parse(const std::string &code) {" << std::endl
+          << "    std::vector<Token> tokens = lex(code);" << std::endl;
+
+    for (const auto preFun : cfg.pre_functions) {
+        preFun(files);
+    }
+    
+    files << FileHandler::WriteMode::CPP << std::endl
+          << "    return parse(tokens);" << std::endl
+          << "}" << std::endl;
+}
