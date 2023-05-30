@@ -18,16 +18,13 @@ constexpr MatchResult funMatcher(std::string_view str) {
     }
     return std::nullopt;
 }
-[[maybe_unused]] bool optionParser(std::stack<std::string_view> & /* unused */, Rule &currentRule,
-                                   std::unordered_set<std::string> & /* unused */,
-                                   std::string & /* unused */, bool &assigned,
-                                   const std::string &value, std::string &error,
-                                   std::vector<std::pair<std::string, Rule>> & /* unused */) {
-    if (!assigned) {
+[[maybe_unused]] bool funParser(ParserContext &context, const std::string &value,
+                                   std::string &error) {
+    if (!context.assigned) {
         error = "Expected assignment";
         return true;
     }
-    currentRule.push_back(value);
+    context.currentRule.push_back(value);
     return false;
 }
 
@@ -45,4 +42,4 @@ void funPreFunction(FileHandler &files) {
           << "    std::cout << \"truc\" << std::endl;" << std::endl;
 }
 
-Library library{{{"FUN", funMatcher, optionParser}}, {funGen}, {funPreFunction}};
+Library library{{{"FUN", funMatcher, funParser}}, {funGen}, {funPreFunction}};
