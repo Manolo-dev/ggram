@@ -142,8 +142,7 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
 }
 
 void addRulePopFunctions(const Rule &rule, const std::string &name,
-                         std::vector<PairRuleFunction> &result,
-                         InputHandler::Configuration &cfg) {
+                         std::vector<PairRuleFunction> &result, InputHandler::Configuration &cfg) {
     size_t rule_id = 0;
     std::vector<std::string> newRule;
     for (size_t i = 0; i < rule.size(); i++) {
@@ -169,11 +168,11 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
     std::string currentRuleName;
     std::stack<std::string_view> brackets;
     bool assigned = false;
-	unsigned long column = 0;
+    unsigned long column = 0;
 
     while (files.getline(line)) {
         column = 0;
-		if (line[0] == '#' || line.empty()) {
+        if (line[0] == '#' || line.empty()) {
             continue;
         }
         if (line == FILE_SEPARATOR) {
@@ -191,27 +190,29 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
                 if (matcher == nullptr) {
                     throw std::runtime_error("Matcher is null");
                 }
-				const MatchResult result = matcher(line_view);
-				if (result == std::nullopt) {
-					continue;
-				}
+                const MatchResult result = matcher(line_view);
+                if (result == std::nullopt) {
+                    continue;
+                }
 
-				const auto &match = result.value();
-				const std::string &match_str = std::string(match.first);
+                const auto &match = result.value();
+                const std::string &match_str = std::string(match.first);
 
-				bool const temp = parser(brackets, currentRule, allRuleNames, currentRuleName,
-										assigned, match_str, error, rules);
-				if (temp) {
-					throw SyntaxError(error, files.getCurrentLineNumber(), column + 1, column + match.second);
-				}
+                bool const temp = parser(brackets, currentRule, allRuleNames, currentRuleName,
+                                         assigned, match_str, error, rules);
+                if (temp) {
+                    throw SyntaxError(error, files.getCurrentLineNumber(), column + 1,
+                                      column + match.second);
+                }
 
-				match_found = true;
-				line_view = line_view.substr(match.second);
-				column += match.second;
+                match_found = true;
+                line_view = line_view.substr(match.second);
+                column += match.second;
             }
             if (!match_found) {
-				const size_t next_space = line_view.find_first_of(" ");
-                throw SyntaxError("Unexpected token", files.getCurrentLineNumber(), column + 1, column + next_space);
+                const size_t next_space = line_view.find_first_of(" ");
+                throw SyntaxError("Unexpected token", files.getCurrentLineNumber(), column + 1,
+                                  column + next_space);
             }
         }
     }
@@ -256,7 +257,7 @@ void writeParseFunction(FileHandler &files, InputHandler::Configuration &cfg) {
     for (const auto preFun : cfg.pre_functions) {
         preFun(files);
     }
-    
+
     files << FileHandler::WriteMode::CPP << std::endl
           << "    return parse(tokens);" << std::endl
           << "}" << std::endl;

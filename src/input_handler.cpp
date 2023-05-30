@@ -246,7 +246,8 @@ void libraryFile(const ArgList &arg_list, Configuration &cfg) {
             throw ArgumentError("Cannot open library: " + std::string(dlerror()));
         }
 
-        const auto *const library = reinterpret_cast<const Library *>(dlsym(libraryHandle, "library"));
+        const auto *const library =
+            reinterpret_cast<const Library *>(dlsym(libraryHandle, "library"));
 
         if (library == nullptr) {
             throw ArgumentError("Cannot load library structure:\n" + std::string(dlerror()));

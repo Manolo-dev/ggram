@@ -6,11 +6,11 @@
 #include "input_handler/input_handler.hpp"
 #include "lexme/lexme.hpp"
 #include "regex/regex.hpp"
+#include "rules/generator.hpp"
 #include "rules/parser.hpp"
 #include "rules/rules.hpp"
-#include "rules/generator.hpp"
 
-#define DEBUG_PARAMETERS "./test/test2.gg", "./test/out", "-l", "./libs/lib.so"
+// #define DEBUG_PARAMETERS "./test/test2.gg", "./test/out", "-l", "./libs/lib.so"
 
 void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files) {
     files.open(cfg.input_filename, cfg.output_filepath_cpp, cfg.output_filepath_hpp);
@@ -43,20 +43,20 @@ int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
 
     cfg.lex_ggram_rules = {// iteration and append (for lib), that is why we use std::vector
-                          {"IGNORE", ignoreMatcher, ignoreParser},
-                          {"COMMENT", commentMatcher, commentParser},
-                          {"RULENAME", ruleNameMatcher, ruleNameParser},
-                          {"ASSIGN", assignMatcher, assignParser},
-                          {"OR", orMatcher, orParser},
-                          {"PARENTH", parenthMatcher, parenthParser},
-                          {"ENDPARENTH", endParenthMatcher, endParenthParser},
-                          {"LOOP", loopMatcher, loopParser},
-                          {"ENDLOOP", endLoopMatcher, endLoopParser},
-                          {"OPTION", optionMatcher, optionParser},
-                          {"ENDOPTION", endOptionMatcher, endOptionParser},
-                          {"STRING", stringMatcher, stringParser},
-                          {"END", endMatcher, endParser}};
-    
+                           {"IGNORE", ignoreMatcher, ignoreParser},
+                           {"COMMENT", commentMatcher, commentParser},
+                           {"RULENAME", ruleNameMatcher, ruleNameParser},
+                           {"ASSIGN", assignMatcher, assignParser},
+                           {"OR", orMatcher, orParser},
+                           {"PARENTH", parenthMatcher, parenthParser},
+                           {"ENDPARENTH", endParenthMatcher, endParenthParser},
+                           {"LOOP", loopMatcher, loopParser},
+                           {"ENDLOOP", endLoopMatcher, endLoopParser},
+                           {"OPTION", optionMatcher, optionParser},
+                           {"ENDOPTION", endOptionMatcher, endOptionParser},
+                           {"STRING", stringMatcher, stringParser},
+                           {"END", endMatcher, endParser}};
+
     cfg.gen_ggram_rules = {loopGen, ruleGen, stringGen};
 
 #ifdef DEBUG_PARAMETERS

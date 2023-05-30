@@ -2,8 +2,8 @@
 
 #include "error/argument_error.hpp"
 #include "input_handler/types.hpp"
-#include "utils.hpp"
 #include "lib/lib.hpp"
+#include "utils.hpp"
 #include <array>
 #include <dlfcn.h>
 #include <filesystem>
