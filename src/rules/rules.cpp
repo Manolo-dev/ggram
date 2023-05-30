@@ -108,29 +108,10 @@ std::string generateSimpleRulePopFunction(const std::vector<std::string> &rule,
             it_end) otherwise : INVALID_SYNTAX
             */
 
-            // std::vector<PatternParser> const patterns = {
-            //     {R"-(^\{([a-zA-Z0-9_]+)\}$)-"       , R"-(_pop_while(pop_$1, current))-"},
-            //     {R"-(^<([a-zA-Z_][a-zA-Z0-9_]*)>$)-", R"-(pop_$1(createNext(current)))-"},
-            //     {R"-(^\"([^\"]*)\"$)-"              , R"-(_pop_value("$1", createNext(current)))-"},
-            //     {R"-(^:([a-zA-Z_][a-zA-Z0-9_]*)$)-" , R"-(cgg::$1(it_cur, it_end))-"},
-            // };
-
-            // std::string rule_element = rule_combination[i];
-            // bool found = false;
-            // for (PatternParser const &p : patterns) {
-            //     std::smatch m;
-            //     if (std::regex_match(rule_element, m, std::regex(p.pattern))) {
-            //         rule_element =
-            //             std::regex_replace(rule_element, std::regex(p.pattern), p.replacement);
-            //         found = true;
-            //         break;
-            //     }
-            // }
-
             std::string rule_element = rule_combination[i];
             std::string generated_element;
             bool found = false;
-            for (const auto &gen : cfg.gen_ggram_file) {
+            for (const auto &gen : cfg.gen_ggram_rules) {
                 if (gen(rule_element, generated_element)) {
                     rule_element = generated_element;
                     found = true;
@@ -202,8 +183,8 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
         bool match_found = false;
         while (!line_view.empty()) {
             match_found = false;
-            for (auto it = cfg.lex_ggram_file.begin();
-                 it != cfg.lex_ggram_file.end() && !match_found; it++) {
+            for (auto it = cfg.lex_ggram_rules.begin();
+                 it != cfg.lex_ggram_rules.end() && !match_found; it++) {
                 const auto &[name, matcher, parser] = *it;
                 if (matcher == nullptr) {
                     throw std::runtime_error("Matcher is null");

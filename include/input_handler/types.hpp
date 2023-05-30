@@ -18,8 +18,8 @@ struct Configuration {
     std::string input_filename;
     std::filesystem::path output_filepath_cpp = "parser.cpp";
     std::filesystem::path output_filepath_hpp = "parser.hpp";
-    std::vector<LexerRule> lex_ggram_file;
-    std::vector<GenRule> gen_ggram_file;
+    std::vector<LexerRule> lex_ggram_rules;
+    std::vector<GenRule> gen_ggram_rules;
     std::vector<PreFunction> pre_functions;
 
 };

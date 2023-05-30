@@ -1,16 +1,16 @@
+#include "lib/lib.hpp"
 #include "ctre/ctre.hpp"
 #include "global_defines.hpp"
+#include "input_handler/types.hpp"
 #include "regex/types.hpp"
 #include "rules/types.hpp"
-#include "input_handler/types.hpp"
 
 #include <optional>
 #include <stack>
 #include <string>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
-extern "C" {
 constexpr auto funPattern = ctll::fixed_string{R"-(:([a-zA-Z][a-zA-Z0-9_]*))-"};
 constexpr MatchResult funMatcher(std::string_view str) {
     if (auto match = ctre::starts_with<funPattern>(str); match) {
@@ -31,10 +31,6 @@ constexpr MatchResult funMatcher(std::string_view str) {
     return false;
 }
 
-std::vector<InputHandler::LexerRule> getLexerRules() {
-    return {{"FUN", funMatcher, optionParser}};
-}
-
 constexpr auto funGenPattern = ctll::fixed_string{R"-(:([a-zA-Z0-9_]+))-"};
 bool funGen(std::string_view str, std::string &rule_element) {
     if (auto match = ctre::starts_with<funGenPattern>(str); match) {
@@ -44,16 +40,9 @@ bool funGen(std::string_view str, std::string &rule_element) {
     return false;
 }
 
-std::vector<InputHandler::GenRule> getGenRules() {
-    return {funGen};
-}
-
 void funPreFunction(FileHandler &files) {
     files << FileHandler::WriteMode::CPP << std::endl
           << "    std::cout << \"truc\" << std::endl;" << std::endl;
 }
 
-std::vector<InputHandler::PreFunction> getPreFunctions() {
-    return {funPreFunction};
-}
-} // extern "C"
+Library library{{{"FUN", funMatcher, optionParser}}, {funGen}, {funPreFunction}};

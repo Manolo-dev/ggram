@@ -42,7 +42,7 @@ void initOutputFiles(const InputHandler::Configuration &cfg, FileHandler &files)
 int main(int argc, char const *argv[]) {
     InputHandler::Configuration cfg;
 
-    cfg.lex_ggram_file = {// iteration and append (for lib), that is why we use std::vector
+    cfg.lex_ggram_rules = {// iteration and append (for lib), that is why we use std::vector
                           {"IGNORE", ignoreMatcher, ignoreParser},
                           {"COMMENT", commentMatcher, commentParser},
                           {"RULENAME", ruleNameMatcher, ruleNameParser},
@@ -57,7 +57,7 @@ int main(int argc, char const *argv[]) {
                           {"STRING", stringMatcher, stringParser},
                           {"END", endMatcher, endParser}};
     
-    cfg.gen_ggram_file = {loopGen, ruleGen, stringGen};
+    cfg.gen_ggram_rules = {loopGen, ruleGen, stringGen};
 
 #ifdef DEBUG_PARAMETERS
     (void)argc;
