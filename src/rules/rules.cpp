@@ -169,9 +169,11 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
     std::string currentRuleName;
     std::stack<std::string_view> brackets;
     bool assigned = false;
+	unsigned long column = 0;
 
     while (files.getline(line)) {
-        if (line[0] == '#' || line.empty()) {
+        column = 0;
+		if (line[0] == '#' || line.empty()) {
             continue;
         }
         if (line == FILE_SEPARATOR) {
@@ -189,30 +191,32 @@ std::vector<std::pair<std::string, Rule>> readRules(FileHandler &files,
                 if (matcher == nullptr) {
                     throw std::runtime_error("Matcher is null");
                 }
-                const MatchResult result = matcher(line_view);
-                if (result == std::nullopt) {
-                    continue;
-                }
+				const MatchResult result = matcher(line_view);
+				if (result == std::nullopt) {
+					continue;
+				}
 
-                const auto &match = result.value();
-                const std::string &match_str = std::string(match.first);
+				const auto &match = result.value();
+				const std::string &match_str = std::string(match.first);
 
-                bool const temp = parser(brackets, currentRule, allRuleNames, currentRuleName,
-                                         assigned, match_str, error, rules);
-                if (temp) {
-                    throw SyntaxError(error, files.getCurrentLineNumber());
-                }
+				bool const temp = parser(brackets, currentRule, allRuleNames, currentRuleName,
+										assigned, match_str, error, rules);
+				if (temp) {
+					throw SyntaxError(error, files.getCurrentLineNumber(), column + 1, column + match.second);
+				}
 
-                match_found = true;
-                line_view = line_view.substr(match.second);
+				match_found = true;
+				line_view = line_view.substr(match.second);
+				column += match.second;
             }
             if (!match_found) {
-                throw SyntaxError("Unexpected token", files.getCurrentLineNumber());
+				const size_t next_space = line_view.find_first_of(" ");
+                throw SyntaxError("Unexpected token", files.getCurrentLineNumber(), column + 1, column + next_space);
             }
         }
     }
     if (!currentRule.empty()) {
-        throw SyntaxError("Expected ';'", files.getCurrentLineNumber());
+        throw SyntaxError("Expected ';'", files.getCurrentLineNumber(), column, column);
     }
     return rules;
 }
